@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\SalesReportExport;
 use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use App\Models\SaleItem;
@@ -9,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -54,7 +56,11 @@ class ReportController extends Controller
             ->value('gross_profit') ?? 0;
 
         $paymentSummary = $completedQuery()
-            ->select('payment_method', DB::raw('COUNT(*) as total_transactions'), DB::raw('SUM(total) as total_amount'))
+            ->select(
+                'payment_method',
+                DB::raw('COUNT(*) as total_transactions'),
+                DB::raw('SUM(total) as total_amount')
+            )
             ->groupBy('payment_method')
             ->get();
 
@@ -71,5 +77,32 @@ class ReportController extends Controller
             'totalVoidAmount',
             'paymentSummary',
         ));
+    }
+
+    public function exportSales(Request $request)
+    {
+        $validated = $request->validate([
+            'start_date'     => ['nullable', 'date'],
+            'end_date'       => ['nullable', 'date', 'after_or_equal:start_date'],
+            'payment_method' => ['nullable', Rule::in(['cash', 'qris', 'transfer'])],
+            'status'         => ['nullable', Rule::in(['completed', 'void'])],
+        ]);
+
+        $startDate     = $validated['start_date'] ?? Carbon::today()->toDateString();
+        $endDate       = $validated['end_date'] ?? Carbon::today()->toDateString();
+        $paymentMethod = $validated['payment_method'] ?? null;
+        $status        = $validated['status'] ?? null;
+
+        $fileName = 'laporan-penjualan-' . $startDate . '-sd-' . $endDate . '.xlsx';
+
+        return Excel::download(
+            new SalesReportExport(
+                $startDate,
+                $endDate,
+                $paymentMethod,
+                $status
+            ),
+            $fileName
+        );
     }
 }

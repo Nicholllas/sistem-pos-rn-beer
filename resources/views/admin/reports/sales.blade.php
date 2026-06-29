@@ -82,14 +82,20 @@
                 </div>
             </div>
 
-            <div class="card-footer d-flex justify-content-between">
+            <div class="card-footer d-flex justify-content-between flex-wrap gap-2">
                 <a href="{{ route('admin.reports.sales') }}" class="btn btn-secondary">
                     Reset
                 </a>
 
-                <button type="submit" class="btn btn-primary">
-                    Tampilkan Laporan
-                </button>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('admin.reports.sales.export', request()->query()) }}" class="btn btn-success">
+                        Export Excel
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        Tampilkan Laporan
+                    </button>
+                </div>
             </div>
         </form>
     </div>

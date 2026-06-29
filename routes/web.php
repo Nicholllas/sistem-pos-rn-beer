@@ -47,6 +47,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('/sales/{sale}/void', [SaleController::class, 'void'])->name('sales.void');
 
         Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
+        Route::get('/reports/sales/export', [ReportController::class, 'exportSales'])->name('reports.sales.export');
     });
 
 Route::middleware(['auth', 'role:cashier'])
