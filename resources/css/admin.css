@@ -1,0 +1,46 @@
+.product-table th,
+.product-table td {
+    vertical-align: middle;
+}
+
+/* Default: kolom lain tetap tidak pecah */
+.product-table th:not(:first-child),
+.product-table td:not(:first-child) {
+    white-space: nowrap;
+}
+
+/* Kolom produk boleh turun baris agar tabel tidak terlalu lebar */
+.product-table td:first-child {
+    white-space: normal;
+}
+
+/* Kontrol lebar info produk */
+.product-table .product-name {
+    width: 220px;
+    max-width: 220px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Nama produk boleh wrap */
+.product-table .product-name strong {
+    white-space: normal;
+    line-height: 1.3;
+}
+
+/* Detail kecil juga boleh wrap */
+.product-table .product-name small {
+    white-space: normal;
+    line-height: 1.4;
+}
+
+/* Supaya gambar produk tidak mengecil */
+.product-table img,
+.product-table .product-image-placeholder {
+    flex-shrink: 0;
+}
+
+/* Tombol tetap rapi */
+.product-table .btn {
+    white-space: nowrap;
+}
