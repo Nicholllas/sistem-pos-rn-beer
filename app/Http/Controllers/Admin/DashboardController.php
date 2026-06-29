@@ -16,17 +16,29 @@ class DashboardController extends Controller
         $today = Carbon::today();
 
         $todayTransactions = Sale::whereDate('created_at', $today)
+            ->where('status', 'completed')
             ->count();
 
         $todaySales = Sale::whereDate('created_at', $today)
+            ->where('status', 'completed')
             ->sum('total');
 
         $todayGrossProfit = SaleItem::join('sales', 'sales.id', '=', 'sale_items.sale_id')
             ->whereDate('sales.created_at', $today)
+            ->where('sales.status', 'completed')
             ->selectRaw('SUM(sale_items.subtotal - (sale_items.qty * sale_items.cost_price)) as gross_profit')
             ->value('gross_profit') ?? 0;
 
-        $totalProducts = Product::count();
+        $todayVoidTransactions = Sale::whereDate('created_at', $today)
+            ->where('status', 'void')
+            ->count();
+
+        $todayVoidAmount = Sale::whereDate('created_at', $today)
+            ->where('status', 'void')
+            ->sum('total');
+
+        $totalProducts = Product::where('is_active', true)
+            ->count();
 
         $lowStockProducts = Product::where('is_active', true)
             ->whereColumn('stock', '<=', 'minimum_stock')
@@ -61,6 +73,7 @@ class DashboardController extends Controller
                 DB::raw('SUM(total) as total_amount')
             )
             ->whereDate('created_at', $today)
+            ->where('status', 'completed')
             ->groupBy('payment_method')
             ->get();
 
@@ -72,6 +85,7 @@ class DashboardController extends Controller
             ->join('products', 'products.id', '=', 'sale_items.product_id')
             ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
             ->whereDate('sales.created_at', $today)
+            ->where('sales.status', 'completed')
             ->groupBy('products.id', 'products.name')
             ->orderByDesc('total_qty')
             ->take(5)
@@ -84,6 +98,8 @@ class DashboardController extends Controller
             'outOfStockProducts',
             'todaySales',
             'todayGrossProfit',
+            'todayVoidTransactions',
+            'todayVoidAmount',
             'averageTransaction',
             'lowStockList',
             'latestSales',
