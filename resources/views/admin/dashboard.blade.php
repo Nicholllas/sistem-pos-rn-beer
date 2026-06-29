@@ -67,7 +67,7 @@
                 Riwayat Penjualan Laporan
             </a>
 
-            <a href="#" class="btn btn-secondary btn-sm">
+            <a href="{{ route('admin.reports.sales') }}" class="btn btn-secondary btn-sm">
                 Lihat Laporan
             </a>
         </div>

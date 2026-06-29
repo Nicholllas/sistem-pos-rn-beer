@@ -167,7 +167,7 @@
                         <li class="nav-header">LAPORAN</li>
 
                         <li class="nav-item">
-                            <a href="#"
+                            <a href="{{ route('admin.reports.sales') }}"
                                 class="nav-link {{ request()->routeIs('admin.reports.sales') ? 'active' : '' }}">
                                 <p>Laporan Penjualan</p>
                             </a>

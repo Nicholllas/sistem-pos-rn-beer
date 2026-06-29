@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\SaleController;
+use App\Http\Controllers\Admin\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -44,6 +45,8 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/sales/history', [SaleController::class, 'history'])->name('sales.history');
         Route::get('/sales/{sale}/receipt', [SaleController::class, 'receipt'])->name('sales.receipt');
         Route::put('/sales/{sale}/void', [SaleController::class, 'void'])->name('sales.void');
+
+        Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
     });
 
 Route::middleware(['auth', 'role:cashier'])
