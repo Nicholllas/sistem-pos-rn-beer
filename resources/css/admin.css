@@ -1,3 +1,4 @@
+/* CSS untuk tabel */
 .product-table th,
 .product-table td {
     vertical-align: middle;
@@ -43,4 +44,158 @@
 /* Tombol tetap rapi */
 .product-table .btn {
     white-space: nowrap;
+}
+
+/* CSS print struk penjualan */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #receiptArea,
+    #receiptArea * {
+        visibility: visible;
+    }
+
+    #receiptArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .main-sidebar,
+    .app-sidebar,
+    .app-header,
+    .content-header,
+    .navbar,
+    .sidebar,
+    footer {
+        display: none !important;
+    }
+}
+
+@media print {
+    @page {
+        size: 58mm auto;
+        margin: 0;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: #ffffff !important;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    #receiptArea,
+    #receiptArea * {
+        visibility: visible;
+    }
+
+    #receiptArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 58mm;
+        max-width: 58mm;
+        padding: 4mm;
+        margin: 0;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .no-print,
+    .main-sidebar,
+    .app-sidebar,
+    .app-header,
+    .content-header,
+    .navbar,
+    .sidebar,
+    footer {
+        display: none !important;
+    }
+}
+
+/* css struk printer thermal 58mm*/
+.thermal-receipt {
+    width: 58mm;
+    max-width: 58mm;
+    background: #ffffff;
+    color: #000000;
+    padding: 8px;
+    font-family: "Courier New", monospace;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.receipt-header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.receipt-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.receipt-header p {
+    margin: 2px 0 0;
+    font-size: 11px;
+}
+
+.receipt-info div,
+.receipt-summary div,
+.item-detail {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.receipt-info span:first-child,
+.receipt-summary span:first-child {
+    flex-shrink: 0;
+}
+
+.receipt-info span:last-child,
+.receipt-summary span:last-child,
+.receipt-summary strong {
+    text-align: right;
+}
+
+.receipt-line {
+    border-top: 1px dashed #000;
+    margin: 8px 0;
+}
+
+.receipt-item {
+    margin-bottom: 6px;
+}
+
+.item-name {
+    font-weight: bold;
+    word-break: break-word;
+}
+
+.item-detail {
+    margin-top: 2px;
+}
+
+.receipt-footer {
+    text-align: center;
+    margin-top: 8px;
+}
+
+.receipt-footer p {
+    margin: 2px 0;
 }

@@ -42,6 +42,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/sales/pos', [SaleController::class, 'pos'])->name('sales.pos');
         Route::post('/sales/checkout', [SaleController::class, 'checkout'])->name('sales.checkout');
         Route::get('/sales/history', [SaleController::class, 'history'])->name('sales.history');
+        Route::get('/sales/{sale}/receipt', [SaleController::class, 'receipt'])->name('sales.receipt');
     });
 
 Route::middleware(['auth', 'role:cashier'])

@@ -32,7 +32,9 @@
                         @forelse ($sales as $sale)
                             <tr>
                                 <td>
-                                    <strong>{{ $sale->invoice_number }}</strong>
+                                    <a href="{{ route('admin.sales.receipt', $sale) }}" class="fw-bold text-decoration-none">
+                                        {{ $sale->invoice_number }}
+                                    </a>
                                 </td>
 
                                 <td>

@@ -1,0 +1,113 @@
+@extends('layouts.admin')
+
+@section('title', 'Struk Penjualan')
+@section('page-title', 'Struk Penjualan')
+
+@section('content')
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-center">
+                <div class="thermal-receipt" id="receiptArea">
+                    <div class="receipt-header">
+                        <h4>RN BEER</h4>
+                        <p>Struk Penjualan</p>
+                    </div>
+
+                    <div class="receipt-info">
+                        <div>
+                            <span>Invoice</span>
+                            <span>{{ $sale->invoice_number }}</span>
+                        </div>
+
+                        <div>
+                            <span>Tanggal</span>
+                            <span>{{ $sale->created_at?->format('d/m/Y H:i') ?? '-' }}</span>
+                        </div>
+
+                        <div>
+                            <span>Kasir</span>
+                            <span>{{ $sale->soldBy?->name ?? '-' }}</span>
+                        </div>
+
+                        <div>
+                            <span>Bayar</span>
+                            <span>{{ strtoupper($sale->payment_method) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="receipt-line"></div>
+
+                    <div class="receipt-items">
+                        @foreach ($sale->items as $item)
+                            <div class="receipt-item">
+                                <div class="item-name">
+                                    {{ $item->product?->name ?? '-' }}
+                                </div>
+
+                                <div class="item-detail">
+                                    <span>
+                                        {{ $item->qty }} x Rp {{ number_format($item->price, 0, ',', '.') }}
+                                    </span>
+
+                                    <span>
+                                        Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="receipt-line"></div>
+
+                    <div class="receipt-summary">
+                        <div>
+                            <span>Total</span>
+                            <strong>Rp {{ number_format($sale->total, 0, ',', '.') }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Bayar</span>
+                            <span>Rp {{ number_format($sale->paid_amount, 0, ',', '.') }}</span>
+                        </div>
+
+                        <div>
+                            <span>Kembali</span>
+                            <span>Rp {{ number_format($sale->change_amount, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="receipt-line"></div>
+
+                    <div class="receipt-footer">
+                        <p>Terima kasih sudah berbelanja.</p>
+                        <p>Barang yang sudah dibeli tidak dapat dikembalikan.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 no-print">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">Aksi</h3>
+                </div>
+
+                <div class="card-body d-grid gap-2">
+                    <button type="button" class="btn btn-primary" onclick="window.print()">
+                        Print Struk
+                    </button>
+
+                    <a href="{{ route('admin.sales.pos') }}" class="btn btn-success">
+                        Transaksi Baru
+                    </a>
+
+                    <a href="{{ route('admin.sales.history') }}" class="btn btn-secondary">
+                        Riwayat Penjualan
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@endsection
