@@ -43,6 +43,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/sales/checkout', [SaleController::class, 'checkout'])->name('sales.checkout');
         Route::get('/sales/history', [SaleController::class, 'history'])->name('sales.history');
         Route::get('/sales/{sale}/receipt', [SaleController::class, 'receipt'])->name('sales.receipt');
+        Route::put('/sales/{sale}/void', [SaleController::class, 'void'])->name('sales.void');
     });
 
 Route::middleware(['auth', 'role:cashier'])

@@ -61,7 +61,7 @@
                                     @if ($sale->status === 'completed')
                                         <span class="badge bg-success">Completed</span>
                                     @else
-                                        <span class="badge bg-secondary">{{ ucfirst($sale->status) }}</span>
+                                        <span class="badge bg-danger">Void</span>
                                     @endif
                                 </td>
 

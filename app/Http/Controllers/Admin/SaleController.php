@@ -172,11 +172,91 @@ class SaleController extends Controller
     }
 
     public function receipt(Sale $sale)
-    {
-        $sale->load(['soldBy', 'items.product']);
+{
+    $sale->load([
+        'soldBy',
+        'voidedBy',
+        'items.product',
+    ]);
 
-        return view('admin.sales.receipt', compact('sale'));
+    return view('admin.sales.receipt', compact('sale'));
+}
+
+    public function void(Request $request, Sale $sale)
+{
+    $request->merge([
+        'void_reason' => $this->normalizeText($request->void_reason),
+    ]);
+
+    $validated = $request->validate([
+        'void_reason' => [
+            'required',
+            'string',
+            'max:1000',
+        ],
+    ]);
+
+    DB::transaction(function () use ($sale, $validated) {
+        $sale = Sale::with('items.product')
+            ->lockForUpdate()
+            ->findOrFail($sale->id);
+
+        if ($sale->status === 'void') {
+            throw ValidationException::withMessages([
+                'void_reason' => 'Transaksi ini sudah pernah dibatalkan.',
+            ]);
+        }
+
+        foreach ($sale->items as $item) {
+            $product = Product::lockForUpdate()
+                ->findOrFail($item->product_id);
+
+            $previousStock = $product->stock;
+            $newStock = $previousStock + $item->qty;
+
+            $product->update([
+                'stock' => $newStock,
+                'last_stock_updated_by' => Auth::id(),
+                'last_stock_updated_at' => now(),
+                'updated_by' => Auth::id(),
+            ]);
+
+            StockMovement::create([
+                'product_id' => $product->id,
+                'type' => 'adjustment',
+                'qty' => $item->qty,
+                'previous_stock' => $previousStock,
+                'new_stock' => $newStock,
+                'note' => 'Void transaksi invoice ' . $sale->invoice_number . '. Alasan: ' . $validated['void_reason'],
+                'created_by' => Auth::id(),
+            ]);
+        }
+
+        $sale->update([
+            'status' => 'void',
+            'voided_at' => now(),
+            'voided_by' => Auth::id(),
+            'void_reason' => $validated['void_reason'],
+        ]);
+    });
+
+    return redirect()
+        ->route('admin.sales.receipt', $sale)
+        ->with('success', 'Transaksi berhasil dibatalkan dan stok sudah dikembalikan.');
+}
+
+    private function normalizeText(?string $value): ?string
+{
+    if ($value === null) {
+        return null;
     }
+
+    $value = strip_tags($value);
+    $value = trim($value);
+    $value = preg_replace('/\s+/', ' ', $value);
+
+    return $value === '' ? null : $value;
+}
 
     private function generateInvoiceNumber(): string
     {

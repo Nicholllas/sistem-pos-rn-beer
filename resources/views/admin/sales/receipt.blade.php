@@ -14,6 +14,16 @@
                         <p>Struk Penjualan</p>
                     </div>
 
+                    @if ($sale->status === 'void')
+                        <div class="receipt-line"></div>
+
+                        <div class="text-center">
+                            <strong>*** VOID ***</strong>
+                        </div>
+
+                        <div class="receipt-line"></div>
+                    @endif
+
                     <div class="receipt-info">
                         <div>
                             <span>Invoice</span>
@@ -33,6 +43,17 @@
                         <div>
                             <span>Bayar</span>
                             <span>{{ strtoupper($sale->payment_method) }}</span>
+                        </div>
+
+                        <div>
+                            <span>Status</span>
+                            <span>
+                                @if ($sale->status === 'completed')
+                                    COMPLETED
+                                @else
+                                    VOID
+                                @endif
+                            </span>
                         </div>
                     </div>
 
@@ -77,11 +98,37 @@
                         </div>
                     </div>
 
+                    @if ($sale->status === 'void')
+                        <div class="receipt-line"></div>
+
+                        <div class="receipt-info">
+                            <div>
+                                <span>Void Oleh</span>
+                                <span>{{ $sale->voidedBy?->name ?? '-' }}</span>
+                            </div>
+
+                            <div>
+                                <span>Void Pada</span>
+                                <span>{{ $sale->voided_at?->format('d/m/Y H:i') ?? '-' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-1">
+                            <strong>Alasan Void:</strong>
+                            <br>
+                            {{ $sale->void_reason ?? '-' }}
+                        </div>
+                    @endif
+
                     <div class="receipt-line"></div>
 
                     <div class="receipt-footer">
-                        <p>Terima kasih sudah berbelanja.</p>
-                        <p>Barang yang sudah dibeli tidak dapat dikembalikan.</p>
+                        @if ($sale->status === 'completed')
+                            <p>Terima kasih sudah berbelanja.</p>
+                            <p>Barang yang sudah dibeli tidak dapat dikembalikan.</p>
+                        @else
+                            <p>Struk ini adalah bukti transaksi yang sudah dibatalkan.</p>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -97,6 +144,59 @@
                     <button type="button" class="btn btn-primary" onclick="window.print()">
                         Print Struk
                     </button>
+
+                    @if ($sale->status === 'completed')
+                        <hr>
+
+                        <form action="{{ route('admin.sales.void', $sale) }}" method="POST"
+                            onsubmit="return confirm('Yakin ingin membatalkan transaksi ini? Stok akan dikembalikan.')">
+                            @csrf
+                            @method('PUT')
+
+                            <div class="mb-3">
+                                <label for="void_reason" class="form-label">
+                                    Alasan Void
+                                </label>
+
+                                <textarea name="void_reason" id="void_reason" class="form-control @error('void_reason') is-invalid @enderror"
+                                    rows="3" placeholder="Contoh: Salah input item / salah metode bayar" required>{{ old('void_reason') }}</textarea>
+
+                                @error('void_reason')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-danger w-100">
+                                Void / Batalkan Transaksi
+                            </button>
+                        </form>
+                    @else
+                        <hr>
+
+                        <div class="alert alert-danger mb-0">
+                            <strong>Transaksi sudah dibatalkan.</strong>
+
+                            <br>
+
+                            <small>
+                                Oleh: {{ $sale->voidedBy?->name ?? '-' }}
+                            </small>
+
+                            <br>
+
+                            <small>
+                                Pada: {{ $sale->voided_at?->format('d M Y H:i') ?? '-' }}
+                            </small>
+
+                            <br>
+
+                            <small>
+                                Alasan: {{ $sale->void_reason ?? '-' }}
+                            </small>
+                        </div>
+                    @endif
 
                     <a href="{{ route('admin.sales.pos') }}" class="btn btn-success">
                         Transaksi Baru
