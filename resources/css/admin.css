@@ -199,3 +199,30 @@
 .receipt-footer p {
     margin: 2px 0;
 }
+
+/* css tabel report stok */
+.inventory-report-table th,
+.inventory-report-table td {
+    vertical-align: middle !important;
+}
+
+.inventory-report-table th {
+    white-space: nowrap;
+}
+
+.inventory-report-table td {
+    font-size: 14px;
+}
+
+.inventory-report-table .product-stock-name {
+    min-width: 280px;
+}
+
+.inventory-report-table .update-stock-info {
+    min-width: 150px;
+    line-height: 1.5;
+}
+
+.inventory-report-table .text-nowrap {
+    white-space: nowrap;
+}

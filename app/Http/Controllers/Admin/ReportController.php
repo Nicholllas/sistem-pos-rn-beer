@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\InventoryReportExport;
 use App\Exports\SalesReportExport;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use Carbon\Carbon;
@@ -56,11 +59,7 @@ class ReportController extends Controller
             ->value('gross_profit') ?? 0;
 
         $paymentSummary = $completedQuery()
-            ->select(
-                'payment_method',
-                DB::raw('COUNT(*) as total_transactions'),
-                DB::raw('SUM(total) as total_amount')
-            )
+            ->select('payment_method', DB::raw('COUNT(*) as total_transactions'), DB::raw('SUM(total) as total_amount'))
             ->groupBy('payment_method')
             ->get();
 
@@ -92,17 +91,68 @@ class ReportController extends Controller
         $endDate       = $validated['end_date'] ?? Carbon::today()->toDateString();
         $paymentMethod = $validated['payment_method'] ?? null;
         $status        = $validated['status'] ?? null;
+        $fileName      = 'laporan-penjualan-' . $startDate . '-sd-' . $endDate . '.xlsx';
 
-        $fileName = 'laporan-penjualan-' . $startDate . '-sd-' . $endDate . '.xlsx';
+        return Excel::download(new SalesReportExport($startDate, $endDate, $paymentMethod, $status), $fileName);
+    }
 
-        return Excel::download(
-            new SalesReportExport(
-                $startDate,
-                $endDate,
-                $paymentMethod,
-                $status
-            ),
-            $fileName
-        );
+    public function inventory(Request $request)
+    {
+        $validated = $request->validate([
+            'category_id'  => ['nullable', 'exists:categories,id'],
+            'stock_status' => ['nullable', Rule::in(['safe', 'low', 'out'])],
+        ]);
+
+        $categoryId  = $validated['category_id'] ?? null;
+        $stockStatus = $validated['stock_status'] ?? null;
+
+        $productsQuery = Product::with(['category', 'lastStockUpdatedBy'])
+            ->where('is_active', true)
+            ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))
+            ->when($stockStatus === 'safe', fn ($q) => $q->whereColumn('stock', '>', 'minimum_stock'))
+            ->when($stockStatus === 'low', fn ($q) => $q->where('stock', '>', 0)->whereColumn('stock', '<=', 'minimum_stock'))
+            ->when($stockStatus === 'out', fn ($q) => $q->where('stock', 0));
+
+        $summaryProducts = (clone $productsQuery)->get();
+
+        $totalProducts        = $summaryProducts->count();
+        $totalStockUnits      = $summaryProducts->sum('stock');
+        $totalStockCostValue  = $summaryProducts->sum(fn ($p) => $p->stock * $p->cost_price);
+        $totalStockSalesValue = $summaryProducts->sum(fn ($p) => $p->stock * $p->price);
+        $potentialGrossProfit = $totalStockSalesValue - $totalStockCostValue;
+
+        $lowStockProducts  = (clone $productsQuery)->where('stock', '>', 0)->whereColumn('stock', '<=', 'minimum_stock')->count();
+        $outOfStockProducts = (clone $productsQuery)->where('stock', 0)->count();
+
+        $products   = $productsQuery->orderBy('stock')->orderBy('name')->paginate(15)->withQueryString();
+        $categories = Category::orderBy('name')->get();
+
+        return view('admin.reports.inventory', compact(
+            'products',
+            'categories',
+            'categoryId',
+            'stockStatus',
+            'totalProducts',
+            'totalStockUnits',
+            'totalStockCostValue',
+            'totalStockSalesValue',
+            'potentialGrossProfit',
+            'lowStockProducts',
+            'outOfStockProducts',
+        ));
+    }
+
+    public function exportInventory(Request $request)
+    {
+        $validated = $request->validate([
+            'category_id'  => ['nullable', 'exists:categories,id'],
+            'stock_status' => ['nullable', Rule::in(['safe', 'low', 'out'])],
+        ]);
+
+        $categoryId  = isset($validated['category_id']) ? (int) $validated['category_id'] : null;
+        $stockStatus = $validated['stock_status'] ?? null;
+        $fileName    = 'laporan-stok-' . now()->format('Y-m-d-His') . '.xlsx';
+
+        return Excel::download(new InventoryReportExport($categoryId, $stockStatus), $fileName);
     }
 }

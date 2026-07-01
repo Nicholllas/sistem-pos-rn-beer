@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\SaleController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -48,6 +49,11 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
         Route::get('/reports/sales/export', [ReportController::class, 'exportSales'])->name('reports.sales.export');
+        Route::get('/reports/inventory', [ReportController::class, 'inventory'])->name('reports.inventory');
+        Route::get('/reports/inventory/export', [ReportController::class, 'exportInventory'])->name('reports.inventory.export');
+
+        Route::resource('users', UserController::class);
+        Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
     });
 
 Route::middleware(['auth', 'role:cashier'])

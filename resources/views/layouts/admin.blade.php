@@ -105,9 +105,9 @@
                         </li>
 
                         <li class="nav-item">
-                            <a href="#"
+                            <a href="{{ route('admin.users.index') }}"
                                 class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                                <p>User / Kasir</p>
+                                <p>Manajemen User</p>
                             </a>
                         </li>
 
@@ -177,6 +177,13 @@
                             <a href="#"
                                 class="nav-link {{ request()->routeIs('admin.reports.profit') ? 'active' : '' }}">
                                 <p>Laporan Laba</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('admin.reports.inventory') }}"
+                                class="nav-link {{ request()->routeIs('admin.reports.inventory') ? 'active' : '' }}">
+                                <p>Laporan Stok</p>
                             </a>
                         </li>
 
