@@ -30,11 +30,24 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        if ($user->role === 'admin') {
-            return redirect('/admin/dashboard');
+        if (! $user->is_active) {
+            Auth::guard('web')->logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()
+                ->withErrors([
+                    'email' => 'Akun kamu sudah dinonaktifkan.',
+                ])
+                ->onlyInput('email');
         }
 
-        return redirect('/cashier/pos');
+        if ($user->role === 'cashier') {
+            return redirect()->intended(route('admin.sales.pos'));
+        }
+
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     /**

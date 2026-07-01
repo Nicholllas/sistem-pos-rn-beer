@@ -14,14 +14,26 @@ class RoleMiddleware
      *
      * @param  Closure(Request): (Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             abort(403);
         }
 
-        if (Auth::user()->role !== $role) {
-            abort(403);
+        $user = Auth::user();
+
+        if (! $user->is_active) {
+            Auth::logout();
+
+            return redirect()
+                ->route('login')
+                ->withErrors([
+                    'email' => 'Akun kamu sudah dinonaktifkan.',
+                ]);
+        }
+
+        if (! in_array($user->role, $roles, true)) {
+            abort(403, 'Kamu tidak memiliki akses ke halaman ini.');
         }
 
         return $next($request);

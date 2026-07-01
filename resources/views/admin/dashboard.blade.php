@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Dashboard Admin')
-@section('page-title', 'Dashboard Admin')
+@section('title', 'Dashboard Penjualan')
+@section('page-title', 'Dashboard Penjualan')
 
 @section('content')
 
