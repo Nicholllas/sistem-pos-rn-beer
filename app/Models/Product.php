@@ -89,4 +89,12 @@ class Product extends Model
     {
         return $this->hasMany(PurchaseItem::class);
     }
+
+    public function hasTransactionHistory(): bool
+    {
+        return $this->saleItems()->exists()
+            || $this->purchaseItems()->exists()
+            || $this->stockMovements()->exists()
+            || $this->stockBatches()->exists();
+    }
 }

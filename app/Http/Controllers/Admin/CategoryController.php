@@ -10,58 +10,34 @@ use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of categories.
-     */
     public function index()
     {
         $categories = Category::with(['createdBy', 'updatedBy'])
+            ->withCount(['products as products_count' => fn ($q) => $q->withTrashed()])
             ->latest()
             ->paginate(10);
 
         return view('admin.categories.index', compact('categories'));
     }
 
-    /**
-     * Show the form for creating a new category.
-     */
     public function create()
     {
         return view('admin.categories.create');
     }
 
-    /**
-     * Store a newly created category.
-     */
     public function store(Request $request)
     {
-        $request->merge([
-            'name' => strtoupper(trim($request->name)),
-        ]);
-
-        $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('categories', 'name')->whereNull('deleted_at'),
-            ],
-        ]);
+        $validated = $this->validateCategory($request);
 
         Category::create([
-            'name' => $validated['name'],
+            'name'       => $validated['name'],
             'created_by' => Auth::id(),
             'updated_by' => Auth::id(),
         ]);
 
-        return redirect()
-            ->route('admin.categories.index')
-            ->with('success', 'Kategori berhasil dibuat.');
+        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil dibuat.');
     }
 
-    /**
-     * Show the form for editing the category.
-     */
     public function edit(Category $category)
     {
         $category->load(['createdBy', 'updatedBy']);
@@ -69,51 +45,32 @@ class CategoryController extends Controller
         return view('admin.categories.edit', compact('category'));
     }
 
-    /**
-     * Update the specified category.
-     */
     public function update(Request $request, Category $category)
     {
-        $request->merge([
-            'name' => strtoupper(trim($request->name)),
-        ]);
-
-        $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('categories', 'name')
-                    ->whereNull('deleted_at')
-                    ->ignore($category->id),
-            ],
-        ]);
+        $validated = $this->validateCategory($request, $category);
 
         $category->update([
-            'name' => $validated['name'],
+            'name'       => $validated['name'],
             'updated_by' => Auth::id(),
         ]);
 
-        return redirect()
-            ->route('admin.categories.index')
-            ->with('success', 'Kategori berhasil diubah.');
+        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil diubah.');
     }
 
-    /**
-     * Soft delete the specified category.
-     */
     public function destroy(Category $category)
     {
+        if ($category->hasProducts()) {
+            return redirect()
+                ->route('admin.categories.index')
+                ->withErrors(['delete' => 'Kategori tidak bisa dihapus karena masih memiliki produk atau pernah digunakan oleh produk. Pindahkan produk ke kategori lain terlebih dahulu.']);
+        }
+
+        $category->update(['updated_by' => Auth::id()]);
         $category->delete();
 
-        return redirect()
-            ->route('admin.categories.index')
-            ->with('success', 'Kategori berhasil dihapus.');
+        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil dipindahkan ke trash.');
     }
 
-    /**
-     * Display trashed categories.
-     */
     public function trash()
     {
         $categories = Category::onlyTrashed()
@@ -124,19 +81,28 @@ class CategoryController extends Controller
         return view('admin.categories.trash', compact('categories'));
     }
 
-    /**
-     * Restore the specified trashed category.
-     */
     public function restore(string $id)
     {
         $category = Category::withTrashed()->findOrFail($id);
 
         $category->restore();
-
         $category->update(['updated_by' => Auth::id()]);
 
-        return redirect()
-            ->route('admin.categories.trash')
-            ->with('success', 'Kategori berhasil direstore.');
+        return redirect()->route('admin.categories.trash')->with('success', 'Kategori berhasil direstore.');
+    }
+
+    private function validateCategory(Request $request, ?Category $category = null): array
+    {
+        $request->merge(['name' => strtoupper(trim($request->name))]);
+
+        $nameUnique = Rule::unique('categories', 'name')->whereNull('deleted_at');
+
+        if ($category) {
+            $nameUnique = $nameUnique->ignore($category->id);
+        }
+
+        return $request->validate([
+            'name' => ['required', 'string', 'max:255', $nameUnique],
+        ]);
     }
 }

@@ -12,8 +12,7 @@ class SupplierController extends Controller
 {
     public function index()
     {
-        $suppliers = Supplier::latest()
-            ->paginate(10);
+        $suppliers = Supplier::latest()->paginate(10);
 
         return view('admin.suppliers.index', compact('suppliers'));
     }
@@ -25,56 +24,19 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
-        $request->merge([
-            'name' => $this->normalizeText($request->name),
-            'phone' => $this->normalizePhone($request->phone),
-            'email' => $request->email ? strtolower(trim($request->email)) : null,
-            'address' => $this->normalizeText($request->address, false),
-        ]);
-
-        $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                'regex:/^[A-Z0-9\s\.\,\-\&\/]+$/',
-                Rule::unique('suppliers', 'name')->whereNull('deleted_at'),
-            ],
-            'phone' => [
-                'nullable',
-                'string',
-                'max:30',
-                'regex:/^[0-9\+\-\s]+$/',
-            ],
-            'email' => [
-                'nullable',
-                'email',
-                'max:255',
-            ],
-            'address' => [
-                'nullable',
-                'string',
-                'max:1000',
-            ],
-            'is_active' => [
-                'nullable',
-                'boolean',
-            ],
-        ], $this->validationMessages());
+        $validated = $this->validateSupplier($request);
 
         Supplier::create([
-            'name' => $validated['name'],
-            'phone' => $validated['phone'] ?? null,
-            'email' => $validated['email'] ?? null,
-            'address' => $validated['address'] ?? null,
-            'is_active' => $request->boolean('is_active'),
+            'name'       => $validated['name'],
+            'phone'      => $validated['phone'] ?? null,
+            'email'      => $validated['email'] ?? null,
+            'address'    => $validated['address'] ?? null,
+            'is_active'  => $request->boolean('is_active'),
             'created_by' => Auth::id(),
             'updated_by' => Auth::id(),
         ]);
 
-        return redirect()
-            ->route('admin.suppliers.index')
-            ->with('success', 'Supplier berhasil ditambahkan.');
+        return redirect()->route('admin.suppliers.index')->with('success', 'Supplier berhasil ditambahkan.');
     }
 
     public function edit(Supplier $supplier)
@@ -84,78 +46,37 @@ class SupplierController extends Controller
 
     public function update(Request $request, Supplier $supplier)
     {
-        $request->merge([
-            'name' => $this->normalizeText($request->name),
-            'phone' => $this->normalizePhone($request->phone),
-            'email' => $request->email ? strtolower(trim($request->email)) : null,
-            'address' => $this->normalizeText($request->address, false),
-        ]);
-
-        $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                'regex:/^[A-Z0-9\s\.\,\-\&\/]+$/',
-                Rule::unique('suppliers', 'name')
-                    ->whereNull('deleted_at')
-                    ->ignore($supplier->id),
-            ],
-            'phone' => [
-                'nullable',
-                'string',
-                'max:30',
-                'regex:/^[0-9\+\-\s]+$/',
-            ],
-            'email' => [
-                'nullable',
-                'email',
-                'max:255',
-            ],
-            'address' => [
-                'nullable',
-                'string',
-                'max:1000',
-            ],
-            'is_active' => [
-                'nullable',
-                'boolean',
-            ],
-        ], $this->validationMessages());
+        $validated = $this->validateSupplier($request, $supplier);
 
         $supplier->update([
-            'name' => $validated['name'],
-            'phone' => $validated['phone'] ?? null,
-            'email' => $validated['email'] ?? null,
-            'address' => $validated['address'] ?? null,
-            'is_active' => $request->boolean('is_active'),
+            'name'       => $validated['name'],
+            'phone'      => $validated['phone'] ?? null,
+            'email'      => $validated['email'] ?? null,
+            'address'    => $validated['address'] ?? null,
+            'is_active'  => $request->boolean('is_active'),
             'updated_by' => Auth::id(),
         ]);
 
-        return redirect()
-            ->route('admin.suppliers.index')
-            ->with('success', 'Supplier berhasil diubah.');
+        return redirect()->route('admin.suppliers.index')->with('success', 'Supplier berhasil diubah.');
     }
 
     public function destroy(Supplier $supplier)
     {
-        $supplier->update([
-            'is_active' => false,
-            'updated_by' => Auth::id(),
-        ]);
+        if ($supplier->hasTransactionHistory()) {
+            return redirect()
+                ->route('admin.suppliers.index')
+                ->withErrors(['delete' => 'Supplier tidak bisa dihapus karena sudah memiliki histori pembelian. Silakan nonaktifkan supplier jika tidak ingin digunakan lagi.']);
+        }
 
+        $supplier->update(['updated_by' => Auth::id()]);
         $supplier->delete();
 
-        return redirect()
-            ->route('admin.suppliers.index')
-            ->with('success', 'Supplier berhasil dipindahkan ke trash.');
+        return redirect()->route('admin.suppliers.index')->with('success', 'Supplier berhasil dipindahkan ke trash.');
     }
 
     public function trash()
     {
-        $suppliers = Supplier::onlyTrashed()
-            ->latest('deleted_at')
-            ->paginate(10);
+        $suppliers = Supplier::onlyTrashed()->latest('deleted_at')->paginate(10);
 
         return view('admin.suppliers.trash', compact('suppliers'));
     }
@@ -165,15 +86,33 @@ class SupplierController extends Controller
         $supplier = Supplier::onlyTrashed()->findOrFail($id);
 
         $supplier->restore();
+        $supplier->update(['is_active' => true, 'updated_by' => Auth::id()]);
 
-        $supplier->update([
-            'is_active' => true,
-            'updated_by' => Auth::id(),
+        return redirect()->route('admin.suppliers.trash')->with('success', 'Supplier berhasil direstore.');
+    }
+
+    private function validateSupplier(Request $request, ?Supplier $supplier = null): array
+    {
+        $request->merge([
+            'name'    => $this->normalizeText($request->name),
+            'phone'   => $this->normalizePhone($request->phone),
+            'email'   => $request->email ? strtolower(trim($request->email)) : null,
+            'address' => $this->normalizeText($request->address, false),
         ]);
 
-        return redirect()
-            ->route('admin.suppliers.trash')
-            ->with('success', 'Supplier berhasil direstore.');
+        $nameUnique = Rule::unique('suppliers', 'name')->whereNull('deleted_at');
+
+        if ($supplier) {
+            $nameUnique = $nameUnique->ignore($supplier->id);
+        }
+
+        return $request->validate([
+            'name'      => ['required', 'string', 'max:255', 'regex:/^[A-Z0-9\s\.\,\-\&\/]+$/', $nameUnique],
+            'phone'     => ['nullable', 'string', 'max:30', 'regex:/^[0-9\+\-\s]+$/'],
+            'email'     => ['nullable', 'email', 'max:255'],
+            'address'   => ['nullable', 'string', 'max:1000'],
+            'is_active' => ['nullable', 'boolean'],
+        ], $this->validationMessages());
     }
 
     private function normalizeText(?string $value, bool $uppercase = true): ?string
@@ -182,9 +121,7 @@ class SupplierController extends Controller
             return null;
         }
 
-        $value = strip_tags($value);
-        $value = trim($value);
-        $value = preg_replace('/\s+/', ' ', $value);
+        $value = trim(preg_replace('/\s+/', ' ', strip_tags($value)));
 
         if ($value === '') {
             return null;
@@ -199,9 +136,7 @@ class SupplierController extends Controller
             return null;
         }
 
-        $value = strip_tags($value);
-        $value = trim($value);
-        $value = preg_replace('/\s+/', ' ', $value);
+        $value = trim(preg_replace('/\s+/', ' ', strip_tags($value)));
 
         return $value === '' ? null : $value;
     }
@@ -209,10 +144,10 @@ class SupplierController extends Controller
     private function validationMessages(): array
     {
         return [
-            'name.regex' => 'Nama supplier hanya boleh berisi huruf, angka, spasi, titik, koma, strip, &, dan garis miring.',
-            'name.unique' => 'Nama supplier sudah digunakan.',
-            'phone.regex' => 'Nomor telepon hanya boleh berisi angka, spasi, +, dan strip.',
-            'email.email' => 'Format email supplier tidak valid.',
+            'name.regex'   => 'Nama supplier hanya boleh berisi huruf, angka, spasi, titik, koma, strip, &, dan garis miring.',
+            'name.unique'  => 'Nama supplier sudah digunakan.',
+            'phone.regex'  => 'Nomor telepon hanya boleh berisi angka, spasi, +, dan strip.',
+            'email.email'  => 'Format email supplier tidak valid.',
         ];
     }
 }

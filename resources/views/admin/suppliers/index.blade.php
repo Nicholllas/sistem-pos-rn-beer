@@ -91,15 +91,25 @@
                                             Edit
                                         </a>
 
-                                        <form action="{{ route('admin.suppliers.destroy', $supplier) }}" method="POST"
-                                            onsubmit="return confirm('Yakin ingin memindahkan supplier ini ke trash?')">
-                                            @csrf
-                                            @method('DELETE')
+                                        @if (!$supplier->hasTransactionHistory())
+                                            <form action="{{ route('admin.suppliers.destroy', $supplier) }}" method="POST"
+                                                class="d-inline" onsubmit="return confirm('Yakin hapus supplier ini?')">
+                                                @csrf
+                                                @method('DELETE')
 
-                                            <button type="submit" class="btn btn-danger btn-sm w-100">
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn btn-danger btn-sm" disabled>
                                                 Hapus
                                             </button>
-                                        </form>
+
+                                            <small class="text-muted d-block" style="line-height: 1.15;">
+                                                Tidak bisa dihapus karena sudah memiliki riwayat transaksi.
+                                            </small>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

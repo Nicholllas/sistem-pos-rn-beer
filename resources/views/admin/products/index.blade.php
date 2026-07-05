@@ -156,15 +156,24 @@
                                             Edit
                                         </a>
 
-                                        <form action="{{ route('admin.products.destroy', $product) }}" method="POST"
-                                            onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
-                                            @csrf
-                                            @method('DELETE')
+                                        @if (!$product->hasTransactionHistory())
+                                            <form action="{{ route('admin.products.destroy', $product) }}" method="POST"
+                                                class="d-inline" onsubmit="return confirm('Yakin hapus produk ini?')">
+                                                @csrf
+                                                @method('DELETE')
 
-                                            <button type="submit" class="btn btn-danger btn-sm w-100">
-                                                Delete
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn btn-danger btn-sm" disabled>
+                                                Hapus
                                             </button>
-                                        </form>
+                                            <small class="text-muted d-block" style="line-height: 1.15;">
+                                                Ada riwayat transaksi.
+                                            </small>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

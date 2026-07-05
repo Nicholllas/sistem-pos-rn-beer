@@ -69,22 +69,35 @@
                                 </td>
 
                                 <td>
-                                    <a href="{{ route('admin.categories.edit', $category) }}"
-                                        class="btn btn-warning btn-sm">
-                                        Edit
-                                    </a>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <a href="{{ route('admin.categories.edit', $category) }}"
+                                            class="btn btn-warning btn-sm">
+                                            Edit
+                                        </a>
 
-                                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
-                                        class="d-inline" onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+                                        @if (($category->products_count ?? 0) <= 0)
+                                            <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
+                                                onsubmit="return confirm('Yakin hapus kategori ini?')">
+                                                @csrf
+                                                @method('DELETE')
 
-                                        @csrf
-                                        @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn btn-secondary btn-sm" disabled>
+                                                Terkunci
+                                            </button>
+                                        @endif
+                                    </div>
 
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            Delete
-                                        </button>
-
-                                    </form>
+                                    @if (($category->products_count ?? 0) > 0)
+                                        <div class="small text-muted mt-1">
+                                            Tidak bisa dihapus karena dipakai oleh
+                                            <strong>{{ $category->products_count }}</strong> produk.
+                                        </div>
+                                    @endif
                                 </td>
                             </tr>
 

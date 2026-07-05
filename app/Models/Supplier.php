@@ -37,4 +37,9 @@ class Supplier extends Model
     {
         return $this->hasMany(Purchase::class);
     }
+
+    public function hasTransactionHistory(): bool
+    {
+        return $this->purchases()->exists();
+    }
 }

@@ -12,8 +12,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::latest()
-            ->paginate(10);
+        $users = User::latest()->paginate(10);
 
         return view('admin.users.index', compact('users'));
     }
@@ -26,50 +25,27 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->merge([
-            'name' => $this->normalizeName($request->name),
+            'name'  => $this->normalizeName($request->name),
             'email' => strtolower(trim($request->email)),
         ]);
 
         $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                'regex:/^[A-Z0-9\s\.\-]+$/',
-            ],
-            'email' => [
-                'required',
-                'email',
-                'max:255',
-                Rule::unique('users', 'email'),
-            ],
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'confirmed',
-            ],
-            'role' => [
-                'required',
-                Rule::in(['admin', 'cashier']),
-            ],
-            'is_active' => [
-                'nullable',
-                'boolean',
-            ],
+            'name'      => ['required', 'string', 'max:255', 'regex:/^[A-Z0-9\s\.\-]+$/'],
+            'email'     => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
+            'password'  => ['required', 'string', 'min:8', 'confirmed'],
+            'role'      => ['required', Rule::in(['admin', 'cashier'])],
+            'is_active' => ['nullable', 'boolean'],
         ], $this->validationMessages());
 
         User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => $validated['password'],
-            'role' => $validated['role'],
+            'name'      => $validated['name'],
+            'email'     => $validated['email'],
+            'password'  => $validated['password'],
+            'role'      => $validated['role'],
             'is_active' => $request->boolean('is_active'),
         ]);
 
-        return redirect()
-            ->route('admin.users.index')
-            ->with('success', 'User berhasil dibuat.');
+        return redirect()->route('admin.users.index')->with('success', 'User berhasil dibuat.');
     }
 
     public function edit(User $user)
@@ -80,94 +56,67 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->merge([
-            'name' => $this->normalizeName($request->name),
+            'name'  => $this->normalizeName($request->name),
             'email' => strtolower(trim($request->email)),
         ]);
 
         $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                'regex:/^[A-Z0-9\s\.\-]+$/',
-            ],
-            'email' => [
-                'required',
-                'email',
-                'max:255',
-                Rule::unique('users', 'email')->ignore($user->id),
-            ],
-            'role' => [
-                'required',
-                Rule::in(['admin', 'cashier']),
-            ],
-            'is_active' => [
-                'nullable',
-                'boolean',
-            ],
+            'name'      => ['required', 'string', 'max:255', 'regex:/^[A-Z0-9\s\.\-]+$/'],
+            'email'     => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'role'      => ['required', Rule::in(['admin', 'cashier'])],
+            'is_active' => ['nullable', 'boolean'],
         ], $this->validationMessages());
 
         if ($user->id === Auth::id() && $validated['role'] !== 'admin') {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'role' => 'Kamu tidak bisa mengubah role akun sendiri dari admin menjadi cashier.',
-                ]);
+            return back()->withInput()->withErrors(['role' => 'Kamu tidak bisa mengubah role akun sendiri dari admin menjadi cashier.']);
         }
 
         if ($user->id === Auth::id() && ! $request->boolean('is_active')) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'is_active' => 'Kamu tidak bisa menonaktifkan akun sendiri.',
-                ]);
+            return back()->withInput()->withErrors(['is_active' => 'Kamu tidak bisa menonaktifkan akun sendiri.']);
+        }
+
+        if ($this->isLastActiveAdmin($user) && ($request->boolean('is_active') === false || $request->role !== 'admin')) {
+            return back()->withInput()->withErrors(['is_active' => 'User ini adalah admin aktif terakhir. Tidak boleh dinonaktifkan atau diubah menjadi kasir.']);
         }
 
         $user->update([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'role' => $validated['role'],
+            'name'      => $validated['name'],
+            'email'     => $validated['email'],
+            'role'      => $validated['role'],
             'is_active' => $request->boolean('is_active'),
         ]);
 
-        return redirect()
-            ->route('admin.users.index')
-            ->with('success', 'User berhasil diubah.');
+        return redirect()->route('admin.users.index')->with('success', 'User berhasil diubah.');
     }
 
     public function destroy(User $user)
     {
-        if ($user->id === Auth::id()) {
-            return back()->withErrors([
-                'user' => 'Kamu tidak bisa menghapus akun sendiri.',
-            ]);
+        if ($this->isLastActiveAdmin($user)) {
+            return redirect()
+                ->route('admin.users.index')
+                ->withErrors(['delete' => 'User ini adalah admin aktif terakhir. Tidak boleh dihapus.']);
+        }
+
+        if (auth()->id() === $user->id) {
+            return redirect()
+                ->route('admin.users.index')
+                ->withErrors(['delete' => 'Kamu tidak bisa menghapus akun yang sedang digunakan.']);
         }
 
         $user->delete();
 
-        return redirect()
-            ->route('admin.users.index')
-            ->with('success', 'User berhasil dihapus.');
+        return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
     }
 
     public function resetPassword(Request $request, User $user)
     {
         $validated = $request->validate([
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'confirmed',
-            ],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $user->update([
-            'password' => $validated['password'],
-        ]);
+        $user->update(['password' => $validated['password']]);
 
-        return redirect()
-            ->route('admin.users.index')
-            ->with('success', 'Password user berhasil direset.');
+        return redirect()->route('admin.users.index')->with('success', 'Password user berhasil direset.');
     }
 
     private function normalizeName(?string $value): ?string
@@ -176,9 +125,7 @@ class UserController extends Controller
             return null;
         }
 
-        $value = strip_tags($value);
-        $value = trim($value);
-        $value = preg_replace('/\s+/', ' ', $value);
+        $value = trim(preg_replace('/\s+/', ' ', strip_tags($value)));
 
         return $value === '' ? null : mb_strtoupper($value);
     }
@@ -186,9 +133,21 @@ class UserController extends Controller
     private function validationMessages(): array
     {
         return [
-            'name.regex' => 'Nama hanya boleh berisi huruf, angka, spasi, titik, dan strip.',
-            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
-            'role.in' => 'Role harus admin atau cashier.',
+            'name.regex'          => 'Nama hanya boleh berisi huruf, angka, spasi, titik, dan strip.',
+            'password.confirmed'  => 'Konfirmasi password tidak sesuai.',
+            'role.in'             => 'Role harus admin atau cashier.',
         ];
+    }
+
+    private function isLastActiveAdmin(User $user): bool
+    {
+        if ($user->role !== 'admin' || !$user->is_active) {
+            return false;
+        }
+
+        return User::where('role', 'admin')
+            ->where('is_active', true)
+            ->where('id', '!=', $user->id)
+            ->doesntExist();
     }
 }
