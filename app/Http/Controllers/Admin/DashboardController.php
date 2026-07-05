@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Purchase;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use App\Models\SalePayment;
+use App\Models\StockBatch;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +18,11 @@ class DashboardController extends Controller
     {
         $today = Carbon::today();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Sales Summary
+        |--------------------------------------------------------------------------
+        */
         $todayTransactions = Sale::whereDate('created_at', $today)
             ->where('status', 'completed')
             ->count();
@@ -26,7 +34,7 @@ class DashboardController extends Controller
         $todayGrossProfit = SaleItem::join('sales', 'sales.id', '=', 'sale_items.sale_id')
             ->whereDate('sales.created_at', $today)
             ->where('sales.status', 'completed')
-            ->selectRaw('SUM(sale_items.subtotal - (sale_items.qty * sale_items.cost_price)) as gross_profit')
+            ->selectRaw('COALESCE(SUM(sale_items.subtotal - (sale_items.qty * sale_items.cost_price)), 0) as gross_profit')
             ->value('gross_profit') ?? 0;
 
         $todayVoidTransactions = Sale::whereDate('created_at', $today)
@@ -37,6 +45,41 @@ class DashboardController extends Controller
             ->where('status', 'void')
             ->sum('total');
 
+        $averageTransaction = $todayTransactions > 0
+            ? $todaySales / $todayTransactions
+            : 0;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Purchase Summary
+        |--------------------------------------------------------------------------
+        */
+        $todayPurchaseTransactions = Purchase::whereDate('purchase_date', $today)
+            ->where('status', 'completed')
+            ->count();
+
+        $todayPurchaseAmount = Purchase::whereDate('purchase_date', $today)
+            ->where('status', 'completed')
+            ->sum('total');
+
+        $todayPurchaseQty = Purchase::join('purchase_items', 'purchase_items.purchase_id', '=', 'purchases.id')
+            ->whereDate('purchases.purchase_date', $today)
+            ->where('purchases.status', 'completed')
+            ->sum('purchase_items.qty');
+
+        $todayVoidPurchaseTransactions = Purchase::whereDate('purchase_date', $today)
+            ->where('status', 'void')
+            ->count();
+
+        $todayVoidPurchaseAmount = Purchase::whereDate('purchase_date', $today)
+            ->where('status', 'void')
+            ->sum('total');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Inventory Summary
+        |--------------------------------------------------------------------------
+        */
         $totalProducts = Product::where('is_active', true)
             ->count();
 
@@ -48,9 +91,12 @@ class DashboardController extends Controller
             ->where('stock', 0)
             ->count();
 
-        $averageTransaction = $todayTransactions > 0
-            ? $todaySales / $todayTransactions
-            : 0;
+        $totalFifoStockQty = StockBatch::where('qty_remaining', '>', 0)
+            ->sum('qty_remaining');
+
+        $totalFifoStockValue = StockBatch::where('qty_remaining', '>', 0)
+            ->selectRaw('COALESCE(SUM(qty_remaining * cost_price), 0) as total_value')
+            ->value('total_value') ?? 0;
 
         $lowStockList = Product::with([
                 'category',
@@ -62,19 +108,37 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        $latestSales = Sale::with('soldBy')
+        /*
+        |--------------------------------------------------------------------------
+        | Tables
+        |--------------------------------------------------------------------------
+        */
+        $latestSales = Sale::with(['soldBy', 'payments'])
             ->latest()
             ->take(10)
             ->get();
 
-        $paymentSummary = Sale::select(
-                'payment_method',
-                DB::raw('COUNT(*) as total_transactions'),
-                DB::raw('SUM(total) as total_amount')
+        $latestPurchases = Purchase::with(['supplier', 'createdBy'])
+            ->latest('purchase_date')
+            ->latest('id')
+            ->take(5)
+            ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Payment Summary
+        |--------------------------------------------------------------------------
+        | Pakai sale_payments agar split payment tetap akurat.
+        */
+        $paymentSummary = SalePayment::join('sales', 'sales.id', '=', 'sale_payments.sale_id')
+            ->select(
+                'sale_payments.payment_method',
+                DB::raw('COUNT(DISTINCT sale_payments.sale_id) as total_transactions'),
+                DB::raw('SUM(sale_payments.amount) as total_amount')
             )
-            ->whereDate('created_at', $today)
-            ->where('status', 'completed')
-            ->groupBy('payment_method')
+            ->whereDate('sales.created_at', $today)
+            ->where('sales.status', 'completed')
+            ->groupBy('sale_payments.payment_method')
             ->get();
 
         $topProductsToday = SaleItem::select(
@@ -93,16 +157,27 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', compact(
             'todayTransactions',
-            'totalProducts',
-            'lowStockProducts',
-            'outOfStockProducts',
             'todaySales',
             'todayGrossProfit',
             'todayVoidTransactions',
             'todayVoidAmount',
             'averageTransaction',
+
+            'todayPurchaseTransactions',
+            'todayPurchaseAmount',
+            'todayPurchaseQty',
+            'todayVoidPurchaseTransactions',
+            'todayVoidPurchaseAmount',
+
+            'totalProducts',
+            'lowStockProducts',
+            'outOfStockProducts',
+            'totalFifoStockQty',
+            'totalFifoStockValue',
+
             'lowStockList',
             'latestSales',
+            'latestPurchases',
             'paymentSummary',
             'topProductsToday'
         ));
