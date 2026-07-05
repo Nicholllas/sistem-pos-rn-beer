@@ -32,4 +32,9 @@ class Supplier extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
 }

@@ -54,6 +54,26 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="cost_price" class="form-label">
+                        Harga Modal per Produk <span class="text-danger">*</span>
+                    </label>
+
+                    <input type="number" name="cost_price" id="cost_price"
+                        class="form-control @error('cost_price') is-invalid @enderror" value="{{ old('cost_price') }}"
+                        min="0" step="1" placeholder="Contoh: 15000" required>
+
+                    @error('cost_price')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
+                    <small class="text-muted">
+                        Harga ini akan menjadi cost batch FIFO untuk stok masuk manual.
+                    </small>
+                </div>
+
+                <div class="mb-3">
                     <label for="note" class="form-label">Catatan</label>
 
                     <textarea name="note" id="note" class="form-control @error('note') is-invalid @enderror" rows="3"

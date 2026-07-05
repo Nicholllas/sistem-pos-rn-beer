@@ -142,15 +142,15 @@
                         </li>
 
                         <li class="nav-item">
-                            <a href="#"
-                                class="nav-link {{ request()->routeIs('admin.purchases.*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.purchases.create') }}"
+                                class="nav-link {{ request()->routeIs('admin.purchases.create') ? 'active' : '' }}">
                                 <p>Pembelian Stok</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="#"
-                                class="nav-link {{ request()->routeIs('admin.purchases.history') ? 'active' : '' }}">
+                            <a href="{{ route('admin.purchases.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.purchases.index') || request()->routeIs('admin.purchases.show') ? 'active' : '' }}">
                                 <p>Riwayat Pembelian</p>
                             </a>
                         </li>
@@ -182,6 +182,13 @@
                             <a href="{{ route('admin.inventory.logs') }}"
                                 class="nav-link {{ request()->routeIs('admin.inventory.logs') ? 'active' : '' }}">
                                 <p>Log Stok</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('admin.inventory.batches') }}"
+                                class="nav-link {{ request()->routeIs('admin.inventory.batches') ? 'active' : '' }}">
+                                <p>Batch FIFO</p>
                             </a>
                         </li>
 

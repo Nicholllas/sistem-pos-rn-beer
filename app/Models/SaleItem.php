@@ -31,4 +31,9 @@ class SaleItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function saleItemBatches()
+    {
+        return $this->hasMany(SaleItemBatch::class);
+    }
 }

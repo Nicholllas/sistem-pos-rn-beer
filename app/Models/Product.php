@@ -79,4 +79,14 @@ class Product extends Model
     {
         return $query->whereColumn('stock', '<=', 'minimum_stock');
     }
+
+    public function stockBatches()
+    {
+        return $this->hasMany(StockBatch::class);
+    }
+
+    public function purchaseItems()
+    {
+        return $this->hasMany(PurchaseItem::class);
+    }
 }
