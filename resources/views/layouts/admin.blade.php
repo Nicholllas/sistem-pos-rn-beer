@@ -209,7 +209,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <a href="#"
+                            <a href="{{ route('admin.reports.purchases') }}"
                                 class="nav-link {{ request()->routeIs('admin.reports.purchases') ? 'active' : '' }}">
                                 <p>Laporan Pembelian</p>
                             </a>

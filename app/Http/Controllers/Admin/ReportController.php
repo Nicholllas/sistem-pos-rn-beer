@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exports\InventoryReportExport;
+use App\Exports\PurchaseReportExport;
 use App\Exports\SalesReportExport;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Purchase;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -121,7 +124,7 @@ class ReportController extends Controller
         $totalStockSalesValue = $summaryProducts->sum(fn ($p) => $p->stock * $p->price);
         $potentialGrossProfit = $totalStockSalesValue - $totalStockCostValue;
 
-        $lowStockProducts  = (clone $productsQuery)->where('stock', '>', 0)->whereColumn('stock', '<=', 'minimum_stock')->count();
+        $lowStockProducts   = (clone $productsQuery)->where('stock', '>', 0)->whereColumn('stock', '<=', 'minimum_stock')->count();
         $outOfStockProducts = (clone $productsQuery)->where('stock', 0)->count();
 
         $products   = $productsQuery->orderBy('stock')->orderBy('name')->paginate(15)->withQueryString();
@@ -154,5 +157,85 @@ class ReportController extends Controller
         $fileName    = 'laporan-stok-' . now()->format('Y-m-d-His') . '.xlsx';
 
         return Excel::download(new InventoryReportExport($categoryId, $stockStatus), $fileName);
+    }
+
+    public function purchases(Request $request)
+    {
+        $validated = $request->validate([
+            'start_date'  => ['nullable', 'date'],
+            'end_date'    => ['nullable', 'date', 'after_or_equal:start_date'],
+            'supplier_id' => ['nullable', Rule::exists('suppliers', 'id')->whereNull('deleted_at')],
+            'status'      => ['nullable', Rule::in(['completed', 'void'])],
+        ]);
+
+        $startDate  = $validated['start_date'] ?? now()->startOfMonth()->toDateString();
+        $endDate    = $validated['end_date'] ?? now()->toDateString();
+        $supplierId = $validated['supplier_id'] ?? null;
+        $status     = $validated['status'] ?? null;
+
+        $baseQuery = fn () => Purchase::query()
+            ->whereDate('purchase_date', '>=', $startDate)
+            ->whereDate('purchase_date', '<=', $endDate)
+            ->when($supplierId, fn ($q) => $q->where('supplier_id', $supplierId));
+
+        $tableQuery     = fn () => $baseQuery()->when($status, fn ($q) => $q->where('status', $status));
+        $completedQuery = fn () => $baseQuery()->where('status', 'completed');
+        $voidQuery      = fn () => $baseQuery()->where('status', 'void');
+
+        $totalPurchaseTransactions = $completedQuery()->count();
+        $totalPurchaseAmount       = $completedQuery()->sum('total');
+        $totalPurchaseItems        = $completedQuery()->join('purchase_items', 'purchase_items.purchase_id', '=', 'purchases.id')->sum('purchase_items.qty');
+        $totalVoidTransactions     = $voidQuery()->count();
+        $totalVoidAmount           = $voidQuery()->sum('total');
+
+        $supplierSummary = $completedQuery()
+            ->join('suppliers', 'suppliers.id', '=', 'purchases.supplier_id')
+            ->selectRaw('suppliers.name as supplier_name, COUNT(purchases.id) as total_transactions, SUM(purchases.total) as total_amount')
+            ->groupBy('suppliers.id', 'suppliers.name')
+            ->orderByDesc('total_amount')
+            ->get();
+
+        $purchases = $tableQuery()
+            ->with(['supplier', 'createdBy'])
+            ->withSum('items as total_qty', 'qty')
+            ->latest('purchase_date')
+            ->latest('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        $suppliers = Supplier::orderBy('name')->get();
+
+        return view('admin.reports.purchases', compact(
+            'purchases',
+            'suppliers',
+            'supplierSummary',
+            'startDate',
+            'endDate',
+            'supplierId',
+            'status',
+            'totalPurchaseTransactions',
+            'totalPurchaseAmount',
+            'totalPurchaseItems',
+            'totalVoidTransactions',
+            'totalVoidAmount',
+        ));
+    }
+
+    public function exportPurchases(Request $request)
+    {
+        $validated = $request->validate([
+            'start_date'  => ['nullable', 'date'],
+            'end_date'    => ['nullable', 'date', 'after_or_equal:start_date'],
+            'supplier_id' => ['nullable', Rule::exists('suppliers', 'id')->whereNull('deleted_at')],
+            'status'      => ['nullable', Rule::in(['completed', 'void'])],
+        ]);
+
+        $startDate  = $validated['start_date'] ?? now()->startOfMonth()->toDateString();
+        $endDate    = $validated['end_date'] ?? now()->toDateString();
+        $supplierId = !empty($validated['supplier_id']) ? (int) $validated['supplier_id'] : null;
+        $status     = $validated['status'] ?? null;
+        $fileName   = 'laporan-pembelian-' . $startDate . '-sd-' . $endDate . '.xlsx';
+
+        return Excel::download(new PurchaseReportExport($startDate, $endDate, $supplierId, $status), $fileName);
     }
 }
