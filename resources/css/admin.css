@@ -226,3 +226,40 @@
 .inventory-report-table .text-nowrap {
     white-space: nowrap;
 }
+
+.inventory-summary-card {
+    min-height: 118px;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.inventory-summary-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 6px;
+}
+
+.inventory-summary-value {
+    font-size: 1.55rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.inventory-summary-note {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 6px;
+}
+
+.inventory-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.inventory-compare-table td,
+.inventory-compare-table th {
+    padding: 0.55rem 0.75rem;
+}

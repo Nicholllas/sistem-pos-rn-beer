@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use App\Models\StockBatch;
 use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -102,62 +103,117 @@ class ReportController extends Controller
     public function inventory(Request $request)
     {
         $validated = $request->validate([
-            'category_id'  => ['nullable', 'exists:categories,id'],
-            'stock_status' => ['nullable', Rule::in(['safe', 'low', 'out'])],
+            'category_id' => ['nullable', Rule::exists('categories', 'id')->whereNull('deleted_at')],
+            'status'      => ['nullable', Rule::in(['active', 'inactive', 'low_stock', 'out_of_stock'])],
         ]);
 
-        $categoryId  = $validated['category_id'] ?? null;
-        $stockStatus = $validated['stock_status'] ?? null;
+        $categoryId = $validated['category_id'] ?? null;
+        $status     = $validated['status'] ?? null;
 
-        $productsQuery = Product::with(['category', 'lastStockUpdatedBy'])
-            ->where('is_active', true)
-            ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))
-            ->when($stockStatus === 'safe', fn ($q) => $q->whereColumn('stock', '>', 'minimum_stock'))
-            ->when($stockStatus === 'low', fn ($q) => $q->where('stock', '>', 0)->whereColumn('stock', '<=', 'minimum_stock'))
-            ->when($stockStatus === 'out', fn ($q) => $q->where('stock', 0));
+        $batchSummary = StockBatch::query()
+            ->select('product_id')
+            ->selectRaw('COALESCE(SUM(qty_remaining), 0) as fifo_stock_qty')
+            ->selectRaw('COALESCE(SUM(qty_remaining * cost_price), 0) as fifo_stock_value')
+            ->where('qty_remaining', '>', 0)
+            ->groupBy('product_id');
 
-        $summaryProducts = (clone $productsQuery)->get();
+        $applyStatusFilter = function ($query) use ($status) {
+            match ($status) {
+                'active'       => $query->where('products.is_active', true),
+                'inactive'     => $query->where('products.is_active', false),
+                'low_stock'    => $query->whereColumn('products.stock', '<=', 'products.minimum_stock')->where('products.stock', '>', 0),
+                'out_of_stock' => $query->where('products.stock', 0),
+                default        => null,
+            };
+        };
 
-        $totalProducts        = $summaryProducts->count();
-        $totalStockUnits      = $summaryProducts->sum('stock');
-        $totalStockCostValue  = $summaryProducts->sum(fn ($p) => $p->stock * $p->cost_price);
-        $totalStockSalesValue = $summaryProducts->sum(fn ($p) => $p->stock * $p->price);
-        $potentialGrossProfit = $totalStockSalesValue - $totalStockCostValue;
+        $baseQuery = Product::query()
+            ->leftJoinSub($batchSummary, 'fifo_batches', fn ($join) => $join->on('fifo_batches.product_id', '=', 'products.id'))
+            ->when($categoryId, fn ($q) => $q->where('products.category_id', $categoryId))
+            ->when($status, $applyStatusFilter);
 
-        $lowStockProducts   = (clone $productsQuery)->where('stock', '>', 0)->whereColumn('stock', '<=', 'minimum_stock')->count();
-        $outOfStockProducts = (clone $productsQuery)->where('stock', 0)->count();
+        $totalProducts           = (clone $baseQuery)->count('products.id');
+        $totalSystemStock        = (clone $baseQuery)->sum('products.stock');
+        $totalFifoStockQty       = (clone $baseQuery)->selectRaw('COALESCE(SUM(COALESCE(fifo_batches.fifo_stock_qty, 0)), 0) as total_qty')->value('total_qty') ?? 0;
+        $totalFifoStockValue     = (clone $baseQuery)->selectRaw('COALESCE(SUM(COALESCE(fifo_batches.fifo_stock_value, 0)), 0) as total_value')->value('total_value') ?? 0;
+        $totalLastCostStockValue = (clone $baseQuery)->selectRaw('COALESCE(SUM(products.stock * products.cost_price), 0) as total_value')->value('total_value') ?? 0;
+        $stockMismatchCount      = (clone $baseQuery)->whereRaw('products.stock <> COALESCE(fifo_batches.fifo_stock_qty, 0)')->count('products.id');
 
-        $products   = $productsQuery->orderBy('stock')->orderBy('name')->paginate(15)->withQueryString();
+        $products = (clone $baseQuery)
+            ->with(['category'])
+            ->select('products.*')
+            ->selectRaw('COALESCE(fifo_batches.fifo_stock_qty, 0) as fifo_stock_qty')
+            ->selectRaw('COALESCE(fifo_batches.fifo_stock_value, 0) as fifo_stock_value')
+            ->selectRaw('
+                CASE
+                    WHEN COALESCE(fifo_batches.fifo_stock_qty, 0) > 0
+                    THEN COALESCE(fifo_batches.fifo_stock_value, 0) / COALESCE(fifo_batches.fifo_stock_qty, 0)
+                    ELSE 0
+                END as fifo_average_cost
+            ')
+            ->orderBy('products.name')
+            ->paginate(15)
+            ->withQueryString();
+
+        $categorySummary = Product::query()
+            ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
+            ->leftJoinSub($batchSummary, 'fifo_batches', fn ($join) => $join->on('fifo_batches.product_id', '=', 'products.id'))
+            ->when($categoryId, fn ($q) => $q->where('products.category_id', $categoryId))
+            ->when($status, $applyStatusFilter)
+            ->selectRaw('
+                COALESCE(categories.name, "Tanpa Kategori") as category_name,
+                COUNT(products.id) as total_products,
+                COALESCE(SUM(products.stock), 0) as total_system_stock,
+                COALESCE(SUM(COALESCE(fifo_batches.fifo_stock_qty, 0)), 0) as total_fifo_stock,
+                COALESCE(SUM(COALESCE(fifo_batches.fifo_stock_value, 0)), 0) as total_fifo_value
+            ')
+            ->groupBy('categories.id', 'categories.name')
+            ->orderBy('categories.name')
+            ->get();
+
         $categories = Category::orderBy('name')->get();
 
         return view('admin.reports.inventory', compact(
             'products',
             'categories',
+            'categorySummary',
             'categoryId',
-            'stockStatus',
+            'status',
             'totalProducts',
-            'totalStockUnits',
-            'totalStockCostValue',
-            'totalStockSalesValue',
-            'potentialGrossProfit',
-            'lowStockProducts',
-            'outOfStockProducts',
+            'totalSystemStock',
+            'totalFifoStockQty',
+            'totalFifoStockValue',
+            'totalLastCostStockValue',
+            'stockMismatchCount',
         ));
     }
 
     public function exportInventory(Request $request)
-    {
-        $validated = $request->validate([
-            'category_id'  => ['nullable', 'exists:categories,id'],
-            'stock_status' => ['nullable', Rule::in(['safe', 'low', 'out'])],
-        ]);
+{
+    $validated = $request->validate([
+        'category_id' => [
+            'nullable',
+            Rule::exists('categories', 'id')->whereNull('deleted_at'),
+        ],
+        'status' => [
+            'nullable',
+            Rule::in(['active', 'inactive', 'low_stock', 'out_of_stock']),
+        ],
+    ]);
 
-        $categoryId  = isset($validated['category_id']) ? (int) $validated['category_id'] : null;
-        $stockStatus = $validated['stock_status'] ?? null;
-        $fileName    = 'laporan-stok-' . now()->format('Y-m-d-His') . '.xlsx';
+    $categoryId = !empty($validated['category_id'])
+        ? (int) $validated['category_id']
+        : null;
 
-        return Excel::download(new InventoryReportExport($categoryId, $stockStatus), $fileName);
-    }
+    $status = $validated['status'] ?? null;
+
+    $fileName = 'laporan-stok-fifo-' . now()->format('Ymd-His') . '.xlsx';
+
+    return Excel::download(
+        new InventoryReportExport($categoryId, $status),
+        $fileName
+    );
+}
 
     public function purchases(Request $request)
     {
