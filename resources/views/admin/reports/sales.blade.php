@@ -52,14 +52,21 @@
 
                         <select name="payment_method" id="payment_method" class="form-select">
                             <option value="">Semua Metode</option>
+
                             <option value="cash" @selected(request('payment_method') === 'cash')>
                                 Cash
                             </option>
+
                             <option value="qris" @selected(request('payment_method') === 'qris')>
                                 QRIS
                             </option>
+
                             <option value="transfer" @selected(request('payment_method') === 'transfer')>
                                 Transfer
+                            </option>
+
+                            <option value="split" @selected(request('payment_method') === 'split')>
+                                Split
                             </option>
                         </select>
                     </div>
@@ -147,12 +154,13 @@
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0">
+                <table class="table table-hover table-striped align-middle mb-0">
                     <thead>
                         <tr>
                             <th>Metode Pembayaran</th>
                             <th>Total Transaksi</th>
                             <th>Total Nominal</th>
+                            <th>Rincian Pembayaran Split</th>
                         </tr>
                     </thead>
 
@@ -173,6 +181,10 @@
                                             <span class="badge bg-info">Transfer</span>
                                         @break
 
+                                        @case('split')
+                                            <span class="badge bg-dark">Split</span>
+                                        @break
+
                                         @default
                                             <span class="badge bg-secondary">
                                                 {{ $payment->payment_method }}
@@ -185,10 +197,53 @@
                                 <td>
                                     Rp {{ number_format($payment->total_amount, 0, ',', '.') }}
                                 </td>
+
+                                <td>
+                                    @if ($payment->payment_method === 'split')
+                                        <div class="d-flex flex-column gap-1">
+                                            <div>
+                                                <span class="badge bg-success">
+                                                    Cash
+                                                </span>
+
+                                                <span class="ms-1">
+                                                    Rp
+                                                    {{ number_format($splitPaymentBreakdown->get('cash', 0), 0, ',', '.') }}
+                                                </span>
+                                            </div>
+
+                                            <div>
+                                                <span class="badge bg-primary">
+                                                    QRIS
+                                                </span>
+
+                                                <span class="ms-1">
+                                                    Rp
+                                                    {{ number_format($splitPaymentBreakdown->get('qris', 0), 0, ',', '.') }}
+                                                </span>
+                                            </div>
+
+                                            <div>
+                                                <span class="badge bg-info">
+                                                    Transfer
+                                                </span>
+
+                                                <span class="ms-1">
+                                                    Rp
+                                                    {{ number_format($splitPaymentBreakdown->get('transfer', 0), 0, ',', '.') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <span class="text-muted">
+                                            -
+                                        </span>
+                                    @endif
+                                </td>
                             </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center text-muted py-3">
+                                    <td colspan="4" class="text-center text-muted py-3">
                                         Belum ada data pembayaran.
                                     </td>
                                 </tr>
@@ -199,7 +254,7 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-header">
                 <h3 class="card-title mb-0">
                     Detail Transaksi
@@ -255,7 +310,84 @@
                                     </td>
 
                                     <td>
-                                        {{ strtoupper($sale->payment_method) }}
+                                        @switch($sale->payment_method)
+                                            @case('cash')
+                                                <span class="badge bg-success">
+                                                    Cash
+                                                </span>
+                                            @break
+
+                                            @case('qris')
+                                                <span class="badge bg-primary">
+                                                    QRIS
+                                                </span>
+                                            @break
+
+                                            @case('transfer')
+                                                <span class="badge bg-info">
+                                                    Transfer
+                                                </span>
+                                            @break
+
+                                            @case('split')
+                                                @php
+                                                    $splitAmounts = $sale->payments
+                                                        ->groupBy('payment_method')
+                                                        ->map(fn($payments) => $payments->sum('amount'));
+
+                                                    $cashAmount = max(
+                                                        0,
+                                                        (float) $splitAmounts->get('cash', 0) -
+                                                            (float) $sale->change_amount,
+                                                    );
+                                                @endphp
+
+                                                <div class="d-flex flex-column gap-1">
+                                                    <div>
+                                                        <span class="badge bg-dark">
+                                                            Split
+                                                        </span>
+                                                    </div>
+
+                                                    @if ($cashAmount > 0)
+                                                        <small class="text-nowrap">
+                                                            <span class="badge bg-success">
+                                                                Cash
+                                                            </span>
+
+                                                            Rp {{ number_format($cashAmount, 0, ',', '.') }}
+                                                        </small>
+                                                    @endif
+
+                                                    @if ($splitAmounts->get('qris', 0) > 0)
+                                                        <small class="text-nowrap">
+                                                            <span class="badge bg-primary">
+                                                                QRIS
+                                                            </span>
+
+                                                            Rp
+                                                            {{ number_format($splitAmounts->get('qris', 0), 0, ',', '.') }}
+                                                        </small>
+                                                    @endif
+
+                                                    @if ($splitAmounts->get('transfer', 0) > 0)
+                                                        <small class="text-nowrap">
+                                                            <span class="badge bg-info">
+                                                                Transfer
+                                                            </span>
+
+                                                            Rp
+                                                            {{ number_format($splitAmounts->get('transfer', 0), 0, ',', '.') }}
+                                                        </small>
+                                                    @endif
+                                                </div>
+                                            @break
+
+                                            @default
+                                                <span class="badge bg-secondary">
+                                                    {{ strtoupper($sale->payment_method) }}
+                                                </span>
+                                        @endswitch
                                     </td>
 
                                     <td>
@@ -270,23 +402,23 @@
                                         {{ $sale->created_at?->format('d/m/Y H:i') ?? '-' }}
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="text-center text-muted py-4">
-                                        Tidak ada transaksi sesuai filter.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted py-4">
+                                            Tidak ada transaksi sesuai filter.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
+                @if ($sales->hasPages())
+                    <div class="card-footer">
+                        {{ $sales->links() }}
+                    </div>
+                @endif
             </div>
 
-            @if ($sales->hasPages())
-                <div class="card-footer">
-                    {{ $sales->links() }}
-                </div>
-            @endif
-        </div>
-
-    @endsection
+        @endsection

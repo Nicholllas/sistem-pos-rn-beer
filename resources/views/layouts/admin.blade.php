@@ -12,6 +12,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 
     @vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/js/app.js'])
+    @stack('styles')
 </head>
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -151,7 +152,7 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.purchases.index') }}"
                                 class="nav-link {{ request()->routeIs('admin.purchases.index') || request()->routeIs('admin.purchases.show') ? 'active' : '' }}">
-                                <p>Riwayat Pembelian</p>
+                                <p>Riwayat Pembelian Stok</p>
                             </a>
                         </li>
 

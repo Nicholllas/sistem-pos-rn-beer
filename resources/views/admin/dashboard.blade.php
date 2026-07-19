@@ -191,17 +191,20 @@
     {{-- Payment Summary --}}
     <div class="card mb-3">
         <div class="card-header">
-            <h3 class="card-title">Ringkasan Pembayaran Hari Ini</h3>
+            <h3 class="card-title mb-0">
+                Ringkasan Pembayaran Hari Ini
+            </h3>
         </div>
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover mb-0">
+                <table class="table table-striped table-hover align-middle mb-0">
                     <thead>
                         <tr>
                             <th>Metode Pembayaran</th>
                             <th>Total Transaksi</th>
                             <th>Total Nominal</th>
+                            <th>Rincian Pembayaran Split</th>
                         </tr>
                     </thead>
 
@@ -211,37 +214,92 @@
                                 <td>
                                     @switch($payment->payment_method)
                                         @case('cash')
-                                            <span class="badge bg-success">Cash</span>
+                                            <span class="badge bg-success">
+                                                Cash
+                                            </span>
                                         @break
 
                                         @case('qris')
-                                            <span class="badge bg-primary">QRIS</span>
+                                            <span class="badge bg-primary">
+                                                QRIS
+                                            </span>
                                         @break
 
                                         @case('transfer')
-                                            <span class="badge bg-info">Transfer</span>
+                                            <span class="badge bg-info">
+                                                Transfer
+                                            </span>
                                         @break
 
                                         @case('split')
-                                            <span class="badge bg-dark">Split</span>
+                                            <span class="badge bg-dark">
+                                                Split
+                                            </span>
                                         @break
 
                                         @default
                                             <span class="badge bg-secondary">
-                                                {{ $payment->payment_method }}
+                                                {{ ucfirst($payment->payment_method) }}
                                             </span>
                                     @endswitch
                                 </td>
 
-                                <td>{{ $payment->total_transactions }}</td>
+                                <td>
+                                    {{ $payment->total_transactions }} Transaksi
+                                </td>
 
                                 <td>
-                                    Rp {{ number_format($payment->total_amount, 0, ',', '.') }}
+                                    <strong>
+                                        Rp {{ number_format($payment->total_amount, 0, ',', '.') }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    @if ($payment->payment_method === 'split')
+                                        <div class="d-flex flex-column gap-1">
+                                            <div>
+                                                <span class="badge bg-success">
+                                                    Cash
+                                                </span>
+
+                                                <span class="ms-1">
+                                                    Rp
+                                                    {{ number_format($splitPaymentBreakdown->get('cash', 0), 0, ',', '.') }}
+                                                </span>
+                                            </div>
+
+                                            <div>
+                                                <span class="badge bg-primary">
+                                                    QRIS
+                                                </span>
+
+                                                <span class="ms-1">
+                                                    Rp
+                                                    {{ number_format($splitPaymentBreakdown->get('qris', 0), 0, ',', '.') }}
+                                                </span>
+                                            </div>
+
+                                            <div>
+                                                <span class="badge bg-info">
+                                                    Transfer
+                                                </span>
+
+                                                <span class="ms-1">
+                                                    Rp
+                                                    {{ number_format($splitPaymentBreakdown->get('transfer', 0), 0, ',', '.') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <span class="text-muted">
+                                            -
+                                        </span>
+                                    @endif
                                 </td>
                             </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center text-muted py-3">
+                                    <td colspan="4" class="text-center text-muted py-3">
                                         Belum ada pembayaran hari ini.
                                     </td>
                                 </tr>
@@ -252,10 +310,11 @@
             </div>
         </div>
 
-        <div class="row">
+        {{-- Low Stock & Top Products --}}
+        <div class="row g-3 mb-3">
             {{-- Low Stock Table --}}
             <div class="col-lg-7">
-                <div class="card">
+                <div class="card h-100 mb-0">
                     <div class="card-header">
                         <h3 class="card-title">
                             Produk Stok Menipis
@@ -286,6 +345,7 @@
                                             <td>
                                                 <strong>{{ $product->name }}</strong>
                                                 <br>
+
                                                 <small class="text-muted">
                                                     SKU: {{ $product->sku }}
                                                 </small>
@@ -323,7 +383,7 @@
 
             {{-- Top Products --}}
             <div class="col-lg-5">
-                <div class="card">
+                <div class="card h-100 mb-0">
                     <div class="card-header">
                         <h3 class="card-title">
                             Produk Terlaris Hari Ini

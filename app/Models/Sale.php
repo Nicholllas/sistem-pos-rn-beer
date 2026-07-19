@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\SalePayment;
 
 class Sale extends Model
 {
@@ -41,7 +43,7 @@ class Sale extends Model
         return $this->belongsTo(User::class, 'voided_by');
     }
 
-    public function payments()
+    public function payments(): HasMany
     {
         return $this->hasMany(SalePayment::class);
     }

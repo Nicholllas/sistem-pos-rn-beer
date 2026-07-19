@@ -130,16 +130,40 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         | Pakai sale_payments agar split payment tetap akurat.
         */
-        $paymentSummary = SalePayment::join('sales', 'sales.id', '=', 'sale_payments.sale_id')
-            ->select(
-                'sale_payments.payment_method',
-                DB::raw('COUNT(DISTINCT sale_payments.sale_id) as total_transactions'),
-                DB::raw('SUM(sale_payments.amount) as total_amount')
-            )
-            ->whereDate('sales.created_at', $today)
-            ->where('sales.status', 'completed')
-            ->groupBy('sale_payments.payment_method')
+        $paymentSummary = Sale::query()
+            ->whereDate('created_at', $today)
+            ->where('status', 'completed')
+            ->select('payment_method')
+            ->selectRaw('COUNT(*) as total_transactions')
+            ->selectRaw('SUM(total) as total_amount')
+            ->groupBy('payment_method')
+            ->orderByRaw("
+                CASE payment_method
+                    WHEN 'cash' THEN 1
+                    WHEN 'qris' THEN 2
+                    WHEN 'transfer' THEN 3
+                    WHEN 'split' THEN 4
+                    ELSE 5
+                END")
             ->get();
+        
+        $splitPaymentBreakdown = SalePayment::query()
+    ->join('sales', 'sales.id', '=', 'sale_payments.sale_id')
+    ->whereDate('sales.created_at', $today)
+    ->where('sales.status', 'completed')
+    ->where('sales.payment_method', 'split')
+    ->selectRaw("
+        sale_payments.payment_method,
+        SUM(
+            CASE
+                WHEN sale_payments.payment_method = 'cash'
+                    THEN sale_payments.amount - sales.change_amount
+                ELSE sale_payments.amount
+            END
+        ) as total_amount
+    ")
+    ->groupBy('sale_payments.payment_method')
+    ->pluck('total_amount', 'payment_method');
 
         $topProductsToday = SaleItem::select(
                 'products.name as product_name',
@@ -179,6 +203,7 @@ class DashboardController extends Controller
             'latestSales',
             'latestPurchases',
             'paymentSummary',
+            'splitPaymentBreakdown',
             'topProductsToday'
         ));
     }
