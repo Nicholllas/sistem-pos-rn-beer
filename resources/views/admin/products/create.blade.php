@@ -19,7 +19,13 @@
 
                 <div class="alert alert-info">
                     Isi identitas produk dengan rapi. Nama produk dan SKU akan dibuat otomatis dari
-                    <strong>Brand</strong>, <strong>Variant</strong>, <strong>Ukuran</strong>, dan <strong>Satuan</strong>.
+                    <strong>Brand</strong>, <strong>Variant</strong>, <strong>Ukuran</strong>, dan
+                    <strong>Satuan</strong>.
+
+                    <div class="mt-2">
+                        Stok awal produk otomatis bernilai 0. Penambahan stok dilakukan melalui menu
+                        <strong>Stock In</strong> atau <strong>Pembelian Stok</strong>.
+                    </div>
                 </div>
 
                 <div class="row">
@@ -213,29 +219,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="stock" class="form-label">
-                                Stock Awal
-                            </label>
-
-                            <input type="number" name="stock" id="stock"
-                                class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', 0) }}"
-                                min="0" required>
-
-                            @error('stock')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-                            <small class="text-muted">
-                                Untuk awal boleh isi 0. Nanti penambahan stok akan lewat menu Stock In.
-                            </small>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="mb-3">
                             <label for="minimum_stock" class="form-label">
                                 Minimum Stock
@@ -252,7 +236,7 @@
                             @enderror
 
                             <small class="text-muted">
-                                Jika stock kurang/sama dengan minimum, produk akan dianggap stok menipis.
+                                Jika stok kurang dari atau sama dengan minimum stok, produk akan dianggap stok menipis.
                             </small>
                         </div>
                     </div>

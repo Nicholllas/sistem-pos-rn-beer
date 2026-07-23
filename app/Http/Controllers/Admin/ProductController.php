@@ -5,11 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\StockMovement;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -35,37 +33,31 @@ class ProductController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $this->validateProduct($request);
-        $sku       = $this->generateSku($validated['brand'], $validated['variant'], $validated['size'], $validated['unit']);
+        $sku       = $this->generateSku(
+            $validated['brand'],
+            $validated['variant'],
+            $validated['size'],
+            $validated['unit']
+        );
 
         if (Product::where('sku', $sku)->whereNull('deleted_at')->exists()) {
             return back()
-                ->withErrors(['brand' => 'Produk dengan kombinasi brand, variant, ukuran, dan satuan ini sudah ada.'])
+                ->withErrors([
+                    'brand' => 'Produk dengan kombinasi brand, variant, ukuran, dan satuan ini sudah ada.',
+                ])
                 ->withInput();
         }
 
-        DB::transaction(function () use ($request, $validated, $sku) {
-            $product = Product::create([
-                ...$this->productFields($request, $validated, $sku),
-                'created_by'            => Auth::id(),
-                'updated_by'            => Auth::id(),
-                'last_stock_updated_by' => Auth::id(),
-                'last_stock_updated_at' => now(),
-            ]);
+        Product::create([
+            ...$this->productFields($request, $validated, $sku),
+            'stock'      => 0,
+            'created_by' => Auth::id(),
+            'updated_by' => Auth::id(),
+        ]);
 
-            if ($product->stock > 0) {
-                StockMovement::create([
-                    'product_id'     => $product->id,
-                    'type'           => 'in',
-                    'qty'            => $product->stock,
-                    'previous_stock' => 0,
-                    'new_stock'      => $product->stock,
-                    'note'           => 'Stok awal produk',
-                    'created_by'     => Auth::id(),
-                ]);
-            }
-        });
-
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dibuat.');
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Produk berhasil dibuat. Stok awal produk adalah 0.');
     }
 
     public function edit(Product $product)
@@ -80,40 +72,34 @@ class ProductController extends Controller
     public function update(Request $request, Product $product): RedirectResponse
     {
         $validated = $this->validateProduct($request, $product);
-        $sku       = $this->generateSku($validated['brand'], $validated['variant'], $validated['size'], $validated['unit']);
+        $sku       = $this->generateSku(
+            $validated['brand'],
+            $validated['variant'],
+            $validated['size'],
+            $validated['unit']
+        );
 
-        if (Product::where('sku', $sku)->whereNull('deleted_at')->where('id', '!=', $product->id)->exists()) {
+        if (
+            Product::where('sku', $sku)
+                ->whereNull('deleted_at')
+                ->where('id', '!=', $product->id)
+                ->exists()
+        ) {
             return back()
-                ->withErrors(['brand' => 'Produk dengan kombinasi brand, variant, ukuran, dan satuan ini sudah digunakan produk lain.'])
+                ->withErrors([
+                    'brand' => 'Produk dengan kombinasi brand, variant, ukuran, dan satuan ini sudah digunakan produk lain.',
+                ])
                 ->withInput();
         }
 
-        DB::transaction(function () use ($request, $validated, $sku, $product) {
-            $oldStock     = $product->stock;
-            $newStock     = (int) $validated['stock'];
-            $stockChanged = $oldStock !== $newStock;
+        $product->update([
+            ...$this->productFields($request, $validated, $sku, $product),
+            'updated_by' => Auth::id(),
+        ]);
 
-            $product->update([
-                ...$this->productFields($request, $validated, $sku, $product),
-                'updated_by'            => Auth::id(),
-                'last_stock_updated_by' => $stockChanged ? Auth::id() : $product->last_stock_updated_by,
-                'last_stock_updated_at' => $stockChanged ? now() : $product->last_stock_updated_at,
-            ]);
-
-            if ($stockChanged) {
-                StockMovement::create([
-                    'product_id'     => $product->id,
-                    'type'           => 'adjustment',
-                    'qty'            => $newStock - $oldStock,
-                    'previous_stock' => $oldStock,
-                    'new_stock'      => $newStock,
-                    'note'           => 'Penyesuaian stok dari edit produk',
-                    'created_by'     => Auth::id(),
-                ]);
-            }
-        });
-
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diubah.');
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Produk berhasil diubah.');
     }
 
     public function destroy(Product $product): RedirectResponse
@@ -121,13 +107,17 @@ class ProductController extends Controller
         if ($product->hasTransactionHistory()) {
             return redirect()
                 ->route('admin.products.index')
-                ->withErrors(['delete' => 'Produk tidak bisa dihapus karena sudah memiliki histori transaksi, pembelian, batch FIFO, atau log stok. Silakan nonaktifkan produk jika tidak ingin digunakan lagi.']);
+                ->withErrors([
+                    'delete' => 'Produk tidak bisa dihapus karena sudah memiliki histori transaksi, pembelian, batch FIFO, atau log stok. Silakan nonaktifkan produk jika tidak ingin digunakan lagi.',
+                ]);
         }
 
         $product->update(['updated_by' => Auth::id()]);
         $product->delete();
 
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dipindahkan ke trash.');
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Produk berhasil dipindahkan ke trash.');
     }
 
     public function trash()
@@ -147,7 +137,9 @@ class ProductController extends Controller
         $product->restore();
         $product->update(['updated_by' => Auth::id()]);
 
-        return redirect()->route('admin.products.trash')->with('success', 'Produk berhasil direstore.');
+        return redirect()
+            ->route('admin.products.trash')
+            ->with('success', 'Produk berhasil direstore.');
     }
 
     private function validateProduct(Request $request, ?Product $product = null): array
@@ -174,15 +166,18 @@ class ProductController extends Controller
             'barcode'       => ['nullable', 'string', 'max:255', 'regex:/^[A-Z0-9\-]+$/', $barcodeUnique],
             'cost_price'    => ['required', 'numeric', 'min:0'],
             'price'         => ['required', 'numeric', 'min:0', 'gte:cost_price'],
-            'stock'         => ['required', 'integer', 'min:0'],
             'minimum_stock' => ['required', 'integer', 'min:0'],
             'image'         => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'is_active'     => ['nullable', 'boolean'],
         ], $this->validationMessages());
     }
 
-    private function productFields(Request $request, array $validated, string $sku, ?Product $product = null): array
-    {
+    private function productFields(
+        Request $request,
+        array $validated,
+        string $sku,
+        ?Product $product = null
+    ): array {
         $imagePath = $product?->image;
 
         if ($request->hasFile('image')) {
@@ -199,12 +194,16 @@ class ProductController extends Controller
             'variant'       => $validated['variant'],
             'size'          => $validated['size'],
             'unit'          => $validated['unit'],
-            'name'          => $this->generateProductName($validated['brand'], $validated['variant'], $validated['size'], $validated['unit']),
+            'name'          => $this->generateProductName(
+                $validated['brand'],
+                $validated['variant'],
+                $validated['size'],
+                $validated['unit']
+            ),
             'sku'           => $sku,
             'barcode'       => $validated['barcode'] ?? null,
             'cost_price'    => $validated['cost_price'],
             'price'         => $validated['price'],
-            'stock'         => $validated['stock'],
             'minimum_stock' => $validated['minimum_stock'],
             'image'         => $imagePath,
             'is_active'     => $request->boolean('is_active'),
@@ -243,6 +242,9 @@ class ProductController extends Controller
 
     private function generateSku(string $brand, string $variant, int $size, string $unit): string
     {
-        return $this->firstLetters($brand) . '-' . $this->firstLetters($variant) . "-{$size}{$unit}";
+        return $this->firstLetters($brand)
+            . '-'
+            . $this->firstLetters($variant)
+            . "-{$size}{$unit}";
     }
 }

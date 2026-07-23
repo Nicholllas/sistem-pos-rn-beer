@@ -24,6 +24,11 @@
                     <br>
                     SKU saat ini:
                     <strong>{{ $product->sku }}</strong>
+                    <div class="mt-1">
+                        Perubahan stok dilakukan melalui menu
+                        <strong>Stock In</strong>, <strong>Pembelian Stok</strong>,
+                        atau <strong>Penyesuaian Stok</strong>.
+                    </div>
                 </div>
 
                 <div class="row">
@@ -222,22 +227,16 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="stock" class="form-label">
-                                Stock
+                            <label class="form-label">
+                                Stok Saat Ini
                             </label>
 
-                            <input type="number" name="stock" id="stock"
-                                class="form-control @error('stock') is-invalid @enderror"
-                                value="{{ old('stock', $product->stock) }}" min="0" required>
-
-                            @error('stock')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
+                            <input type="text" class="form-control"
+                                value="{{ number_format($product->stock, 0, ',', '.') }}" disabled>
 
                             <small class="text-muted">
-                                Jika stok diubah, sistem akan mencatat siapa yang terakhir mengubah stok.
+                                Stok tidak dapat diubah dari halaman produk. Gunakan menu Stock In,
+                                Pembelian Stok, atau Penyesuaian Stok.
                             </small>
                         </div>
                     </div>
@@ -259,7 +258,7 @@
                             @enderror
 
                             <small class="text-muted">
-                                Produk dianggap stok menipis jika stock kurang/sama dengan minimum stock.
+                                Produk dianggap stok menipis jika stok kurang dari atau sama dengan minimum stok.
                             </small>
                         </div>
                     </div>
