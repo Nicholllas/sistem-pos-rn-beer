@@ -1,5 +1,4 @@
 /* stylelint-disable at-rule-no-unknown */
-@import "./auth.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

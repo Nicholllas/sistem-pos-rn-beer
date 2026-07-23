@@ -1,9 +1,8 @@
-/* Thermal receipt 58mm */
 .thermal-receipt {
     width: 54mm;
     max-width: 54mm;
-    background: #ffffff;
-    color: #000000;
+    background: #fff;
+    color: #000;
     padding: 2mm;
     box-sizing: border-box;
     font-family: "Courier New", monospace;
@@ -79,7 +78,6 @@
     margin: 2px 0;
 }
 
-/* Print thermal receipt only */
 @media print {
     @page {
         size: 58mm 210mm;
@@ -93,7 +91,7 @@
         max-width: 58mm !important;
         margin: 0 !important;
         padding: 0 !important;
-        background: #ffffff !important;
+        background: #fff !important;
         overflow: visible !important;
     }
 
@@ -134,22 +132,18 @@
         left: 50% !important;
         top: 0 !important;
         transform: translateX(-50%) !important;
-
         width: 54mm !important;
         max-width: 54mm !important;
-
         min-height: 0 !important;
         height: auto !important;
         margin: 0 !important;
         padding: 2mm !important;
         box-sizing: border-box !important;
-
-        background: #ffffff !important;
-        color: #000000 !important;
+        background: #fff !important;
+        color: #000 !important;
         border: none !important;
         box-shadow: none !important;
         overflow: visible !important;
-
         page-break-before: avoid !important;
         page-break-after: avoid !important;
         page-break-inside: avoid !important;
@@ -192,5 +186,290 @@
         overflow: hidden !important;
         margin: 0 !important;
         padding: 0 !important;
+    }
+}
+
+.receipt-action-card {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.receipt-action-card .card-header {
+    padding: 16px 18px;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    gap: 12px;
+}
+
+.receipt-action-card .card-body {
+    padding: 18px;
+}
+
+.receipt-action-card .badge {
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.receipt-action-heading {
+    min-width: 0;
+}
+
+.receipt-action-heading .card-title {
+    display: block;
+    float: none;
+    margin: 0 0 3px;
+    line-height: 1.25;
+}
+
+.receipt-action-heading small {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.payment-overview {
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.payment-overview-row,
+.payment-breakdown-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 3px 0;
+    font-size: 13px;
+}
+
+.payment-overview-row {
+    padding: 5px 0;
+    font-size: 14px;
+}
+
+.payment-overview-row > span:first-child,
+.payment-breakdown-row span {
+    color: #64748b;
+}
+
+.payment-overview-row strong,
+.payment-breakdown-row strong {
+    color: #0f172a;
+    text-align: right;
+}
+
+.payment-method {
+    font-size: 12px;
+    letter-spacing: 0.4px;
+}
+
+.payment-change-row {
+    padding-top: 12px;
+    margin-top: 8px;
+    border-top: 1px dashed #cbd5e1;
+}
+
+.payment-change-row span,
+.payment-change-row strong {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.payment-breakdown {
+    padding: 10px 0 10px 12px;
+    margin: 7px 0 9px;
+    border-left: 2px solid #cbd5e1;
+}
+
+.payment-breakdown-title {
+    margin-bottom: 5px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.cashier-reminder {
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    border: 1px solid;
+    border-radius: 12px;
+}
+
+.cashier-reminder strong {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 14px;
+}
+
+.cashier-reminder small {
+    display: block;
+    line-height: 1.5;
+}
+
+.cashier-reminder-amount {
+    margin: 4px 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.cashier-reminder-warning {
+    color: #854d0e;
+    background: #fefce8;
+    border-color: #fde68a;
+}
+
+.cashier-reminder-success {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.cashier-reminder-info {
+    color: #075985;
+    background: #f0f9ff;
+    border-color: #bae6fd;
+}
+
+.action-buttons {
+    display: grid;
+    gap: 9px;
+}
+
+.action-buttons .btn {
+    padding-top: 9px;
+    padding-bottom: 9px;
+    border-radius: 9px;
+    font-weight: 600;
+}
+
+.void-action {
+    margin-top: 18px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.void-action summary {
+    position: relative;
+    padding: 16px 28px 4px 0;
+    color: #b91c1c;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.void-action summary::-webkit-details-marker {
+    display: none;
+}
+
+.void-action summary::after {
+    position: absolute;
+    top: 15px;
+    right: 2px;
+    content: "+";
+    font-size: 18px;
+    line-height: 1;
+}
+
+.void-action[open] summary::after {
+    content: "−";
+}
+
+.void-action-body {
+    padding-top: 12px;
+}
+
+.void-warning {
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    color: #991b1b;
+    font-size: 12px;
+    line-height: 1.5;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+}
+
+.void-information {
+    padding: 14px;
+    margin-top: 18px;
+    color: #7f1d1d;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+}
+
+.void-information > strong {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.void-information-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 3px 0;
+    font-size: 13px;
+}
+
+.void-information-row span:first-child {
+    color: #991b1b;
+}
+
+.void-information-reason {
+    padding-top: 9px;
+    margin-top: 8px;
+    border-top: 1px dashed #fecaca;
+}
+
+.void-information-reason span {
+    font-size: 12px;
+    color: #991b1b;
+}
+
+.void-information-reason p {
+    margin: 3px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.receipt-layout {
+    align-items: flex-start;
+}
+
+.receipt-main-column,
+.receipt-action-column {
+    min-width: 0;
+}
+
+@media (min-width: 768px) {
+    .receipt-main-column {
+        flex: 0 0 66.666667%;
+        width: 66.666667%;
+        max-width: 66.666667%;
+    }
+
+    .receipt-action-column {
+        flex: 0 0 33.333333%;
+        width: 33.333333%;
+        max-width: 33.333333%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .receipt-action-card {
+        margin-top: 20px;
     }
 }

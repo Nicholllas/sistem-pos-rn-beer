@@ -10,7 +10,7 @@
     {{-- favicon --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/auth.css', 'resources/js/app.js'])
 </head>
 
 <body>

@@ -2,15 +2,46 @@
 
 @section('title', 'Struk Penjualan')
 @section('page-title', 'Struk Penjualan')
-
 @push('styles')
-    @vite(['resources/css/receipt.css'])
+    @vite('resources/css/receipt.css')
 @endpush
-
 @section('content')
+    @php
+        $isCompleted = $sale->status === 'completed';
 
-    <div class="row">
-        <div class="col-md-8">
+        $paymentMethod = strtolower((string) $sale->payment_method);
+        $isCash = $paymentMethod === 'cash';
+        $isSplit = $paymentMethod === 'split';
+
+        $changeAmount = (float) $sale->change_amount;
+
+        /*
+         * Mengelompokkan nominal pembayaran berdasarkan metode.
+         *
+         * Contoh:
+         * [
+         *     'cash' => 50000,
+         *     'qris' => 61000,
+         * ]
+         */
+        $paymentAmounts = $sale->payments
+            ->groupBy(fn($payment) => strtolower((string) $payment->payment_method))
+            ->map(fn($payments) => (float) $payments->sum('amount'));
+
+        $cashAmount = (float) $paymentAmounts->get('cash', 0);
+        $hasCashPayment = $cashAmount > 0;
+
+        $activeNonCashMethods = collect([
+            'qris' => 'QRIS',
+            'transfer' => 'Transfer',
+        ])
+            ->filter(fn($label, $method) => (float) $paymentAmounts->get($method, 0) > 0)
+            ->values()
+            ->implode(' dan ');
+    @endphp
+
+    <div class="row receipt-layout">
+        <div class="col-md-8 receipt-main-column">
             <div class="d-flex justify-content-center">
                 <div class="thermal-receipt" id="receiptArea">
                     <div class="receipt-header">
@@ -138,77 +169,232 @@
             </div>
         </div>
 
-        <div class="col-md-4 no-print">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title mb-0">Aksi</h3>
+        <div class="col-md-4 no-print receipt-action-column">
+            <div class="card receipt-action-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="receipt-action-heading">
+                        <h3 class="card-title">Aksi Transaksi</h3>
+
+                        <small>
+                            {{ $sale->invoice_number }}
+                        </small>
+                    </div>
+
+                    <span class="badge {{ $isCompleted ? 'bg-success' : 'bg-danger' }}">
+                        {{ $isCompleted ? 'Selesai' : 'Dibatalkan' }}
+                    </span>
                 </div>
 
-                <div class="card-body d-grid gap-2">
-                    <button type="button" class="btn btn-primary" onclick="window.print()">
-                        Print Struk
-                    </button>
+                <div class="card-body">
+                    {{-- Ringkasan Pembayaran --}}
+                    <div class="payment-overview">
+                        <div class="payment-overview-row">
+                            <span>Metode Pembayaran</span>
 
-                    @if ($sale->status === 'completed')
-                        <hr>
+                            <strong class="payment-method">
+                                {{ strtoupper($sale->payment_method ?? '-') }}
+                            </strong>
+                        </div>
 
-                        <form action="{{ route('admin.sales.void', $sale) }}" method="POST"
-                            onsubmit="return confirm('Yakin ingin membatalkan transaksi ini? Stok akan dikembalikan.')">
-                            @csrf
-                            @method('PUT')
+                        @if ($isSplit)
+                            <div class="payment-breakdown">
+                                <div class="payment-breakdown-title">
+                                    Rincian Pembayaran
+                                </div>
 
-                            <div class="mb-3">
-                                <label for="void_reason" class="form-label">
-                                    Alasan Void
-                                </label>
+                                @foreach ([
+            'cash' => 'Cash',
+            'qris' => 'QRIS',
+            'transfer' => 'Transfer',
+        ] as $method => $label)
+                                    @php
+                                        $methodAmount = (float) $paymentAmounts->get($method, 0);
+                                    @endphp
 
-                                <textarea name="void_reason" id="void_reason" class="form-control @error('void_reason') is-invalid @enderror"
-                                    rows="3" placeholder="Contoh: Salah input item / salah metode bayar" required>{{ old('void_reason') }}</textarea>
+                                    @if ($methodAmount > 0)
+                                        <div class="payment-breakdown-row">
+                                            <span>{{ $label }}</span>
 
-                                @error('void_reason')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                                            <strong>
+                                                Rp {{ number_format($methodAmount, 0, ',', '.') }}
+                                            </strong>
+                                        </div>
+                                    @endif
+                                @endforeach
                             </div>
+                        @endif
 
-                            <button type="submit" class="btn btn-danger w-100">
-                                Void / Batalkan Transaksi
-                            </button>
-                        </form>
-                    @else
-                        <hr>
+                        <div class="payment-overview-row">
+                            <span>Total Belanja</span>
 
-                        <div class="alert alert-danger mb-0">
-                            <strong>Transaksi sudah dibatalkan.</strong>
+                            <strong>
+                                Rp {{ number_format($sale->total, 0, ',', '.') }}
+                            </strong>
+                        </div>
 
-                            <br>
+                        <div class="payment-overview-row">
+                            <span>
+                                {{ $isSplit ? 'Total Pembayaran' : 'Uang Diterima' }}
+                            </span>
 
-                            <small>
-                                Oleh: {{ $sale->voidedBy?->name ?? '-' }}
-                            </small>
+                            <strong>
+                                Rp {{ number_format($sale->paid_amount, 0, ',', '.') }}
+                            </strong>
+                        </div>
 
-                            <br>
+                        <div class="payment-overview-row payment-change-row">
+                            <span>Kembalian</span>
 
-                            <small>
-                                Pada: {{ $sale->voided_at?->format('d M Y H:i') ?? '-' }}
-                            </small>
+                            <strong>
+                                Rp {{ number_format($sale->change_amount, 0, ',', '.') }}
+                            </strong>
+                        </div>
+                    </div>
 
-                            <br>
+                    {{-- Reminder Kasir --}}
+                    @if ($isCompleted && ($isCash || ($isSplit && $hasCashPayment)) && $changeAmount > 0)
+                        <div class="cashier-reminder cashier-reminder-warning" role="alert">
+                            <div>
+                                <strong>Jangan lupa berikan kembalian</strong>
 
-                            <small>
-                                Alasan: {{ $sale->void_reason ?? '-' }}
-                            </small>
+                                <div class="cashier-reminder-amount">
+                                    Rp {{ number_format($sale->change_amount, 0, ',', '.') }}
+                                </div>
+
+                                @if ($isSplit && $activeNonCashMethods !== '')
+                                    <small class="mb-1">
+                                        Pastikan pembayaran {{ $activeNonCashMethods }} sudah berhasil.
+                                    </small>
+                                @endif
+
+                                <small>
+                                    Pastikan jumlah kembalian sesuai sebelum pelanggan meninggalkan kasir.
+                                </small>
+                            </div>
+                        </div>
+                    @elseif ($isCompleted && $isSplit)
+                        <div class="cashier-reminder cashier-reminder-info">
+                            <div>
+                                <strong>Pastikan seluruh pembayaran split berhasil</strong>
+
+                                @if ($activeNonCashMethods !== '')
+                                    <small>
+                                        Periksa status pembayaran {{ $activeNonCashMethods }}.
+                                    </small>
+                                @endif
+
+                                @if ($hasCashPayment)
+                                    <small>
+                                        Pastikan uang tunai yang diterima sudah sesuai.
+                                    </small>
+                                @endif
+                            </div>
+                        </div>
+                    @elseif ($isCompleted && $isCash)
+                        <div class="cashier-reminder cashier-reminder-success">
+                            <div>
+                                <strong>Uang diterima pas</strong>
+
+                                <small>
+                                    Transaksi ini tidak memiliki kembalian.
+                                </small>
+                            </div>
+                        </div>
+                    @elseif ($isCompleted)
+                        <div class="cashier-reminder cashier-reminder-info">
+                            <div>
+                                <strong>Pastikan pembayaran sudah berhasil</strong>
+
+                                <small>
+                                    Periksa status pembayaran
+                                    {{ strtoupper($sale->payment_method) }}
+                                    sebelum menyelesaikan pelayanan pelanggan.
+                                </small>
+                            </div>
                         </div>
                     @endif
 
-                    <a href="{{ route('admin.sales.pos') }}" class="btn btn-success">
-                        Transaksi Baru
-                    </a>
+                    {{-- Aksi Utama --}}
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-primary w-100" onclick="window.print()">
+                            Print Struk
+                        </button>
 
-                    <a href="{{ route('admin.sales.history') }}" class="btn btn-secondary">
-                        Riwayat Penjualan
-                    </a>
+                        <a href="{{ route('admin.sales.pos') }}" class="btn btn-success w-100"
+                            @if ($isCompleted && $isCash && $changeAmount > 0) onclick="return confirm(
+                            'Pastikan kembalian Rp {{ number_format($sale->change_amount, 0, ',', '.') }} sudah diberikan kepada pelanggan. Lanjut ke transaksi baru?'
+                        )" @endif>
+                            Transaksi Baru
+                        </a>
+
+                        <a href="{{ route('admin.sales.history') }}" class="btn btn-outline-secondary w-100">
+                            Riwayat Penjualan
+                        </a>
+                    </div>
+
+                    @if ($isCompleted)
+                        {{-- Void dibuat secondary agar tidak mudah terpencet --}}
+                        <details class="void-action" {{ $errors->has('void_reason') ? 'open' : '' }}>
+                            <summary>
+                                Batalkan Transaksi
+                            </summary>
+
+                            <div class="void-action-body">
+                                <div class="void-warning">
+                                    Gunakan hanya jika terjadi kesalahan transaksi.
+                                    Stok produk akan dikembalikan secara otomatis.
+                                </div>
+
+                                <form action="{{ route('admin.sales.void', $sale) }}" method="POST"
+                                    onsubmit="return confirm(
+                                'Yakin ingin membatalkan transaksi {{ $sale->invoice_number }}? Stok produk akan dikembalikan.'
+                            )">
+                                    @csrf
+                                    @method('PUT')
+
+                                    <div class="mb-3">
+                                        <label for="void_reason" class="form-label">
+                                            Alasan Void
+                                        </label>
+
+                                        <textarea name="void_reason" id="void_reason" class="form-control @error('void_reason') is-invalid @enderror"
+                                            rows="3" placeholder="Contoh: Salah input item atau salah metode pembayaran" required>{{ old('void_reason') }}</textarea>
+
+                                        @error('void_reason')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    <button type="submit" class="btn btn-danger w-100">
+                                        Void / Batalkan Transaksi
+                                    </button>
+                                </form>
+                            </div>
+                        </details>
+                    @else
+                        <div class="void-information">
+                            <strong>Transaksi telah dibatalkan</strong>
+
+                            <div class="void-information-row">
+                                <span>Oleh</span>
+                                <span>{{ $sale->voidedBy?->name ?? '-' }}</span>
+                            </div>
+
+                            <div class="void-information-row">
+                                <span>Pada</span>
+                                <span>
+                                    {{ $sale->voided_at?->format('d M Y H:i') ?? '-' }}
+                                </span>
+                            </div>
+
+                            <div class="void-information-reason">
+                                <span>Alasan</span>
+                                <p>{{ $sale->void_reason ?? '-' }}</p>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
