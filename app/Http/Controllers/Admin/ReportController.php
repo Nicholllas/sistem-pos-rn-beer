@@ -270,60 +270,60 @@ class ReportController extends Controller
     }
 
     public function exportSales(Request $request)
-{
-    $validated = $request->validate([
-        'start_date' => [
-            'nullable',
-            'date',
-        ],
-        'end_date' => [
-            'nullable',
-            'date',
-            'after_or_equal:start_date',
-        ],
-        'payment_method' => [
-            'nullable',
-            Rule::in([
-                'cash',
-                'qris',
-                'transfer',
-                'split',
-            ]),
-        ],
-        'status' => [
-            'nullable',
-            Rule::in([
-                'completed',
-                'void',
-            ]),
-        ],
-    ]);
+    {
+        $validated = $request->validate([
+            'start_date' => [
+                'nullable',
+                'date',
+            ],
+            'end_date' => [
+                'nullable',
+                'date',
+                'after_or_equal:start_date',
+            ],
+            'payment_method' => [
+                'nullable',
+                Rule::in([
+                    'cash',
+                    'qris',
+                    'transfer',
+                    'split',
+                ]),
+            ],
+            'status' => [
+                'nullable',
+                Rule::in([
+                    'completed',
+                    'void',
+                ]),
+            ],
+        ]);
 
-    $startDate = $validated['start_date']
-        ?? Carbon::today()->toDateString();
+        $startDate = $validated['start_date']
+            ?? Carbon::today()->toDateString();
 
-    $endDate = $validated['end_date']
-        ?? Carbon::today()->toDateString();
+        $endDate = $validated['end_date']
+            ?? Carbon::today()->toDateString();
 
-    $paymentMethod = $validated['payment_method'] ?? null;
-    $status = $validated['status'] ?? null;
+        $paymentMethod = $validated['payment_method'] ?? null;
+        $status = $validated['status'] ?? null;
 
-    $fileName = 'laporan-penjualan-'
-        . $startDate
-        . '-sd-'
-        . $endDate
-        . '.xlsx';
+        $fileName = 'laporan-penjualan-'
+            .$startDate
+            .'-sd-'
+            .$endDate
+            .'.xlsx';
 
-    return Excel::download(
-        new SalesReportExport(
-            $startDate,
-            $endDate,
-            $paymentMethod,
-            $status
-        ),
-        $fileName
-    );
-}
+        return Excel::download(
+            new SalesReportExport(
+                $startDate,
+                $endDate,
+                $paymentMethod,
+                $status
+            ),
+            $fileName
+        );
+    }
 
     public function inventory(Request $request)
     {
@@ -665,8 +665,8 @@ class ReportController extends Controller
         $status = $validated['status'] ?? null;
 
         $fileName = 'laporan-stok-fifo-'
-            . now()->format('Ymd-His')
-            . '.xlsx';
+            .now()->format('Ymd-His')
+            .'.xlsx';
 
         return Excel::download(
             new InventoryReportExport(
@@ -887,10 +887,10 @@ class ReportController extends Controller
         $status = $validated['status'] ?? null;
 
         $fileName = 'laporan-pembelian-'
-            . $startDate
-            . '-sd-'
-            . $endDate
-            . '.xlsx';
+            .$startDate
+            .'-sd-'
+            .$endDate
+            .'.xlsx';
 
         return Excel::download(
             new PurchaseReportExport(

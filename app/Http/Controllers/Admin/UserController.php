@@ -25,23 +25,23 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->merge([
-            'name'  => $this->normalizeName($request->name),
+            'name' => $this->normalizeName($request->name),
             'email' => strtolower(trim($request->email)),
         ]);
 
         $validated = $request->validate([
-            'name'      => ['required', 'string', 'max:255', 'regex:/^[A-Z0-9\s\.\-]+$/'],
-            'email'     => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
-            'password'  => ['required', 'string', 'min:8', 'confirmed'],
-            'role'      => ['required', Rule::in(['admin', 'cashier'])],
+            'name' => ['required', 'string', 'max:255', 'regex:/^[A-Z0-9\s\.\-]+$/'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', Rule::in(['admin', 'cashier'])],
             'is_active' => ['nullable', 'boolean'],
         ], $this->validationMessages());
 
         User::create([
-            'name'      => $validated['name'],
-            'email'     => $validated['email'],
-            'password'  => $validated['password'],
-            'role'      => $validated['role'],
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+            'role' => $validated['role'],
             'is_active' => $request->boolean('is_active'),
         ]);
 
@@ -56,14 +56,14 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->merge([
-            'name'  => $this->normalizeName($request->name),
+            'name' => $this->normalizeName($request->name),
             'email' => strtolower(trim($request->email)),
         ]);
 
         $validated = $request->validate([
-            'name'      => ['required', 'string', 'max:255', 'regex:/^[A-Z0-9\s\.\-]+$/'],
-            'email'     => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'role'      => ['required', Rule::in(['admin', 'cashier'])],
+            'name' => ['required', 'string', 'max:255', 'regex:/^[A-Z0-9\s\.\-]+$/'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'role' => ['required', Rule::in(['admin', 'cashier'])],
             'is_active' => ['nullable', 'boolean'],
         ], $this->validationMessages());
 
@@ -80,9 +80,9 @@ class UserController extends Controller
         }
 
         $user->update([
-            'name'      => $validated['name'],
-            'email'     => $validated['email'],
-            'role'      => $validated['role'],
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'role' => $validated['role'],
             'is_active' => $request->boolean('is_active'),
         ]);
 
@@ -133,15 +133,15 @@ class UserController extends Controller
     private function validationMessages(): array
     {
         return [
-            'name.regex'          => 'Nama hanya boleh berisi huruf, angka, spasi, titik, dan strip.',
-            'password.confirmed'  => 'Konfirmasi password tidak sesuai.',
-            'role.in'             => 'Role harus admin atau cashier.',
+            'name.regex' => 'Nama hanya boleh berisi huruf, angka, spasi, titik, dan strip.',
+            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+            'role.in' => 'Role harus admin atau cashier.',
         ];
     }
 
     private function isLastActiveAdmin(User $user): bool
     {
-        if ($user->role !== 'admin' || !$user->is_active) {
+        if ($user->role !== 'admin' || ! $user->is_active) {
             return false;
         }
 

@@ -16,12 +16,16 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class PurchaseSupplierSheet implements FromArray, WithTitle, WithEvents, WithColumnWidths, WithColumnFormatting, ShouldAutoSize
+class PurchaseSupplierSheet implements FromArray, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithEvents, WithTitle
 {
     protected string $startDate;
+
     protected string $endDate;
+
     protected ?int $supplierId;
+
     protected ?string $status;
+
     protected int $lastRow = 1;
 
     public function __construct(string $startDate, string $endDate, ?int $supplierId = null, ?string $status = null)
@@ -46,9 +50,9 @@ class PurchaseSupplierSheet implements FromArray, WithTitle, WithEvents, WithCol
         $rows = [
             ['RN BEER — RINGKASAN SUPPLIER', '', '', '', ''],
             [
-                'Periode: ' . Carbon::parse($this->startDate)->format('d/m/Y') .
-                ' s/d ' . Carbon::parse($this->endDate)->format('d/m/Y') .
-                '     Supplier: ' . $supplierName .
+                'Periode: '.Carbon::parse($this->startDate)->format('d/m/Y').
+                ' s/d '.Carbon::parse($this->endDate)->format('d/m/Y').
+                '     Supplier: '.$supplierName.
                 '     Status: COMPLETED',
                 '', '', '', '',
             ],
@@ -163,15 +167,15 @@ class PurchaseSupplierSheet implements FromArray, WithTitle, WithEvents, WithCol
                 ]);
 
                 if ($this->lastRow >= 5) {
-                    $sheet->getStyle('A5:E' . $this->lastRow)->applyFromArray([
+                    $sheet->getStyle('A5:E'.$this->lastRow)->applyFromArray([
                         'borders' => [
                             'allBorders' => ['borderStyle' => Border::BORDER_THIN],
                         ],
                     ]);
 
-                    $sheet->getStyle('A6:A' . $this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle('C6:D' . $this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle('E6:E' . $this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                    $sheet->getStyle('A6:A'.$this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('C6:D'.$this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('E6:E'.$this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 }
             },
         ];

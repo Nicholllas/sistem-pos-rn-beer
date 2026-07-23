@@ -3,12 +3,12 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SaleController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,7 +23,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware('role:admin,cashier')->group(function () {
-        
+
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/sales/pos', [SaleController::class, 'pos'])->name('sales.pos');
@@ -55,7 +55,6 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     });
 
     Route::middleware('role:admin')->group(function () {
-        
 
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::get('/categories-trash', [CategoryController::class, 'trash'])->name('categories.trash');
@@ -74,4 +73,4 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     });
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

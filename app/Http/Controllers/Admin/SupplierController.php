@@ -27,11 +27,11 @@ class SupplierController extends Controller
         $validated = $this->validateSupplier($request);
 
         Supplier::create([
-            'name'       => $validated['name'],
-            'phone'      => $validated['phone'] ?? null,
-            'email'      => $validated['email'] ?? null,
-            'address'    => $validated['address'] ?? null,
-            'is_active'  => $request->boolean('is_active'),
+            'name' => $validated['name'],
+            'phone' => $validated['phone'] ?? null,
+            'email' => $validated['email'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'is_active' => $request->boolean('is_active'),
             'created_by' => Auth::id(),
             'updated_by' => Auth::id(),
         ]);
@@ -49,11 +49,11 @@ class SupplierController extends Controller
         $validated = $this->validateSupplier($request, $supplier);
 
         $supplier->update([
-            'name'       => $validated['name'],
-            'phone'      => $validated['phone'] ?? null,
-            'email'      => $validated['email'] ?? null,
-            'address'    => $validated['address'] ?? null,
-            'is_active'  => $request->boolean('is_active'),
+            'name' => $validated['name'],
+            'phone' => $validated['phone'] ?? null,
+            'email' => $validated['email'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'is_active' => $request->boolean('is_active'),
             'updated_by' => Auth::id(),
         ]);
 
@@ -94,9 +94,9 @@ class SupplierController extends Controller
     private function validateSupplier(Request $request, ?Supplier $supplier = null): array
     {
         $request->merge([
-            'name'    => $this->normalizeText($request->name),
-            'phone'   => $this->normalizePhone($request->phone),
-            'email'   => $request->email ? strtolower(trim($request->email)) : null,
+            'name' => $this->normalizeText($request->name),
+            'phone' => $this->normalizePhone($request->phone),
+            'email' => $request->email ? strtolower(trim($request->email)) : null,
             'address' => $this->normalizeText($request->address, false),
         ]);
 
@@ -107,10 +107,10 @@ class SupplierController extends Controller
         }
 
         return $request->validate([
-            'name'      => ['required', 'string', 'max:255', 'regex:/^[A-Z0-9\s\.\,\-\&\/]+$/', $nameUnique],
-            'phone'     => ['nullable', 'string', 'max:30', 'regex:/^[0-9\+\-\s]+$/'],
-            'email'     => ['nullable', 'email', 'max:255'],
-            'address'   => ['nullable', 'string', 'max:1000'],
+            'name' => ['required', 'string', 'max:255', 'regex:/^[A-Z0-9\s\.\,\-\&\/]+$/', $nameUnique],
+            'phone' => ['nullable', 'string', 'max:30', 'regex:/^[0-9\+\-\s]+$/'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'address' => ['nullable', 'string', 'max:1000'],
             'is_active' => ['nullable', 'boolean'],
         ], $this->validationMessages());
     }
@@ -144,10 +144,10 @@ class SupplierController extends Controller
     private function validationMessages(): array
     {
         return [
-            'name.regex'   => 'Nama supplier hanya boleh berisi huruf, angka, spasi, titik, koma, strip, &, dan garis miring.',
-            'name.unique'  => 'Nama supplier sudah digunakan.',
-            'phone.regex'  => 'Nomor telepon hanya boleh berisi angka, spasi, +, dan strip.',
-            'email.email'  => 'Format email supplier tidak valid.',
+            'name.regex' => 'Nama supplier hanya boleh berisi huruf, angka, spasi, titik, koma, strip, &, dan garis miring.',
+            'name.unique' => 'Nama supplier sudah digunakan.',
+            'phone.regex' => 'Nomor telepon hanya boleh berisi angka, spasi, +, dan strip.',
+            'email.email' => 'Format email supplier tidak valid.',
         ];
     }
 }

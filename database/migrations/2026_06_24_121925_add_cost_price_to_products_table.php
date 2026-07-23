@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->decimal('cost_price', 15, 2)
-            ->default(0)
-            ->after('barcode');
+                ->default(0)
+                ->after('barcode');
         });
     }
 

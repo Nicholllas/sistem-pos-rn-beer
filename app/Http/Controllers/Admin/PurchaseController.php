@@ -161,9 +161,9 @@ class PurchaseController extends Controller
                     'qty' => $qty,
                     'previous_stock' => $previousStock,
                     'new_stock' => $newStock,
-                    'note' => 'Pembelian stok ' . $purchase->purchase_number
-                        . ' | Batch FIFO #' . $stockBatch->id
-                        . ' | Modal: Rp ' . number_format($costPrice, 0, ',', '.'),
+                    'note' => 'Pembelian stok '.$purchase->purchase_number
+                        .' | Batch FIFO #'.$stockBatch->id
+                        .' | Modal: Rp '.number_format($costPrice, 0, ',', '.'),
                     'created_by' => Auth::id(),
                 ]);
             }
@@ -254,9 +254,9 @@ class PurchaseController extends Controller
                     'qty' => -$item->qty,
                     'previous_stock' => $previousStock,
                     'new_stock' => $newStock,
-                    'note' => 'Void pembelian ' . $purchase->purchase_number
-                        . ' | Batch FIFO #' . $batch->id
-                        . ' | Alasan: ' . $validated['void_reason'],
+                    'note' => 'Void pembelian '.$purchase->purchase_number
+                        .' | Batch FIFO #'.$batch->id
+                        .' | Alasan: '.$validated['void_reason'],
                     'created_by' => Auth::id(),
                 ]);
             }
@@ -277,9 +277,9 @@ class PurchaseController extends Controller
 
     private function generatePurchaseNumber(): string
     {
-        $prefix = 'PO-' . now()->format('Ymd') . '-';
+        $prefix = 'PO-'.now()->format('Ymd').'-';
 
-        $lastPurchase = Purchase::where('purchase_number', 'like', $prefix . '%')
+        $lastPurchase = Purchase::where('purchase_number', 'like', $prefix.'%')
             ->lockForUpdate()
             ->latest('id')
             ->first();
@@ -291,7 +291,7 @@ class PurchaseController extends Controller
             $nextNumber = $lastSequence + 1;
         }
 
-        return $prefix . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     private function normalizeText(?string $value): ?string

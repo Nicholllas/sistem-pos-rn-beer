@@ -16,10 +16,12 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class InventoryStockSheet implements FromArray, WithTitle, WithEvents, WithColumnWidths, WithColumnFormatting, ShouldAutoSize
+class InventoryStockSheet implements FromArray, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithEvents, WithTitle
 {
     protected ?int $categoryId;
+
     protected ?string $status;
+
     protected int $lastRow = 1;
 
     public function __construct(?int $categoryId = null, ?string $status = null)
@@ -99,9 +101,9 @@ class InventoryStockSheet implements FromArray, WithTitle, WithEvents, WithColum
         $rows = [
             ['RN BEER — LAPORAN STOK FIFO', '', '', '', '', '', '', '', '', '', '', '', ''],
             [
-                'Kategori: ' . $categoryName .
-                '     Status: ' . $statusLabel .
-                '     Export: ' . now()->format('d/m/Y H:i'),
+                'Kategori: '.$categoryName.
+                '     Status: '.$statusLabel.
+                '     Export: '.now()->format('d/m/Y H:i'),
                 '', '', '', '', '', '', '', '', '', '', '', '',
             ],
             ['', '', '', '', '', '', '', '', '', '', '', '', ''],
@@ -286,16 +288,16 @@ class InventoryStockSheet implements FromArray, WithTitle, WithEvents, WithColum
                 $sheet->getStyle('A9:P9')->applyFromArray($this->headerStyle());
 
                 if ($this->lastRow >= 10) {
-                    $sheet->getStyle('A9:P' . $this->lastRow)->applyFromArray([
+                    $sheet->getStyle('A9:P'.$this->lastRow)->applyFromArray([
                         'borders' => [
                             'allBorders' => ['borderStyle' => Border::BORDER_THIN],
                         ],
                     ]);
 
-                    $sheet->getStyle('A10:A' . $this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle('E10:H' . $this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle('I10:N' . $this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-                    $sheet->getStyle('O10:P' . $this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('A10:A'.$this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('E10:H'.$this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('I10:N'.$this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                    $sheet->getStyle('O10:P'.$this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 }
 
                 $sheet->freezePane('A10');

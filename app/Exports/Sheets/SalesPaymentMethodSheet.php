@@ -15,12 +15,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class SalesPaymentMethodSheet implements
-    FromArray,
-    ShouldAutoSize,
-    WithTitle,
-    WithEvents,
-    WithColumnFormatting
+class SalesPaymentMethodSheet implements FromArray, ShouldAutoSize, WithColumnFormatting, WithEvents, WithTitle
 {
     public function __construct(
         private string $startDate,
@@ -187,16 +182,16 @@ class SalesPaymentMethodSheet implements
 
         $rows[] = [
             'Periode: '
-                . Carbon::parse($this->startDate)->format('d/m/Y')
-                . ' s/d '
-                . Carbon::parse($this->endDate)->format('d/m/Y')
-                . '     Metode: '
-                . (
+                .Carbon::parse($this->startDate)->format('d/m/Y')
+                .' s/d '
+                .Carbon::parse($this->endDate)->format('d/m/Y')
+                .'     Metode: '
+                .(
                     $this->paymentMethod
                         ? strtoupper($this->paymentMethod)
                         : 'SEMUA'
                 )
-                . '     Status: COMPLETED',
+                .'     Status: COMPLETED',
             '',
             '',
             '',
@@ -360,8 +355,8 @@ class SalesPaymentMethodSheet implements
                 $sheet->mergeCells('A4:H4');
 
                 $sheet->mergeCells(
-                    'A' . $totalRow
-                    . ':B' . $totalRow
+                    'A'.$totalRow
+                    .':B'.$totalRow
                 );
 
                 /*
@@ -510,7 +505,7 @@ class SalesPaymentMethodSheet implements
 
                 if ($highestRow > 5) {
                     $sheet->getStyle(
-                        'A6:H' . $highestRow
+                        'A6:H'.$highestRow
                     )->applyFromArray([
                         'borders' => [
                             'allBorders' => [
@@ -533,9 +528,9 @@ class SalesPaymentMethodSheet implements
                         if ($row % 2 === 0) {
                             $sheet->getStyle(
                                 'A'
-                                . $row
-                                . ':H'
-                                . $row
+                                .$row
+                                .':H'
+                                .$row
                             )->applyFromArray([
                                 'fill' => [
                                     'fillType' => Fill::FILL_SOLID,
@@ -548,7 +543,7 @@ class SalesPaymentMethodSheet implements
                     }
 
                     $sheet->getStyle(
-                        'A6:A' . $highestRow
+                        'A6:A'.$highestRow
                     )
                         ->getAlignment()
                         ->setHorizontal(
@@ -556,7 +551,7 @@ class SalesPaymentMethodSheet implements
                         );
 
                     $sheet->getStyle(
-                        'C6:H' . $highestRow
+                        'C6:H'.$highestRow
                     )
                         ->getAlignment()
                         ->setHorizontal(
@@ -564,19 +559,19 @@ class SalesPaymentMethodSheet implements
                         );
 
                     $sheet->getStyle(
-                        'C6:C' . $highestRow
+                        'C6:C'.$highestRow
                     )
                         ->getNumberFormat()
                         ->setFormatCode('#,##0');
 
                     $sheet->getStyle(
-                        'D6:G' . $highestRow
+                        'D6:G'.$highestRow
                     )
                         ->getNumberFormat()
                         ->setFormatCode('"Rp" #,##0');
 
                     $sheet->getStyle(
-                        'H6:H' . $highestRow
+                        'H6:H'.$highestRow
                     )
                         ->getNumberFormat()
                         ->setFormatCode('0.0%');
@@ -590,9 +585,9 @@ class SalesPaymentMethodSheet implements
 
                 $sheet->getStyle(
                     'A'
-                    . $totalRow
-                    . ':H'
-                    . $totalRow
+                    .$totalRow
+                    .':H'
+                    .$totalRow
                 )->applyFromArray([
                     'font' => [
                         'bold' => true,
@@ -621,22 +616,22 @@ class SalesPaymentMethodSheet implements
                 ]);
 
                 $sheet->getStyle(
-                    'C' . $totalRow
+                    'C'.$totalRow
                 )
                     ->getNumberFormat()
                     ->setFormatCode('#,##0');
 
                 $sheet->getStyle(
                     'D'
-                    . $totalRow
-                    . ':G'
-                    . $totalRow
+                    .$totalRow
+                    .':G'
+                    .$totalRow
                 )
                     ->getNumberFormat()
                     ->setFormatCode('"Rp" #,##0');
 
                 $sheet->getStyle(
-                    'H' . $totalRow
+                    'H'.$totalRow
                 )
                     ->getNumberFormat()
                     ->setFormatCode('0.0%');
@@ -681,7 +676,7 @@ class SalesPaymentMethodSheet implements
 
                 if ($highestRow > 6) {
                     $sheet->setAutoFilter(
-                        'A5:H' . ($highestRow - 1)
+                        'A5:H'.($highestRow - 1)
                     );
                 }
 
@@ -692,7 +687,7 @@ class SalesPaymentMethodSheet implements
                     ->setFitToHeight(0);
 
                 $sheet->getStyle(
-                    'A1:H' . $highestRow
+                    'A1:H'.$highestRow
                 )
                     ->getAlignment()
                     ->setWrapText(false);

@@ -10,6 +10,7 @@ use App\Models\SaleItemBatch;
 use App\Models\SalePayment;
 use App\Models\StockBatch;
 use App\Models\StockMovement;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -32,27 +33,27 @@ class SaleController extends Controller
     public function checkout(Request $request)
     {
         $validated = $request->validate([
-            'items'                     => ['required', 'array', 'min:1'],
-            'items.*.product_id'        => [
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.product_id' => [
                 'required',
                 Rule::exists('products', 'id')
                     ->whereNull('deleted_at')
                     ->where('is_active', true),
             ],
-            'items.*.qty'               => ['required', 'integer', 'min:1'],
-            'payments'                  => ['required', 'array', 'min:1'],
+            'items.*.qty' => ['required', 'integer', 'min:1'],
+            'payments' => ['required', 'array', 'min:1'],
             'payments.*.payment_method' => ['required', Rule::in(['cash', 'qris', 'transfer'])],
-            'payments.*.amount'         => ['required', 'numeric', 'min:0'],
+            'payments.*.amount' => ['required', 'numeric', 'min:0'],
         ], [
-            'items.required'                     => 'Keranjang masih kosong.',
-            'items.min'                          => 'Minimal harus ada 1 produk di keranjang.',
-            'payments.required'                  => 'Minimal satu metode pembayaran harus diisi.',
-            'payments.min'                       => 'Minimal satu metode pembayaran harus diisi.',
+            'items.required' => 'Keranjang masih kosong.',
+            'items.min' => 'Minimal harus ada 1 produk di keranjang.',
+            'payments.required' => 'Minimal satu metode pembayaran harus diisi.',
+            'payments.min' => 'Minimal satu metode pembayaran harus diisi.',
             'payments.*.payment_method.required' => 'Metode pembayaran wajib dipilih.',
-            'payments.*.payment_method.in'       => 'Metode pembayaran tidak valid.',
-            'payments.*.amount.required'         => 'Nominal pembayaran wajib diisi.',
-            'payments.*.amount.numeric'          => 'Nominal pembayaran harus berupa angka.',
-            'payments.*.amount.min'              => 'Nominal pembayaran tidak boleh minus.',
+            'payments.*.payment_method.in' => 'Metode pembayaran tidak valid.',
+            'payments.*.amount.required' => 'Nominal pembayaran wajib diisi.',
+            'payments.*.amount.numeric' => 'Nominal pembayaran harus berupa angka.',
+            'payments.*.amount.min' => 'Nominal pembayaran tidak boleh minus.',
         ]);
 
         $sale = DB::transaction(function () use ($validated) {
@@ -207,7 +208,7 @@ class SaleController extends Controller
                     'qty' => -$qty,
                     'previous_stock' => $item['previous_stock'],
                     'new_stock' => $item['new_stock'],
-                    'note' => 'Penjualan invoice ' . $sale->invoice_number,
+                    'note' => 'Penjualan invoice '.$sale->invoice_number,
                     'created_by' => Auth::id(),
                 ]);
             }
@@ -217,16 +218,120 @@ class SaleController extends Controller
 
         return redirect()
             ->route('admin.sales.receipt', $sale)
-            ->with('success', 'Transaksi berhasil. Invoice: ' . $sale->invoice_number);
+            ->with('success', 'Transaksi berhasil. Invoice: '.$sale->invoice_number);
     }
 
-    public function history()
+    public function history(Request $request)
     {
-        $sales = Sale::with(['soldBy', 'payments'])
-            ->latest()
-            ->paginate(10);
+        $filters = $request->validate([
+            'search' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
 
-        return view('admin.sales.history', compact('sales'));
+            'start_date' => [
+                'nullable',
+                'date',
+            ],
+
+            'end_date' => [
+                'nullable',
+                'date',
+                'after_or_equal:start_date',
+            ],
+
+            'cashier_id' => [
+                'nullable',
+                'integer',
+                'exists:users,id',
+            ],
+
+            'status' => [
+                'nullable',
+                'in:completed,void',
+            ],
+
+            'payment_method' => [
+                'nullable',
+                'in:cash,qris,transfer,split',
+            ],
+        ]);
+
+        $sales = Sale::query()
+            ->with([
+                'soldBy:id,name',
+            ])
+
+            ->when(
+                $filters['search'] ?? null,
+                function ($query, $search) {
+                    $query->where(
+                        'invoice_number',
+                        'like',
+                        '%'.trim($search).'%'
+                    );
+                }
+            )
+
+            ->when(
+                $filters['start_date'] ?? null,
+                function ($query, $startDate) {
+                    $query->whereDate('created_at', '>=', $startDate);
+                }
+            )
+
+            ->when(
+                $filters['end_date'] ?? null,
+                function ($query, $endDate) {
+                    $query->whereDate('created_at', '<=', $endDate);
+                }
+            )
+
+            ->when(
+                $filters['cashier_id'] ?? null,
+                function ($query, $cashierId) {
+                    $query->where('sold_by', $cashierId);
+                }
+            )
+
+            ->when(
+                $filters['status'] ?? null,
+                function ($query, $status) {
+                    $query->where('status', $status);
+                }
+            )
+
+            ->when(
+                $filters['payment_method'] ?? null,
+                function ($query, $paymentMethod) {
+                    $query->where('payment_method', $paymentMethod);
+                }
+            )
+
+            ->latest('created_at')
+            ->paginate(20)
+            ->withQueryString();
+
+        $cashiers = User::query()
+            ->whereIn(
+                'id',
+                Sale::query()
+                    ->select('sold_by')
+                    ->whereNotNull('sold_by')
+                    ->distinct()
+            )
+            ->orderBy('name')
+            ->get([
+                'id',
+                'name',
+                'is_active',
+            ]);
+
+        return view('admin.sales.history', compact(
+            'sales',
+            'cashiers'
+        ));
     }
 
     public function receipt(Sale $sale)
@@ -326,7 +431,7 @@ class SaleController extends Controller
                     'qty' => $item->qty,
                     'previous_stock' => $previousStock,
                     'new_stock' => $newStock,
-                    'note' => 'Void transaksi invoice ' . $sale->invoice_number . '. Alasan: ' . $validated['void_reason'],
+                    'note' => 'Void transaksi invoice '.$sale->invoice_number.'. Alasan: '.$validated['void_reason'],
                     'created_by' => Auth::id(),
                 ]);
             }
@@ -409,9 +514,9 @@ class SaleController extends Controller
 
     private function generateInvoiceNumber(): string
     {
-        $prefix = 'INV-' . now()->format('Ymd') . '-';
+        $prefix = 'INV-'.now()->format('Ymd').'-';
 
-        $lastSale = Sale::where('invoice_number', 'like', $prefix . '%')
+        $lastSale = Sale::where('invoice_number', 'like', $prefix.'%')
             ->lockForUpdate()
             ->latest('id')
             ->first();
@@ -420,6 +525,6 @@ class SaleController extends Controller
             ? ((int) str_replace($prefix, '', $lastSale->invoice_number)) + 1
             : 1;
 
-        return $prefix . str_pad($next, 4, '0', STR_PAD_LEFT);
+        return $prefix.str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 }

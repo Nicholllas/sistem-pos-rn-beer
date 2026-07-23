@@ -15,14 +15,17 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class PurchaseSummarySheet implements FromArray, WithTitle, WithEvents, WithColumnWidths, WithColumnFormatting, ShouldAutoSize
+class PurchaseSummarySheet implements FromArray, ShouldAutoSize, WithColumnFormatting, WithColumnWidths, WithEvents, WithTitle
 {
     protected string $startDate;
+
     protected string $endDate;
+
     protected ?int $supplierId;
+
     protected ?string $status;
+
     protected int $lastRow = 1;
 
     public function __construct(string $startDate, string $endDate, ?int $supplierId = null, ?string $status = null)
@@ -74,10 +77,10 @@ class PurchaseSummarySheet implements FromArray, WithTitle, WithEvents, WithColu
         $rows = [
             ['RN BEER — LAPORAN PEMBELIAN', '', '', '', '', '', '', ''],
             [
-                'Periode: ' . Carbon::parse($this->startDate)->format('d/m/Y') .
-                ' s/d ' . Carbon::parse($this->endDate)->format('d/m/Y') .
-                '     Supplier: ' . $supplierName .
-                '     Status: ' . $statusLabel,
+                'Periode: '.Carbon::parse($this->startDate)->format('d/m/Y').
+                ' s/d '.Carbon::parse($this->endDate)->format('d/m/Y').
+                '     Supplier: '.$supplierName.
+                '     Status: '.$statusLabel,
                 '', '', '', '', '', '', '',
             ],
             ['', '', '', '', '', '', '', ''],
@@ -198,16 +201,16 @@ class PurchaseSummarySheet implements FromArray, WithTitle, WithEvents, WithColu
                 $sheet->getStyle('A9:H9')->applyFromArray($this->headerStyle());
 
                 if ($this->lastRow >= 10) {
-                    $sheet->getStyle('A9:H' . $this->lastRow)->applyFromArray([
+                    $sheet->getStyle('A9:H'.$this->lastRow)->applyFromArray([
                         'borders' => [
                             'allBorders' => ['borderStyle' => Border::BORDER_THIN],
                         ],
                     ]);
 
-                    $sheet->getStyle('A10:A' . $this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle('E10:E' . $this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle('F10:F' . $this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-                    $sheet->getStyle('G10:G' . $this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('A10:A'.$this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('E10:E'.$this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $sheet->getStyle('F10:F'.$this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                    $sheet->getStyle('G10:G'.$this->lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 }
             },
         ];

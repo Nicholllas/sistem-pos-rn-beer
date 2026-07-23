@@ -99,9 +99,9 @@ class DashboardController extends Controller
             ->value('total_value') ?? 0;
 
         $lowStockList = Product::with([
-                'category',
-                'lastStockUpdatedBy',
-            ])
+            'category',
+            'lastStockUpdatedBy',
+        ])
             ->where('is_active', true)
             ->whereColumn('stock', '<=', 'minimum_stock')
             ->orderBy('stock', 'asc')
@@ -146,13 +146,13 @@ class DashboardController extends Controller
                     ELSE 5
                 END")
             ->get();
-        
+
         $splitPaymentBreakdown = SalePayment::query()
-    ->join('sales', 'sales.id', '=', 'sale_payments.sale_id')
-    ->whereDate('sales.created_at', $today)
-    ->where('sales.status', 'completed')
-    ->where('sales.payment_method', 'split')
-    ->selectRaw("
+            ->join('sales', 'sales.id', '=', 'sale_payments.sale_id')
+            ->whereDate('sales.created_at', $today)
+            ->where('sales.status', 'completed')
+            ->where('sales.payment_method', 'split')
+            ->selectRaw("
         sale_payments.payment_method,
         SUM(
             CASE
@@ -162,14 +162,14 @@ class DashboardController extends Controller
             END
         ) as total_amount
     ")
-    ->groupBy('sale_payments.payment_method')
-    ->pluck('total_amount', 'payment_method');
+            ->groupBy('sale_payments.payment_method')
+            ->pluck('total_amount', 'payment_method');
 
         $topProductsToday = SaleItem::select(
-                'products.name as product_name',
-                DB::raw('SUM(sale_items.qty) as total_qty'),
-                DB::raw('SUM(sale_items.subtotal) as total_sales')
-            )
+            'products.name as product_name',
+            DB::raw('SUM(sale_items.qty) as total_qty'),
+            DB::raw('SUM(sale_items.subtotal) as total_sales')
+        )
             ->join('products', 'products.id', '=', 'sale_items.product_id')
             ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
             ->whereDate('sales.created_at', $today)

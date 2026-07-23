@@ -30,7 +30,7 @@ class CategoryController extends Controller
         $validated = $this->validateCategory($request);
 
         Category::create([
-            'name'       => $validated['name'],
+            'name' => $validated['name'],
             'created_by' => Auth::id(),
             'updated_by' => Auth::id(),
         ]);
@@ -50,7 +50,7 @@ class CategoryController extends Controller
         $validated = $this->validateCategory($request, $category);
 
         $category->update([
-            'name'       => $validated['name'],
+            'name' => $validated['name'],
             'updated_by' => Auth::id(),
         ]);
 

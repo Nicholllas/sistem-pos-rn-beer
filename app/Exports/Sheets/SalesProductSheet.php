@@ -16,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class SalesProductSheet implements FromArray, ShouldAutoSize, WithTitle, WithEvents, WithColumnFormatting
+class SalesProductSheet implements FromArray, ShouldAutoSize, WithColumnFormatting, WithEvents, WithTitle
 {
     public function __construct(
         private string $startDate,
@@ -37,12 +37,12 @@ class SalesProductSheet implements FromArray, ShouldAutoSize, WithTitle, WithEve
             ->sum('subtotal');
 
         $items = SaleItem::select(
-                'products.name as product_name',
-                'products.sku',
-                'categories.name as category_name',
-                DB::raw('SUM(sale_items.qty) as total_qty'),
-                DB::raw('SUM(sale_items.subtotal) as total_sales')
-            )
+            'products.name as product_name',
+            'products.sku',
+            'categories.name as category_name',
+            DB::raw('SUM(sale_items.qty) as total_qty'),
+            DB::raw('SUM(sale_items.subtotal) as total_sales')
+        )
             ->join('products', 'products.id', '=', 'sale_items.product_id')
             ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
             ->whereIn('sale_items.sale_id', $completedSaleIds)
@@ -60,9 +60,9 @@ class SalesProductSheet implements FromArray, ShouldAutoSize, WithTitle, WithEve
 
         // Row 2
         $rows[] = [
-            'Periode: ' . Carbon::parse($this->startDate)->format('d/m/Y') . ' s/d ' . Carbon::parse($this->endDate)->format('d/m/Y')
-            . '     Metode: ' . ($this->paymentMethod ? strtoupper($this->paymentMethod) : 'SEMUA')
-            . '     Status: COMPLETED',
+            'Periode: '.Carbon::parse($this->startDate)->format('d/m/Y').' s/d '.Carbon::parse($this->endDate)->format('d/m/Y')
+            .'     Metode: '.($this->paymentMethod ? strtoupper($this->paymentMethod) : 'SEMUA')
+            .'     Status: COMPLETED',
             '', '', '', '', '', '',
         ];
 
@@ -149,7 +149,7 @@ class SalesProductSheet implements FromArray, ShouldAutoSize, WithTitle, WithEve
                 $sheet->mergeCells('A1:G1');
                 $sheet->mergeCells('A2:G2');
                 $sheet->mergeCells('A4:G4');
-                $sheet->mergeCells('A' . $totalRow . ':D' . $totalRow);
+                $sheet->mergeCells('A'.$totalRow.':D'.$totalRow);
 
                 /*
                 |--------------------------------------------------------------------------
@@ -262,7 +262,7 @@ class SalesProductSheet implements FromArray, ShouldAutoSize, WithTitle, WithEve
                 |--------------------------------------------------------------------------
                 */
                 if ($highestRow > 5) {
-                    $sheet->getStyle('A6:G' . $highestRow)->applyFromArray([
+                    $sheet->getStyle('A6:G'.$highestRow)->applyFromArray([
                         'borders' => [
                             'allBorders' => [
                                 'borderStyle' => Border::BORDER_THIN,
@@ -276,7 +276,7 @@ class SalesProductSheet implements FromArray, ShouldAutoSize, WithTitle, WithEve
 
                     for ($row = 6; $row <= $highestRow - 1; $row++) {
                         if ($row % 2 === 0) {
-                            $sheet->getStyle('A' . $row . ':G' . $row)->applyFromArray([
+                            $sheet->getStyle('A'.$row.':G'.$row)->applyFromArray([
                                 'fill' => [
                                     'fillType' => Fill::FILL_SOLID,
                                     'startColor' => ['rgb' => 'F2F2F2'],
@@ -285,23 +285,23 @@ class SalesProductSheet implements FromArray, ShouldAutoSize, WithTitle, WithEve
                         }
                     }
 
-                    $sheet->getStyle('A6:A' . $highestRow)
+                    $sheet->getStyle('A6:A'.$highestRow)
                         ->getAlignment()
                         ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                    $sheet->getStyle('E6:G' . $highestRow)
+                    $sheet->getStyle('E6:G'.$highestRow)
                         ->getAlignment()
                         ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-                    $sheet->getStyle('E6:E' . $highestRow)
+                    $sheet->getStyle('E6:E'.$highestRow)
                         ->getNumberFormat()
                         ->setFormatCode('#,##0');
 
-                    $sheet->getStyle('F6:F' . $highestRow)
+                    $sheet->getStyle('F6:F'.$highestRow)
                         ->getNumberFormat()
                         ->setFormatCode('"Rp" #,##0');
 
-                    $sheet->getStyle('G6:G' . $highestRow)
+                    $sheet->getStyle('G6:G'.$highestRow)
                         ->getNumberFormat()
                         ->setFormatCode('0.0%');
                 }
@@ -311,7 +311,7 @@ class SalesProductSheet implements FromArray, ShouldAutoSize, WithTitle, WithEve
                 | Total Row
                 |--------------------------------------------------------------------------
                 */
-                $sheet->getStyle('A' . $totalRow . ':G' . $totalRow)->applyFromArray([
+                $sheet->getStyle('A'.$totalRow.':G'.$totalRow)->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'color' => ['rgb' => $white],
@@ -332,15 +332,15 @@ class SalesProductSheet implements FromArray, ShouldAutoSize, WithTitle, WithEve
                     ],
                 ]);
 
-                $sheet->getStyle('E' . $totalRow)
+                $sheet->getStyle('E'.$totalRow)
                     ->getNumberFormat()
                     ->setFormatCode('#,##0');
 
-                $sheet->getStyle('F' . $totalRow)
+                $sheet->getStyle('F'.$totalRow)
                     ->getNumberFormat()
                     ->setFormatCode('"Rp" #,##0');
 
-                $sheet->getStyle('G' . $totalRow)
+                $sheet->getStyle('G'.$totalRow)
                     ->getNumberFormat()
                     ->setFormatCode('0.0%');
 
@@ -363,12 +363,12 @@ class SalesProductSheet implements FromArray, ShouldAutoSize, WithTitle, WithEve
                 |--------------------------------------------------------------------------
                 */
                 $sheet->freezePane('A6');
-                $sheet->setAutoFilter('A5:G' . ($highestRow - 1));
+                $sheet->setAutoFilter('A5:G'.($highestRow - 1));
 
                 $sheet->getPageSetup()->setFitToWidth(1);
                 $sheet->getPageSetup()->setFitToHeight(0);
 
-                $sheet->getStyle('A1:G' . $highestRow)
+                $sheet->getStyle('A1:G'.$highestRow)
                     ->getAlignment()
                     ->setWrapText(false);
             },

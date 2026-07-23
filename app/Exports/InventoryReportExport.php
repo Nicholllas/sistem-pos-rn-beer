@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class InventoryReportExport implements WithMultipleSheets
 {
     protected ?int $categoryId;
+
     protected ?string $status;
 
     public function __construct(?int $categoryId = null, ?string $status = null)

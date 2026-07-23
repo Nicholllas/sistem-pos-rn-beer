@@ -27,9 +27,9 @@ class InventoryController extends Controller
 
         $validated = $request->validate([
             'product_id' => ['required', Rule::exists('products', 'id')->where('is_active', true)->whereNull('deleted_at')],
-            'qty'        => ['required', 'integer', 'min:1'],
+            'qty' => ['required', 'integer', 'min:1'],
             'cost_price' => ['required', 'numeric', 'min:0'],
-            'note'       => ['nullable', 'string', 'max:1000'],
+            'note' => ['nullable', 'string', 'max:1000'],
         ]);
 
         DB::transaction(function () use ($validated) {
@@ -39,40 +39,40 @@ class InventoryController extends Controller
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $qty           = (int) $validated['qty'];
-            $costPrice     = (float) $validated['cost_price'];
+            $qty = (int) $validated['qty'];
+            $costPrice = (float) $validated['cost_price'];
             $previousStock = $product->stock;
-            $newStock      = $previousStock + $qty;
+            $newStock = $previousStock + $qty;
 
             $product->update([
-                'stock'                 => $newStock,
-                'cost_price'            => $costPrice,
+                'stock' => $newStock,
+                'cost_price' => $costPrice,
                 'last_stock_updated_by' => Auth::id(),
                 'last_stock_updated_at' => now(),
-                'updated_by'            => Auth::id(),
+                'updated_by' => Auth::id(),
             ]);
 
             $stockBatch = StockBatch::create([
-                'product_id'    => $product->id,
-                'source_type'   => 'stock_in',
-                'source_id'     => null,
-                'qty_in'        => $qty,
+                'product_id' => $product->id,
+                'source_type' => 'stock_in',
+                'source_id' => null,
+                'qty_in' => $qty,
                 'qty_remaining' => $qty,
-                'cost_price'    => $costPrice,
-                'batch_date'    => now()->toDateString(),
-                'created_by'    => Auth::id(),
+                'cost_price' => $costPrice,
+                'batch_date' => now()->toDateString(),
+                'created_by' => Auth::id(),
             ]);
 
             StockMovement::create([
-                'product_id'     => $product->id,
-                'type'           => 'in',
-                'qty'            => $qty,
+                'product_id' => $product->id,
+                'type' => 'in',
+                'qty' => $qty,
                 'previous_stock' => $previousStock,
-                'new_stock'      => $newStock,
-                'note'           => ($validated['note'] ?? 'Stok masuk manual')
-                    . ' | Batch FIFO #' . $stockBatch->id
-                    . ' | Modal: Rp ' . number_format($costPrice, 0, ',', '.'),
-                'created_by'     => Auth::id(),
+                'new_stock' => $newStock,
+                'note' => ($validated['note'] ?? 'Stok masuk manual')
+                    .' | Batch FIFO #'.$stockBatch->id
+                    .' | Modal: Rp '.number_format($costPrice, 0, ',', '.'),
+                'created_by' => Auth::id(),
             ]);
         });
 
@@ -91,9 +91,9 @@ class InventoryController extends Controller
         $request->merge(['note' => $this->normalizeNote($request->note)]);
 
         $validated = $request->validate([
-            'product_id'   => ['required', Rule::exists('products', 'id')->whereNull('deleted_at')->where('is_active', true)],
+            'product_id' => ['required', Rule::exists('products', 'id')->whereNull('deleted_at')->where('is_active', true)],
             'actual_stock' => ['required', 'integer', 'min:0'],
-            'note'         => ['required', 'string', 'max:1000'],
+            'note' => ['required', 'string', 'max:1000'],
         ]);
 
         $hasChanged = false;
@@ -106,8 +106,8 @@ class InventoryController extends Controller
                 ->firstOrFail();
 
             $previousStock = (int) $product->stock;
-            $newStock      = (int) $validated['actual_stock'];
-            $difference    = $newStock - $previousStock;
+            $newStock = (int) $validated['actual_stock'];
+            $difference = $newStock - $previousStock;
 
             if ($difference === 0) {
                 return;
@@ -116,46 +116,46 @@ class InventoryController extends Controller
             $hasChanged = true;
 
             if ($difference > 0) {
-                $costPrice  = (float) ($product->cost_price ?? 0);
+                $costPrice = (float) ($product->cost_price ?? 0);
                 $stockBatch = StockBatch::create([
-                    'product_id'    => $product->id,
-                    'source_type'   => 'adjustment',
-                    'source_id'     => null,
-                    'qty_in'        => $difference,
+                    'product_id' => $product->id,
+                    'source_type' => 'adjustment',
+                    'source_id' => null,
+                    'qty_in' => $difference,
                     'qty_remaining' => $difference,
-                    'cost_price'    => $costPrice,
-                    'batch_date'    => now()->toDateString(),
-                    'created_by'    => Auth::id(),
+                    'cost_price' => $costPrice,
+                    'batch_date' => now()->toDateString(),
+                    'created_by' => Auth::id(),
                 ]);
 
                 $movementNote = $validated['note']
-                    . ' | Penyesuaian stok tambah'
-                    . ' | Batch FIFO #' . $stockBatch->id
-                    . ' | Modal: Rp ' . number_format($costPrice, 0, ',', '.');
+                    .' | Penyesuaian stok tambah'
+                    .' | Batch FIFO #'.$stockBatch->id
+                    .' | Modal: Rp '.number_format($costPrice, 0, ',', '.');
             } else {
-                $usedBatches  = $this->reduceFifoBatchesForAdjustment($product, abs($difference));
-                $batchNotes   = collect($usedBatches)
-                    ->map(fn ($b) => 'Batch FIFO #' . $b['stock_batch_id'] . ' qty ' . $b['qty'])
+                $usedBatches = $this->reduceFifoBatchesForAdjustment($product, abs($difference));
+                $batchNotes = collect($usedBatches)
+                    ->map(fn ($b) => 'Batch FIFO #'.$b['stock_batch_id'].' qty '.$b['qty'])
                     ->implode(', ');
 
-                $movementNote = $validated['note'] . ' | Penyesuaian stok kurang | ' . $batchNotes;
+                $movementNote = $validated['note'].' | Penyesuaian stok kurang | '.$batchNotes;
             }
 
             $product->update([
-                'stock'                 => $newStock,
+                'stock' => $newStock,
                 'last_stock_updated_by' => Auth::id(),
                 'last_stock_updated_at' => now(),
-                'updated_by'            => Auth::id(),
+                'updated_by' => Auth::id(),
             ]);
 
             StockMovement::create([
-                'product_id'     => $product->id,
-                'type'           => 'adjustment',
-                'qty'            => $difference,
+                'product_id' => $product->id,
+                'type' => 'adjustment',
+                'qty' => $difference,
                 'previous_stock' => $previousStock,
-                'new_stock'      => $newStock,
-                'note'           => $movementNote,
-                'created_by'     => Auth::id(),
+                'new_stock' => $newStock,
+                'note' => $movementNote,
+                'created_by' => Auth::id(),
             ]);
         });
 
@@ -187,34 +187,34 @@ class InventoryController extends Controller
     public function batches(Request $request)
     {
         $validated = $request->validate([
-            'product_id'  => ['nullable', Rule::exists('products', 'id')->whereNull('deleted_at')],
+            'product_id' => ['nullable', Rule::exists('products', 'id')->whereNull('deleted_at')],
             'source_type' => ['nullable', Rule::in(['initial_stock', 'stock_in', 'purchase', 'adjustment', 'sale_void'])],
-            'status'      => ['nullable', Rule::in(['active', 'empty'])],
+            'status' => ['nullable', Rule::in(['active', 'empty'])],
         ]);
 
         $products = Product::with('category')->orderBy('name')->get();
 
         $sourceLabels = [
             'initial_stock' => 'Stok Awal',
-            'stock_in'      => 'Stok Masuk Manual',
-            'purchase'      => 'Pembelian Stok',
-            'adjustment'    => 'Penyesuaian Stok',
-            'sale_void'     => 'Void Penjualan',
+            'stock_in' => 'Stok Masuk Manual',
+            'purchase' => 'Pembelian Stok',
+            'adjustment' => 'Penyesuaian Stok',
+            'sale_void' => 'Void Penjualan',
         ];
 
         $query = StockBatch::with(['product.category', 'createdBy'])
-            ->when(!empty($validated['product_id']), fn ($q) => $q->where('product_id', $validated['product_id']))
-            ->when(!empty($validated['source_type']), fn ($q) => $q->where('source_type', $validated['source_type']))
-            ->when(!empty($validated['status']), function ($q) use ($validated) {
+            ->when(! empty($validated['product_id']), fn ($q) => $q->where('product_id', $validated['product_id']))
+            ->when(! empty($validated['source_type']), fn ($q) => $q->where('source_type', $validated['source_type']))
+            ->when(! empty($validated['status']), function ($q) use ($validated) {
                 $validated['status'] === 'active'
                     ? $q->where('qty_remaining', '>', 0)
                     : $q->where('qty_remaining', '<=', 0);
             });
 
-        $totalBatches        = (clone $query)->count();
-        $activeBatches       = (clone $query)->where('qty_remaining', '>', 0)->count();
-        $emptyBatches        = (clone $query)->where('qty_remaining', '<=', 0)->count();
-        $totalRemainingQty   = (clone $query)->sum('qty_remaining');
+        $totalBatches = (clone $query)->count();
+        $activeBatches = (clone $query)->where('qty_remaining', '>', 0)->count();
+        $emptyBatches = (clone $query)->where('qty_remaining', '<=', 0)->count();
+        $totalRemainingQty = (clone $query)->sum('qty_remaining');
         $totalRemainingValue = (clone $query)->selectRaw('COALESCE(SUM(qty_remaining * cost_price), 0) as total_value')->value('total_value');
 
         $batches = $query->orderByDesc('batch_date')->orderByDesc('id')->paginate(15)->withQueryString();
@@ -234,7 +234,7 @@ class InventoryController extends Controller
     private function reduceFifoBatchesForAdjustment(Product $product, int $qty): array
     {
         $remainingQty = $qty;
-        $usedBatches  = [];
+        $usedBatches = [];
 
         $batches = StockBatch::where('product_id', $product->id)
             ->where('qty_remaining', '>', 0)
@@ -254,9 +254,9 @@ class InventoryController extends Controller
 
             $usedBatches[] = [
                 'stock_batch_id' => $batch->id,
-                'qty'            => $takenQty,
-                'cost_price'     => (float) $batch->cost_price,
-                'subtotal_cost'  => $takenQty * (float) $batch->cost_price,
+                'qty' => $takenQty,
+                'cost_price' => (float) $batch->cost_price,
+                'subtotal_cost' => $takenQty * (float) $batch->cost_price,
             ];
 
             $remainingQty -= $takenQty;

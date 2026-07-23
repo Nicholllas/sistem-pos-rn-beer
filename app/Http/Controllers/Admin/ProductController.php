@@ -33,7 +33,7 @@ class ProductController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $this->validateProduct($request);
-        $sku       = $this->generateSku(
+        $sku = $this->generateSku(
             $validated['brand'],
             $validated['variant'],
             $validated['size'],
@@ -50,7 +50,7 @@ class ProductController extends Controller
 
         Product::create([
             ...$this->productFields($request, $validated, $sku),
-            'stock'      => 0,
+            'stock' => 0,
             'created_by' => Auth::id(),
             'updated_by' => Auth::id(),
         ]);
@@ -72,7 +72,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product): RedirectResponse
     {
         $validated = $this->validateProduct($request, $product);
-        $sku       = $this->generateSku(
+        $sku = $this->generateSku(
             $validated['brand'],
             $validated['variant'],
             $validated['size'],
@@ -145,9 +145,9 @@ class ProductController extends Controller
     private function validateProduct(Request $request, ?Product $product = null): array
     {
         $request->merge([
-            'brand'   => $this->normalizeText($request->brand),
+            'brand' => $this->normalizeText($request->brand),
             'variant' => $this->normalizeText($request->variant),
-            'unit'    => $this->normalizeText($request->unit),
+            'unit' => $this->normalizeText($request->unit),
             'barcode' => $this->normalizeText($request->barcode),
         ]);
 
@@ -158,17 +158,17 @@ class ProductController extends Controller
         }
 
         return $request->validate([
-            'category_id'   => ['required', Rule::exists('categories', 'id')->whereNull('deleted_at')],
-            'brand'         => ['required', 'string', 'max:100', 'regex:/^[A-Z0-9\s\-\.\+\/]+$/'],
-            'variant'       => ['required', 'string', 'max:150', 'regex:/^[A-Z0-9\s\-\.\+\/]+$/'],
-            'size'          => ['required', 'integer', 'min:1'],
-            'unit'          => ['required', 'string', 'max:20', 'regex:/^[A-Z]+$/'],
-            'barcode'       => ['nullable', 'string', 'max:255', 'regex:/^[A-Z0-9\-]+$/', $barcodeUnique],
-            'cost_price'    => ['required', 'numeric', 'min:0'],
-            'price'         => ['required', 'numeric', 'min:0', 'gte:cost_price'],
+            'category_id' => ['required', Rule::exists('categories', 'id')->whereNull('deleted_at')],
+            'brand' => ['required', 'string', 'max:100', 'regex:/^[A-Z0-9\s\-\.\+\/]+$/'],
+            'variant' => ['required', 'string', 'max:150', 'regex:/^[A-Z0-9\s\-\.\+\/]+$/'],
+            'size' => ['required', 'integer', 'min:1'],
+            'unit' => ['required', 'string', 'max:20', 'regex:/^[A-Z]+$/'],
+            'barcode' => ['nullable', 'string', 'max:255', 'regex:/^[A-Z0-9\-]+$/', $barcodeUnique],
+            'cost_price' => ['required', 'numeric', 'min:0'],
+            'price' => ['required', 'numeric', 'min:0', 'gte:cost_price'],
             'minimum_stock' => ['required', 'integer', 'min:0'],
-            'image'         => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'is_active'     => ['nullable', 'boolean'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'is_active' => ['nullable', 'boolean'],
         ], $this->validationMessages());
     }
 
@@ -189,35 +189,35 @@ class ProductController extends Controller
         }
 
         return [
-            'category_id'   => $validated['category_id'],
-            'brand'         => $validated['brand'],
-            'variant'       => $validated['variant'],
-            'size'          => $validated['size'],
-            'unit'          => $validated['unit'],
-            'name'          => $this->generateProductName(
+            'category_id' => $validated['category_id'],
+            'brand' => $validated['brand'],
+            'variant' => $validated['variant'],
+            'size' => $validated['size'],
+            'unit' => $validated['unit'],
+            'name' => $this->generateProductName(
                 $validated['brand'],
                 $validated['variant'],
                 $validated['size'],
                 $validated['unit']
             ),
-            'sku'           => $sku,
-            'barcode'       => $validated['barcode'] ?? null,
-            'cost_price'    => $validated['cost_price'],
-            'price'         => $validated['price'],
+            'sku' => $sku,
+            'barcode' => $validated['barcode'] ?? null,
+            'cost_price' => $validated['cost_price'],
+            'price' => $validated['price'],
             'minimum_stock' => $validated['minimum_stock'],
-            'image'         => $imagePath,
-            'is_active'     => $request->boolean('is_active'),
+            'image' => $imagePath,
+            'is_active' => $request->boolean('is_active'),
         ];
     }
 
     private function validationMessages(): array
     {
         return [
-            'brand.regex'   => 'Brand hanya boleh berisi huruf, angka, spasi, strip, titik, plus, dan garis miring.',
+            'brand.regex' => 'Brand hanya boleh berisi huruf, angka, spasi, strip, titik, plus, dan garis miring.',
             'variant.regex' => 'Variant hanya boleh berisi huruf, angka, spasi, strip, titik, plus, dan garis miring.',
-            'unit.regex'    => 'Satuan hanya boleh berisi huruf kapital.',
+            'unit.regex' => 'Satuan hanya boleh berisi huruf kapital.',
             'barcode.regex' => 'Barcode hanya boleh berisi huruf, angka, dan strip.',
-            'price.gte'     => 'Harga jual tidak boleh lebih kecil dari harga modal.',
+            'price.gte' => 'Harga jual tidak boleh lebih kecil dari harga modal.',
         ];
     }
 
@@ -243,8 +243,8 @@ class ProductController extends Controller
     private function generateSku(string $brand, string $variant, int $size, string $unit): string
     {
         return $this->firstLetters($brand)
-            . '-'
-            . $this->firstLetters($variant)
-            . "-{$size}{$unit}";
+            .'-'
+            .$this->firstLetters($variant)
+            ."-{$size}{$unit}";
     }
 }

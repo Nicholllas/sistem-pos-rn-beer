@@ -16,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class SalesDailySheet implements FromArray, ShouldAutoSize, WithTitle, WithEvents, WithColumnFormatting
+class SalesDailySheet implements FromArray, ShouldAutoSize, WithColumnFormatting, WithEvents, WithTitle
 {
     private int $detailHeaderRow = 10;
 
@@ -67,9 +67,9 @@ class SalesDailySheet implements FromArray, ShouldAutoSize, WithTitle, WithEvent
 
         // Row 2
         $rows[] = [
-            'Tanggal: ' . Carbon::parse($this->startDate)->format('d/m/Y') . ' s/d ' . Carbon::parse($this->endDate)->format('d/m/Y')
-            . '     Kasir: SEMUA'
-            . '     Shift: SEMUA',
+            'Tanggal: '.Carbon::parse($this->startDate)->format('d/m/Y').' s/d '.Carbon::parse($this->endDate)->format('d/m/Y')
+            .'     Kasir: SEMUA'
+            .'     Shift: SEMUA',
             '', '', '', '', '', '', '', '', '',
         ];
 
@@ -231,7 +231,7 @@ class SalesDailySheet implements FromArray, ShouldAutoSize, WithTitle, WithEvent
 
                 $sheet->mergeCells('A9:J9');
 
-                $sheet->mergeCells('A' . $totalRow . ':F' . $totalRow);
+                $sheet->mergeCells('A'.$totalRow.':F'.$totalRow);
 
                 /*
                 |--------------------------------------------------------------------------
@@ -437,7 +437,7 @@ class SalesDailySheet implements FromArray, ShouldAutoSize, WithTitle, WithEvent
                 |--------------------------------------------------------------------------
                 */
                 if ($highestRow > 10) {
-                    $sheet->getStyle('A11:J' . $highestRow)->applyFromArray([
+                    $sheet->getStyle('A11:J'.$highestRow)->applyFromArray([
                         'borders' => [
                             'allBorders' => [
                                 'borderStyle' => Border::BORDER_THIN,
@@ -451,7 +451,7 @@ class SalesDailySheet implements FromArray, ShouldAutoSize, WithTitle, WithEvent
 
                     for ($row = 11; $row <= $highestRow - 1; $row++) {
                         if ($row % 2 === 0) {
-                            $sheet->getStyle('A' . $row . ':J' . $row)->applyFromArray([
+                            $sheet->getStyle('A'.$row.':J'.$row)->applyFromArray([
                                 'fill' => [
                                     'fillType' => Fill::FILL_SOLID,
                                     'startColor' => ['rgb' => 'F2F2F2'],
@@ -460,15 +460,15 @@ class SalesDailySheet implements FromArray, ShouldAutoSize, WithTitle, WithEvent
                         }
                     }
 
-                    $sheet->getStyle('A11:C' . $highestRow)
+                    $sheet->getStyle('A11:C'.$highestRow)
                         ->getAlignment()
                         ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                    $sheet->getStyle('G11:J' . $highestRow)
+                    $sheet->getStyle('G11:J'.$highestRow)
                         ->getAlignment()
                         ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-                    $sheet->getStyle('H11:J' . $highestRow)
+                    $sheet->getStyle('H11:J'.$highestRow)
                         ->getNumberFormat()
                         ->setFormatCode('"Rp" #,##0');
                 }
@@ -478,7 +478,7 @@ class SalesDailySheet implements FromArray, ShouldAutoSize, WithTitle, WithEvent
                 | Total row
                 |--------------------------------------------------------------------------
                 */
-                $sheet->getStyle('A' . $totalRow . ':J' . $totalRow)->applyFromArray([
+                $sheet->getStyle('A'.$totalRow.':J'.$totalRow)->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'color' => ['rgb' => $white],
@@ -499,7 +499,7 @@ class SalesDailySheet implements FromArray, ShouldAutoSize, WithTitle, WithEvent
                     ],
                 ]);
 
-                $sheet->getStyle('I' . $totalRow . ':J' . $totalRow)
+                $sheet->getStyle('I'.$totalRow.':J'.$totalRow)
                     ->getNumberFormat()
                     ->setFormatCode('"Rp" #,##0');
 
@@ -525,12 +525,12 @@ class SalesDailySheet implements FromArray, ShouldAutoSize, WithTitle, WithEvent
                 |--------------------------------------------------------------------------
                 */
                 $sheet->freezePane('A11');
-                $sheet->setAutoFilter('A10:J' . ($highestRow - 1));
+                $sheet->setAutoFilter('A10:J'.($highestRow - 1));
 
                 $sheet->getPageSetup()->setFitToWidth(1);
                 $sheet->getPageSetup()->setFitToHeight(0);
 
-                $sheet->getStyle('A1:J' . $highestRow)
+                $sheet->getStyle('A1:J'.$highestRow)
                     ->getAlignment()
                     ->setWrapText(false);
             },

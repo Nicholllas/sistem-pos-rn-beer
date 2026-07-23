@@ -10,8 +10,11 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class PurchaseReportExport implements WithMultipleSheets
 {
     protected string $startDate;
+
     protected string $endDate;
+
     protected ?int $supplierId;
+
     protected ?string $status;
 
     public function __construct(string $startDate, string $endDate, ?int $supplierId = null, ?string $status = null)

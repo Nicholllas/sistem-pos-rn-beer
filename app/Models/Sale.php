@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\SalePayment;
 
 class Sale extends Model
 {
@@ -28,17 +28,17 @@ class Sale extends Model
         'voided_at' => 'datetime',
     ];
 
-    public function items()
+    public function items(): HasMany
     {
         return $this->hasMany(SaleItem::class);
     }
 
-    public function soldBy()
+    public function soldBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'sold_by');
     }
 
-    public function voidedBy()
+    public function voidedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'voided_by');
     }
