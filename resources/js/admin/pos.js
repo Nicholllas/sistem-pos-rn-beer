@@ -1,15 +1,47 @@
+import Swal from "sweetalert2";
+
 const cart = [];
+
+const PAYMENT_LABELS = {
+    cash: "Cash",
+    qris: "QRIS",
+    transfer: "Transfer",
+};
+
+const productSearch = document.getElementById("productSearch");
+const productSearchEmpty = document.getElementById("productSearchEmpty");
+const productCards = [...document.querySelectorAll(".product-card")];
+
+const cartItems = document.getElementById("cartItems");
+const cartHiddenInputs = document.getElementById("cartHiddenInputs");
+const paymentHiddenInputs = document.getElementById("paymentHiddenInputs");
+
+const grandTotalText = document.getElementById("grandTotalText");
+const changeText = document.getElementById("changeText");
+const changeSection = changeText?.closest(".pos-change-section");
+
+const checkoutForm = document.getElementById("checkoutForm");
+const checkoutButton = document.getElementById("checkoutButton");
+const paymentHint = document.getElementById("paymentHint");
+
+const paymentInputs = [...document.querySelectorAll(".payment-amount")];
+
+let isSubmitting = false;
+
+/* =========================================================
+   FORMATTER & HELPERS
+   ========================================================= */
 
 const rupiah = (number) => {
     return new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
         minimumFractionDigits: 0,
-    }).format(number);
+    }).format(Number(number) || 0);
 };
 
 const escapeHtml = (value) => {
-    return String(value)
+    return String(value ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -17,49 +49,153 @@ const escapeHtml = (value) => {
         .replaceAll("'", "&#039;");
 };
 
-const productSearch = document.getElementById("productSearch");
-const checkoutForm = document.getElementById("checkoutForm");
-const checkoutButton = document.getElementById("checkoutButton");
-const paymentHint = document.getElementById("paymentHint");
+const normalizeText = (value) => {
+    return String(value ?? "")
+        .trim()
+        .toLowerCase();
+};
 
-function getCartTotal() {
-    return cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+const parseAmount = (value) => {
+    const amount = Number.parseFloat(value);
+
+    if (!Number.isFinite(amount) || amount < 0) {
+        return 0;
+    }
+
+    return Math.floor(amount);
+};
+
+/* =========================================================
+   SWEETALERT HELPERS
+   ========================================================= */
+
+function showWarning(title, message) {
+    return Swal.fire({
+        icon: "warning",
+        title,
+        text: message,
+        confirmButtonText: "Mengerti",
+        focusConfirm: true,
+        customClass: {
+            popup: "pos-alert-popup",
+            confirmButton: "btn btn-primary px-4",
+        },
+        buttonsStyling: false,
+    });
 }
 
-function getPayments() {
-    const payments = [];
+function showError(title, message) {
+    return Swal.fire({
+        icon: "error",
+        title,
+        text: message,
+        confirmButtonText: "Tutup",
+        focusConfirm: true,
+        customClass: {
+            popup: "pos-alert-popup",
+            confirmButton: "btn btn-danger px-4",
+        },
+        buttonsStyling: false,
+    });
+}
 
-    document.querySelectorAll(".payment-amount").forEach((input) => {
-        const amount = parseFloat(input.value) || 0;
-        const method = input.dataset.method;
+/* =========================================================
+   CART DATA
+   ========================================================= */
 
-        if (amount > 0) {
-            payments.push({
-                payment_method: method,
-                amount: amount,
-            });
-        }
+function getCartTotal() {
+    return cart.reduce((total, item) => {
+        return total + item.qty * item.price;
+    }, 0);
+}
+
+function createProductFromButton(button) {
+    return {
+        id: Number.parseInt(button.dataset.id, 10),
+        name: button.dataset.name ?? "-",
+        price: Number.parseFloat(button.dataset.price) || 0,
+        stock: Number.parseInt(button.dataset.stock, 10) || 0,
+        qty: 1,
+    };
+}
+
+async function addProductToCart(button) {
+    if (!button) {
+        return;
+    }
+
+    const product = createProductFromButton(button);
+
+    if (!product.id || product.stock <= 0) {
+        await showWarning(
+            "Stok tidak tersedia",
+            "Produk ini tidak memiliki stok yang dapat dijual.",
+        );
+
+        return;
+    }
+
+    const existingItem = cart.find((item) => {
+        return item.id === product.id;
     });
 
-    return payments;
+    if (existingItem) {
+        if (existingItem.qty >= existingItem.stock) {
+            await showWarning(
+                "Stok tidak mencukupi",
+                `Jumlah ${product.name} tidak boleh melebihi stok tersedia sebanyak ${existingItem.stock}.`,
+            );
+
+            return;
+        }
+
+        existingItem.qty++;
+    } else {
+        cart.push(product);
+    }
+
+    renderCart();
+}
+
+/* =========================================================
+   PAYMENT DATA
+   ========================================================= */
+
+function getPayments() {
+    return paymentInputs
+        .map((input) => {
+            return {
+                payment_method: input.dataset.method,
+                amount: parseAmount(input.value),
+            };
+        })
+        .filter((payment) => {
+            return payment.amount > 0;
+        });
 }
 
 function getPaymentSummary() {
     const payments = getPayments();
 
-    const totalPaid = payments.reduce((sum, payment) => {
-        return sum + payment.amount;
+    const totalPaid = payments.reduce((total, payment) => {
+        return total + payment.amount;
     }, 0);
 
     const cashPaid = payments
-        .filter((payment) => payment.payment_method === "cash")
-        .reduce((sum, payment) => sum + payment.amount, 0);
+        .filter((payment) => {
+            return payment.payment_method === "cash";
+        })
+        .reduce((total, payment) => {
+            return total + payment.amount;
+        }, 0);
 
     const nonCashPaid = payments
-        .filter((payment) =>
-            ["qris", "transfer"].includes(payment.payment_method),
-        )
-        .reduce((sum, payment) => sum + payment.amount, 0);
+        .filter((payment) => {
+            return ["qris", "transfer"].includes(payment.payment_method);
+        })
+        .reduce((total, payment) => {
+            return total + payment.amount;
+        }, 0);
 
     return {
         payments,
@@ -69,211 +205,320 @@ function getPaymentSummary() {
     };
 }
 
+function resetPayments() {
+    paymentInputs.forEach((input) => {
+        input.value = 0;
+    });
+}
+
 function renderPaymentHiddenInputs() {
-    const paymentHiddenInputs = document.getElementById("paymentHiddenInputs");
+    if (!paymentHiddenInputs) {
+        return;
+    }
+
     const payments = getPayments();
 
-    paymentHiddenInputs.innerHTML = "";
+    paymentHiddenInputs.innerHTML = payments
+        .map((payment, index) => {
+            return `
+                <input
+                    type="hidden"
+                    name="payments[${index}][payment_method]"
+                    value="${escapeHtml(payment.payment_method)}"
+                >
 
-    payments.forEach((payment, index) => {
-        paymentHiddenInputs.innerHTML += `
-            <input type="hidden" name="payments[${index}][payment_method]" value="${payment.payment_method}">
-            <input type="hidden" name="payments[${index}][amount]" value="${payment.amount}">
-        `;
+                <input
+                    type="hidden"
+                    name="payments[${index}][amount]"
+                    value="${payment.amount}"
+                >
+            `;
+        })
+        .join("");
+}
+
+/* =========================================================
+   PAYMENT UI
+   ========================================================= */
+
+function setPaymentHint(status, message) {
+    if (!paymentHint) {
+        return;
+    }
+
+    paymentHint.className = `pos-payment-hint is-${status}`;
+    paymentHint.textContent = message;
+}
+
+function updatePaymentMethodBoxes() {
+    paymentInputs.forEach((input) => {
+        const paymentBox = input.closest(".payment-method-box");
+        const amount = parseAmount(input.value);
+
+        paymentBox?.classList.toggle("is-active", amount > 0);
     });
+}
+
+function updateCheckoutButton(isValid) {
+    if (!checkoutButton || isSubmitting) {
+        return;
+    }
+
+    checkoutButton.disabled = !isValid;
+
+    if (cart.length === 0) {
+        checkoutButton.textContent = "Keranjang Kosong";
+        return;
+    }
+
+    if (!isValid) {
+        checkoutButton.textContent = "Lengkapi Pembayaran";
+        return;
+    }
+
+    checkoutButton.textContent = "Proses Checkout";
 }
 
 function calculatePaymentInfo() {
     const total = getCartTotal();
+
     const { totalPaid, cashPaid, nonCashPaid } = getPaymentSummary();
 
-    const kurang = total - totalPaid;
-    const kembali = totalPaid - total;
+    const shortage = Math.max(total - totalPaid, 0);
+    const change = Math.max(totalPaid - total, 0);
 
-    document.getElementById("changeText").innerText = rupiah(
-        kembali > 0 ? kembali : 0,
-    );
+    if (changeText) {
+        changeText.textContent = rupiah(change);
+    }
+
+    changeSection?.classList.toggle("has-change", change > 0);
+
+    updatePaymentMethodBoxes();
+    renderPaymentHiddenInputs();
 
     if (total <= 0) {
-        paymentHint.className = "text-muted d-block mt-1";
-        paymentHint.innerText = "Masukkan nominal pembayaran.";
-        renderPaymentHiddenInputs();
-        return;
+        setPaymentHint(
+            "neutral",
+            "Tambahkan produk ke keranjang terlebih dahulu.",
+        );
+
+        updateCheckoutButton(false);
+
+        return false;
     }
 
     if (totalPaid <= 0) {
-        paymentHint.className = "text-danger d-block mt-1";
-        paymentHint.innerText = `Inputan masih kurang ${rupiah(total)} dari total yang harus dibayar pembeli.`;
-        renderPaymentHiddenInputs();
-        return;
-    }
+        setPaymentHint(
+            "danger",
+            `Masukkan pembayaran sebesar ${rupiah(total)}.`,
+        );
 
-    if (totalPaid < total) {
-        paymentHint.className = "text-danger d-block mt-1";
-        paymentHint.innerText = `Inputan masih kurang ${rupiah(kurang)} dari total yang harus dibayar pembeli.`;
-        renderPaymentHiddenInputs();
-        return;
+        updateCheckoutButton(false);
+
+        return false;
     }
 
     if (nonCashPaid > total) {
-        paymentHint.className = "text-danger d-block mt-1";
-        paymentHint.innerText =
-            "Total pembayaran QRIS/Transfer tidak boleh melebihi total transaksi.";
-        renderPaymentHiddenInputs();
-        return;
+        setPaymentHint(
+            "danger",
+            "Total pembayaran QRIS dan transfer tidak boleh melebihi total transaksi.",
+        );
+
+        updateCheckoutButton(false);
+
+        return false;
     }
 
-    if (kembali > 0 && cashPaid <= 0) {
-        paymentHint.className = "text-danger d-block mt-1";
-        paymentHint.innerText =
-            "Kelebihan pembayaran hanya diperbolehkan jika ada pembayaran cash.";
-        renderPaymentHiddenInputs();
-        return;
+    if (totalPaid < total) {
+        setPaymentHint(
+            "danger",
+            `Pembayaran masih kurang ${rupiah(shortage)}.`,
+        );
+
+        updateCheckoutButton(false);
+
+        return false;
     }
 
-    if (kembali > 0) {
-        paymentHint.className = "text-success d-block mt-1";
-        paymentHint.innerText = `Pembayaran cukup. Kembalian pembeli ${rupiah(kembali)}.`;
-        renderPaymentHiddenInputs();
-        return;
+    if (change > 0 && cashPaid <= 0) {
+        setPaymentHint(
+            "danger",
+            "Kelebihan pembayaran hanya diperbolehkan jika terdapat pembayaran cash.",
+        );
+
+        updateCheckoutButton(false);
+
+        return false;
     }
 
-    paymentHint.className = "text-success d-block mt-1";
-    paymentHint.innerText = "Pembayaran sudah sesuai dengan total transaksi.";
+    if (change > 0) {
+        setPaymentHint(
+            "success",
+            `Pembayaran cukup. Kembalian pelanggan ${rupiah(change)}.`,
+        );
 
-    renderPaymentHiddenInputs();
+        updateCheckoutButton(true);
+
+        return true;
+    }
+
+    setPaymentHint(
+        "success",
+        "Pembayaran sudah sesuai dengan total transaksi.",
+    );
+
+    updateCheckoutButton(true);
+
+    return true;
 }
 
-document.querySelectorAll(".add-to-cart").forEach((button) => {
-    button.addEventListener("click", function () {
-        const product = {
-            id: parseInt(this.dataset.id),
-            name: this.dataset.name,
-            price: parseFloat(this.dataset.price),
-            stock: parseInt(this.dataset.stock),
-            qty: 1,
-        };
-
-        const existing = cart.find((item) => item.id === product.id);
-
-        if (existing) {
-            if (existing.qty >= existing.stock) {
-                alert("Qty tidak boleh melebihi stok tersedia.");
-                return;
-            }
-
-            existing.qty++;
-        } else {
-            cart.push(product);
-        }
-
-        renderCart();
-    });
-});
+/* =========================================================
+   CART RENDER
+   ========================================================= */
 
 function renderCart() {
-    const cartItems = document.getElementById("cartItems");
-    const hiddenInputs = document.getElementById("cartHiddenInputs");
-
-    cartItems.innerHTML = "";
-    hiddenInputs.innerHTML = "";
+    if (!cartItems || !cartHiddenInputs) {
+        return;
+    }
 
     if (cart.length === 0) {
         cartItems.innerHTML = `
-            <p class="text-muted text-center mb-0">
-                Keranjang masih kosong.
-            </p>
-        `;
-    }
-
-    let grandTotal = 0;
-
-    cart.forEach((item, index) => {
-        const subtotal = item.qty * item.price;
-        grandTotal += subtotal;
-
-        cartItems.innerHTML += `
-            <div class="border rounded p-2 mb-2">
-                <div class="d-flex justify-content-between">
-                    <strong>${escapeHtml(item.name)}</strong>
-
-                    <button type="button"
-                            class="btn btn-danger btn-sm"
-                            data-action="remove"
-                            data-id="${item.id}">
-                        X
-                    </button>
+            <div class="pos-cart-empty">
+                <div class="pos-cart-empty-title">
+                    Keranjang masih kosong
                 </div>
 
-                <small>${rupiah(item.price)} x ${item.qty}</small>
-
-                <div class="mt-2 d-flex align-items-center gap-2">
-                    <button type="button"
-                            class="btn btn-secondary btn-sm"
-                            data-action="decrease"
-                            data-id="${item.id}">
-                        -
-                    </button>
-
-                    <span>${item.qty}</span>
-
-                    <button type="button"
-                            class="btn btn-secondary btn-sm"
-                            data-action="increase"
-                            data-id="${item.id}">
-                        +
-                    </button>
-
-                    <strong class="ms-auto">${rupiah(subtotal)}</strong>
-                </div>
+                <p>
+                    Pilih produk dari daftar untuk memulai transaksi.
+                </p>
             </div>
         `;
 
-        hiddenInputs.innerHTML += `
-            <input type="hidden" name="items[${index}][product_id]" value="${item.id}">
-            <input type="hidden" name="items[${index}][qty]" value="${item.qty}">
-        `;
-    });
+        cartHiddenInputs.innerHTML = "";
 
-    document.getElementById("grandTotalText").innerText = rupiah(grandTotal);
+        if (grandTotalText) {
+            grandTotalText.textContent = rupiah(0);
+        }
+
+        resetPayments();
+        calculatePaymentInfo();
+
+        return;
+    }
+
+    cartItems.innerHTML = cart
+        .map((item) => {
+            const subtotal = item.qty * item.price;
+
+            return `
+                <div class="pos-cart-item">
+                    <div class="pos-cart-item-header">
+                        <div class="pos-cart-item-info">
+                            <strong>
+                                ${escapeHtml(item.name)}
+                            </strong>
+
+                            <small>
+                                ${rupiah(item.price)} per item
+                            </small>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="pos-cart-remove"
+                            data-action="remove"
+                            data-id="${item.id}"
+                            aria-label="Hapus ${escapeHtml(item.name)}"
+                            title="Hapus produk"
+                        >
+                            &times;
+                        </button>
+                    </div>
+
+                    <div class="pos-cart-item-footer">
+                        <div class="pos-quantity-control">
+                            <button
+                                type="button"
+                                class="pos-quantity-button"
+                                data-action="decrease"
+                                data-id="${item.id}"
+                                aria-label="Kurangi jumlah"
+                            >
+                                &minus;
+                            </button>
+
+                            <span class="pos-quantity-value">
+                                ${item.qty}
+                            </span>
+
+                            <button
+                                type="button"
+                                class="pos-quantity-button"
+                                data-action="increase"
+                                data-id="${item.id}"
+                                aria-label="Tambah jumlah"
+                            >
+                                &plus;
+                            </button>
+                        </div>
+
+                        <div class="pos-cart-subtotal">
+                            <small>Subtotal</small>
+
+                            <strong>
+                                ${rupiah(subtotal)}
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+            `;
+        })
+        .join("");
+
+    cartHiddenInputs.innerHTML = cart
+        .map((item, index) => {
+            return `
+                <input
+                    type="hidden"
+                    name="items[${index}][product_id]"
+                    value="${item.id}"
+                >
+
+                <input
+                    type="hidden"
+                    name="items[${index}][qty]"
+                    value="${item.qty}"
+                >
+            `;
+        })
+        .join("");
+
+    if (grandTotalText) {
+        grandTotalText.textContent = rupiah(getCartTotal());
+    }
 
     calculatePaymentInfo();
 }
 
-document
-    .getElementById("cartItems")
-    .addEventListener("click", function (event) {
-        const button = event.target.closest("button");
+/* =========================================================
+   CART ACTIONS
+   ========================================================= */
 
-        if (!button) {
-            return;
-        }
-
-        const id = parseInt(button.dataset.id);
-        const action = button.dataset.action;
-
-        if (action === "increase") {
-            increaseQty(id);
-        }
-
-        if (action === "decrease") {
-            decreaseQty(id);
-        }
-
-        if (action === "remove") {
-            removeItem(id);
-        }
+async function increaseQty(id) {
+    const item = cart.find((cartItem) => {
+        return cartItem.id === id;
     });
-
-function increaseQty(id) {
-    const item = cart.find((item) => item.id === id);
 
     if (!item) {
         return;
     }
 
     if (item.qty >= item.stock) {
-        alert("Qty tidak boleh melebihi stok tersedia.");
+        await showWarning(
+            "Stok tidak mencukupi",
+            `Jumlah ${item.name} tidak boleh melebihi stok tersedia sebanyak ${item.stock}.`,
+        );
+
         return;
     }
 
@@ -282,7 +527,9 @@ function increaseQty(id) {
 }
 
 function decreaseQty(id) {
-    const item = cart.find((item) => item.id === id);
+    const item = cart.find((cartItem) => {
+        return cartItem.id === id;
+    });
 
     if (!item) {
         return;
@@ -299,90 +546,337 @@ function decreaseQty(id) {
 }
 
 function removeItem(id) {
-    const index = cart.findIndex((item) => item.id === id);
+    const index = cart.findIndex((item) => {
+        return item.id === id;
+    });
 
-    if (index !== -1) {
-        cart.splice(index, 1);
+    if (index === -1) {
+        return;
     }
 
+    cart.splice(index, 1);
     renderCart();
 }
 
-document.querySelectorAll(".payment-amount").forEach((input) => {
-    input.addEventListener("input", calculatePaymentInfo);
-});
+/* =========================================================
+   PRODUCT SEARCH
+   ========================================================= */
 
-if (checkoutForm) {
-    checkoutForm.addEventListener("submit", function (event) {
-        if (cart.length === 0) {
-            event.preventDefault();
-            alert("Keranjang masih kosong.");
-            return;
+function filterProducts() {
+    if (!productSearch) {
+        return [];
+    }
+
+    const keyword = normalizeText(productSearch.value);
+    const visibleCards = [];
+
+    productCards.forEach((card) => {
+        const name = normalizeText(card.dataset.name);
+        const sku = normalizeText(card.dataset.sku);
+        const barcode = normalizeText(card.dataset.barcode);
+
+        const isMatch =
+            keyword === "" ||
+            name.includes(keyword) ||
+            sku.includes(keyword) ||
+            barcode.includes(keyword);
+
+        card.classList.toggle("d-none", !isMatch);
+
+        if (isMatch) {
+            visibleCards.push(card);
         }
+    });
 
-        const total = getCartTotal();
-        const { payments, totalPaid, cashPaid, nonCashPaid } =
-            getPaymentSummary();
+    productSearchEmpty?.classList.toggle(
+        "d-none",
+        keyword === "" || visibleCards.length > 0,
+    );
 
-        if (payments.length === 0) {
-            event.preventDefault();
-            alert("Minimal satu metode pembayaran harus diisi.");
-            return;
-        }
+    return visibleCards;
+}
 
-        if (totalPaid < total) {
-            event.preventDefault();
-            alert(`Pembayaran masih kurang ${rupiah(total - totalPaid)}.`);
-            return;
-        }
+function resetProductSearch() {
+    if (!productSearch) {
+        return;
+    }
 
-        if (nonCashPaid > total) {
-            event.preventDefault();
-            alert(
-                "Total pembayaran QRIS/Transfer tidak boleh melebihi total transaksi.",
-            );
-            return;
-        }
+    productSearch.value = "";
+    filterProducts();
+    productSearch.focus();
+}
 
-        if (totalPaid > total && cashPaid <= 0) {
-            event.preventDefault();
-            alert(
-                "Kelebihan pembayaran hanya diperbolehkan jika ada pembayaran cash.",
-            );
-            return;
-        }
+async function addProductFromSearch() {
+    if (!productSearch) {
+        return;
+    }
 
-        renderPaymentHiddenInputs();
+    const keyword = normalizeText(productSearch.value);
 
-        const confirmCheckout = confirm(
-            `Total transaksi ${rupiah(total)}. Total bayar ${rupiah(totalPaid)}. Lanjut checkout?`,
+    if (keyword === "") {
+        return;
+    }
+
+    const exactMatch = productCards.find((card) => {
+        const sku = normalizeText(card.dataset.sku);
+        const barcode = normalizeText(card.dataset.barcode);
+
+        return sku === keyword || barcode === keyword;
+    });
+
+    const visibleCards = filterProducts();
+
+    const targetCard =
+        exactMatch ?? (visibleCards.length === 1 ? visibleCards[0] : null);
+
+    if (!targetCard) {
+        await showWarning(
+            "Produk belum dipilih",
+            "Gunakan SKU atau barcode yang tepat, atau pilih produk dari hasil pencarian.",
         );
 
-        if (!confirmCheckout) {
-            event.preventDefault();
-            return;
+        return;
+    }
+
+    const button = targetCard.querySelector(".add-to-cart");
+
+    await addProductToCart(button);
+    resetProductSearch();
+}
+
+/* =========================================================
+   EVENT LISTENERS
+   ========================================================= */
+
+document.querySelectorAll(".add-to-cart").forEach((button) => {
+    button.addEventListener("click", async function () {
+        await addProductToCart(this);
+    });
+});
+
+cartItems?.addEventListener("click", async function (event) {
+    const button = event.target.closest("[data-action]");
+
+    if (!button || !cartItems.contains(button)) {
+        return;
+    }
+
+    const id = Number.parseInt(button.dataset.id, 10);
+    const action = button.dataset.action;
+
+    if (!id) {
+        return;
+    }
+
+    switch (action) {
+        case "increase":
+            await increaseQty(id);
+            break;
+
+        case "decrease":
+            decreaseQty(id);
+            break;
+
+        case "remove":
+            removeItem(id);
+            break;
+    }
+});
+
+paymentInputs.forEach((input) => {
+    input.addEventListener("focus", function () {
+        if (parseAmount(this.value) === 0) {
+            this.select();
+        }
+    });
+
+    input.addEventListener("input", function () {
+        if (Number(this.value) < 0) {
+            this.value = 0;
         }
 
+        calculatePaymentInfo();
+    });
+
+    input.addEventListener("blur", function () {
+        if (this.value === "") {
+            this.value = 0;
+        }
+
+        calculatePaymentInfo();
+    });
+});
+
+productSearch?.addEventListener("input", filterProducts);
+
+productSearch?.addEventListener("keydown", async function (event) {
+    if (event.key !== "Enter") {
+        return;
+    }
+
+    event.preventDefault();
+
+    await addProductFromSearch();
+});
+
+/* =========================================================
+   CHECKOUT
+   ========================================================= */
+
+checkoutForm?.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    if (isSubmitting) {
+        return;
+    }
+
+    if (cart.length === 0) {
+        await showWarning(
+            "Keranjang masih kosong",
+            "Tambahkan minimal satu produk sebelum melakukan checkout.",
+        );
+
+        productSearch?.focus();
+
+        return;
+    }
+
+    const total = getCartTotal();
+
+    const { payments, totalPaid, cashPaid, nonCashPaid } = getPaymentSummary();
+
+    if (payments.length === 0) {
+        await showWarning(
+            "Pembayaran belum diisi",
+            "Minimal satu metode pembayaran harus diisi.",
+        );
+
+        paymentInputs[0]?.focus();
+
+        return;
+    }
+
+    if (nonCashPaid > total) {
+        await showError(
+            "Pembayaran tidak valid",
+            "Total pembayaran QRIS dan transfer tidak boleh melebihi total transaksi.",
+        );
+
+        return;
+    }
+
+    if (totalPaid < total) {
+        await showWarning(
+            "Pembayaran belum cukup",
+            `Pembayaran masih kurang ${rupiah(total - totalPaid)}.`,
+        );
+
+        return;
+    }
+
+    if (totalPaid > total && cashPaid <= 0) {
+        await showError(
+            "Kelebihan pembayaran tidak valid",
+            "Kelebihan pembayaran hanya diperbolehkan jika terdapat pembayaran cash.",
+        );
+
+        return;
+    }
+
+    renderPaymentHiddenInputs();
+
+    const paymentDetailsHtml = payments
+        .map((payment) => {
+            const label =
+                PAYMENT_LABELS[payment.payment_method] ??
+                payment.payment_method;
+
+            return `
+                <div class="pos-confirmation-row">
+                    <span>${escapeHtml(label)}</span>
+
+                    <strong>
+                        ${rupiah(payment.amount)}
+                    </strong>
+                </div>
+            `;
+        })
+        .join("");
+
+    const change = Math.max(totalPaid - total, 0);
+
+    const result = await Swal.fire({
+        icon: "question",
+        title: "Konfirmasi Checkout",
+        html: `
+            <div class="pos-confirmation">
+                <div class="pos-confirmation-row">
+                    <span>Total transaksi</span>
+
+                    <strong>
+                        ${rupiah(total)}
+                    </strong>
+                </div>
+
+                <div class="pos-confirmation-divider"></div>
+
+                <div class="pos-confirmation-label">
+                    Rincian pembayaran
+                </div>
+
+                ${paymentDetailsHtml}
+
+                <div class="pos-confirmation-divider"></div>
+
+                <div class="pos-confirmation-row">
+                    <span>Total pembayaran</span>
+
+                    <strong>
+                        ${rupiah(totalPaid)}
+                    </strong>
+                </div>
+
+                <div class="pos-confirmation-row pos-confirmation-change">
+                    <span>Kembalian</span>
+
+                    <strong>
+                        ${rupiah(change)}
+                    </strong>
+                </div>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Ya, Proses Checkout",
+        cancelButtonText: "Periksa Kembali",
+        reverseButtons: true,
+        focusCancel: true,
+        allowOutsideClick: false,
+        customClass: {
+            popup: "pos-alert-popup",
+            confirmButton: "btn btn-success px-4",
+            cancelButton: "btn btn-outline-secondary px-4",
+        },
+        buttonsStyling: false,
+    });
+
+    if (!result.isConfirmed) {
+        return;
+    }
+
+    isSubmitting = true;
+
+    if (checkoutButton) {
         checkoutButton.disabled = true;
-        checkoutButton.innerText = "Memproses transaksi...";
-    });
-}
+        checkoutButton.textContent = "Memproses transaksi...";
+    }
 
-if (productSearch) {
-    productSearch.addEventListener("input", function () {
-        const keyword = this.value.toUpperCase();
+    checkoutForm.submit();
+});
 
-        document.querySelectorAll(".product-card").forEach((card) => {
-            const name = card.dataset.name || "";
-            const sku = card.dataset.sku || "";
-            const barcode = card.dataset.barcode || "";
+/* =========================================================
+   INITIAL STATE
+   ========================================================= */
 
-            const isMatch =
-                name.includes(keyword) ||
-                sku.includes(keyword) ||
-                barcode.includes(keyword);
-
-            card.style.display = isMatch ? "" : "none";
-        });
-    });
-}
+filterProducts();
+renderCart();
+productSearch?.focus();
