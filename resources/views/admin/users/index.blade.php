@@ -2,214 +2,294 @@
 
 @section('title', 'Manajemen User')
 @section('page-title', 'Manajemen User')
+@section('page-subtitle', 'Kelola akun, hak akses, status login, dan password pengguna.')
+
+@section('page-actions')
+    <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+        Tambah User
+    </a>
+@endsection
 
 @section('content')
+    @php
+        $authenticatedUserId = auth()->id();
+    @endphp
 
-    <div class="card">
-        <div class="card-header d-flex align-items-center justify-content-between">
-            <h3 class="card-title mb-0">
-                Daftar User
-            </h3>
-        @section('page-actions')
-            <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">
-                + Tambah User
-            </a>
-        @endsection
+    <div class="crud-page">
+        <section class="crud-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Daftar User</h2>
+
+                    <p>
+                        Total {{ number_format($users->total(), 0, ',', '.') }}
+                        akun terdaftar dalam sistem.
+                    </p>
+                </div>
+
+                <span class="crud-count-badge">
+                    {{ $users->total() }} user
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table crud-table user-crud-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Dibuat Pada</th>
+                            <th>Terakhir Diubah</th>
+                            <th class="text-end">Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse ($users as $user)
+                            @php
+                                $isCurrentUser = $user->id === $authenticatedUserId;
+
+                                $initials = collect(preg_split('/\s+/', trim($user->name)))
+                                    ->filter()
+                                    ->take(2)
+                                    ->map(fn($word) => strtoupper(substr($word, 0, 1)))
+                                    ->implode('');
+                            @endphp
+
+                            <tr>
+                                <td>
+                                    <div class="user-record-cell">
+                                        <span class="user-record-avatar">
+                                            {{ $initials ?: 'U' }}
+                                        </span>
+
+                                        <div class="user-record-info">
+                                            <div class="user-record-name">
+                                                <strong>{{ $user->name }}</strong>
+
+                                                @if ($isCurrentUser)
+                                                    <span class="user-self-badge">
+                                                        Akun Saya
+                                                    </span>
+                                                @endif
+                                            </div>
+
+                                            <span>{{ $user->email }}</span>
+
+                                            <small>
+                                                ID #{{ $user->id }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span
+                                        class="user-role-badge
+                                            {{ $user->role === 'admin' ? 'is-admin' : 'is-cashier' }}">
+                                        {{ $user->role === 'admin' ? 'Administrator' : 'Kasir' }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span
+                                        class="crud-status
+                                            {{ $user->is_active ? 'is-success' : 'is-muted' }}">
+                                        {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="crud-audit-cell">
+                                        <strong>
+                                            {{ $user->created_at?->format('d M Y') ?? '-' }}
+                                        </strong>
+
+                                        <small>
+                                            {{ $user->created_at?->format('H:i') ?? '-' }}
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="crud-audit-cell">
+                                        <strong>
+                                            {{ $user->updated_at?->format('d M Y') ?? '-' }}
+                                        </strong>
+
+                                        <small>
+                                            {{ $user->updated_at?->format('H:i') ?? '-' }}
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="crud-actions">
+                                        <a href="{{ route('admin.users.edit', $user) }}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            Edit
+                                        </a>
+
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            data-bs-toggle="modal" data-bs-target="#resetPasswordModal"
+                                            data-reset-password-url="{{ route('admin.users.reset-password', $user) }}"
+                                            data-user-name="{{ $user->name }}" data-user-email="{{ $user->email }}">
+                                            Reset Password
+                                        </button>
+
+                                        @if (!$isCurrentUser)
+                                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
+                                                class="js-confirm-action" data-confirm-icon="warning"
+                                                data-confirm-title="Hapus user?"
+                                                data-confirm-message="Akun {{ $user->name }} akan dihapus dan tidak dapat digunakan untuk login."
+                                                data-confirm-button="Ya, Hapus" data-confirm-class="btn btn-danger px-4">
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="user-protected-badge"
+                                                title="Akun yang sedang digunakan tidak dapat dihapus">
+                                                Dilindungi
+                                            </span>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6">
+                                    <div class="crud-empty-state">
+                                        <span class="crud-empty-avatar">
+                                            U
+                                        </span>
+
+                                        <strong>Belum ada user</strong>
+
+                                        <p>
+                                            Tambahkan akun administrator atau kasir
+                                            agar dapat mengakses sistem.
+                                        </p>
+
+                                        <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">
+                                            Tambah User
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if ($users->hasPages())
+                <div class="crud-pagination">
+                    <span>
+                        Menampilkan {{ $users->firstItem() }}
+                        sampai {{ $users->lastItem() }}
+                        dari {{ $users->total() }} user
+                    </span>
+
+                    {{ $users->links() }}
+                </div>
+            @endif
+        </section>
     </div>
 
-    <div class="card-body">
+    {{-- Satu modal digunakan untuk seluruh user --}}
+    <div class="modal fade crud-modal" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form action="#" method="POST" class="modal-content js-submit-form" id="resetPasswordForm">
+                @csrf
+                @method('PUT')
 
-        @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Terjadi kesalahan.</strong>
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title" id="resetPasswordModalLabel">
+                            Reset Password
+                        </h5>
 
-                <ul class="mb-0 mt-2">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+                        <p>
+                            Buat password baru untuk akun yang dipilih.
+                        </p>
+                    </div>
 
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
 
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th style="width: 60px;" class="text-center">No</th>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th class="text-center">Role</th>
-                        <th class="text-center">Status</th>
-                        <th>Dibuat</th>
-                        <th style="width: 160px;" class="text-center">Aksi</th>
-                    </tr>
-                </thead>
+                <div class="modal-body">
+                    <div class="user-reset-target">
+                        <span class="user-record-avatar" id="resetUserAvatar">
+                            U
+                        </span>
 
-                <tbody>
-                    @forelse ($users as $user)
-                        <tr>
-                            <td class="text-center">
-                                {{ $users->firstItem() + $loop->index }}
-                            </td>
+                        <div>
+                            <strong id="resetUserName">
+                                User
+                            </strong>
 
-                            <td>
-                                <strong>{{ $user->name }}</strong>
+                            <small id="resetUserEmail">
+                                -
+                            </small>
+                        </div>
+                    </div>
 
-                                @if ($user->id === auth()->id())
-                                    <span class="badge bg-info ms-1">
-                                        Akun Saya
-                                    </span>
-                                @endif
-                            </td>
+                    <div class="mb-3">
+                        <label for="resetPassword" class="form-label">
+                            Password Baru
+                            <span class="crud-required">*</span>
+                        </label>
 
-                            <td>
-                                {{ $user->email }}
-                            </td>
+                        <div class="crud-password-field">
+                            <input type="password" name="password" id="resetPassword" class="form-control crud-form-control"
+                                required minlength="8" autocomplete="new-password">
 
-                            <td class="text-center">
-                                @if ($user->role === 'admin')
-                                    <span class="badge bg-primary">
-                                        Admin
-                                    </span>
-                                @elseif ($user->role === 'cashier')
-                                    <span class="badge bg-success">
-                                        Cashier
-                                    </span>
-                                @else
-                                    <span class="badge bg-secondary">
-                                        {{ $user->role }}
-                                    </span>
-                                @endif
-                            </td>
+                            <button type="button" class="crud-password-toggle" data-password-toggle="resetPassword">
+                                Lihat
+                            </button>
+                        </div>
+                    </div>
 
-                            <td class="text-center">
-                                @if ($user->is_active)
-                                    <span class="badge bg-success">
-                                        Aktif
-                                    </span>
-                                @else
-                                    <span class="badge bg-danger">
-                                        Nonaktif
-                                    </span>
-                                @endif
-                            </td>
+                    <div>
+                        <label for="resetPasswordConfirmation" class="form-label">
+                            Konfirmasi Password
+                            <span class="crud-required">*</span>
+                        </label>
 
-                            <td>
-                                {{ $user->created_at?->format('d/m/Y H:i') ?? '-' }}
-                            </td>
+                        <div class="crud-password-field">
+                            <input type="password" name="password_confirmation" id="resetPasswordConfirmation"
+                                class="form-control crud-form-control" required minlength="8" autocomplete="new-password"
+                                data-password-confirmation-for="resetPassword"
+                                data-password-match-target="resetPasswordMatch">
 
-                            <td>
-                                <div class="d-grid gap-1">
-                                    <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-warning btn-sm">
-                                        Edit
-                                    </a>
+                            <button type="button" class="crud-password-toggle"
+                                data-password-toggle="resetPasswordConfirmation">
+                                Lihat
+                            </button>
+                        </div>
 
-                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#resetPasswordModal{{ $user->id }}">
-                                        Reset Password
-                                    </button>
-
-                                    @if ($user->id !== auth()->id())
-                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
-                                            onsubmit="return confirm('Yakin ingin menghapus user ini?')">
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <button type="submit" class="btn btn-danger btn-sm w-100">
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
-                                Belum ada user.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            {{-- Reset Password Modal --}}
-            @foreach ($users as $user)
-                {{-- Reset Password Modal --}}
-                <div class="modal fade" id="resetPasswordModal{{ $user->id }}" tabindex="-1"
-                    aria-labelledby="resetPasswordModalLabel{{ $user->id }}" aria-hidden="true">
-
-                    <div class="modal-dialog modal-dialog-centered">
-                        <form action="{{ route('admin.users.reset-password', $user) }}" method="POST"
-                            class="modal-content">
-                            @csrf
-                            @method('PUT')
-
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="resetPasswordModalLabel{{ $user->id }}">
-                                    Reset Password User
-                                </h5>
-
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-
-                            <div class="modal-body">
-                                <p class="mb-3">
-                                    Reset password untuk:
-                                    <br>
-                                    <strong>{{ $user->name }}</strong>
-                                    <br>
-                                    <small class="text-muted">{{ $user->email }}</small>
-                                </p>
-
-                                <div class="mb-3">
-                                    <label for="password{{ $user->id }}" class="form-label">
-                                        Password Baru
-                                    </label>
-
-                                    <input type="password" name="password" id="password{{ $user->id }}"
-                                        class="form-control" required minlength="8">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="password_confirmation{{ $user->id }}" class="form-label">
-                                        Konfirmasi Password Baru
-                                    </label>
-
-                                    <input type="password" name="password_confirmation"
-                                        id="password_confirmation{{ $user->id }}" class="form-control" required
-                                        minlength="8">
-                                </div>
-
-                                <small class="text-muted">
-                                    Minimal password 8 karakter.
-                                </small>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    Batal
-                                </button>
-
-                                <button type="submit" class="btn btn-primary">
-                                    Simpan Password
-                                </button>
-                            </div>
-                        </form>
+                        <small class="crud-password-match" id="resetPasswordMatch">
+                            Minimal 8 karakter.
+                        </small>
                     </div>
                 </div>
-            @endforeach
-        </div>
 
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+
+                    <button type="submit" class="btn btn-primary js-submit-button"
+                        data-loading-text="Menyimpan password...">
+                        Simpan Password
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    @if ($users->hasPages())
-        <div class="card-footer">
-            {{ $users->links() }}
-        </div>
-    @endif
-</div>
-
 @endsection

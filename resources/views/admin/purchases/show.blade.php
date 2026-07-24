@@ -2,256 +2,388 @@
 
 @section('title', 'Detail Pembelian')
 @section('page-title', 'Detail Pembelian')
+@section('page-subtitle', 'Periksa informasi supplier, item, batch FIFO, dan status pembelian.')
+
+@section('page-actions')
+    <a href="{{ route('admin.purchases.index') }}" class="btn btn-outline-secondary">
+        Kembali
+    </a>
+
+    @if ($purchase->status === 'completed')
+        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#voidPurchaseModal">
+            Void Pembelian
+        </button>
+    @endif
+@endsection
 
 @section('content')
+    @php
+        $isVoid = $purchase->status === 'void';
+        $totalQty = $purchase->items->sum('qty');
+    @endphp
 
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card mb-3">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <h3 class="card-title mb-0">
-                        Detail Pembelian
-                    </h3>
+    <div class="crud-page purchase-detail-page">
+        <section class="purchase-detail-hero {{ $isVoid ? 'is-void' : '' }}">
+            <div class="purchase-detail-primary">
+                <span class="purchase-detail-eyebrow">
+                    Nomor Pembelian
+                </span>
 
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('admin.purchases.index') }}" class="btn btn-secondary btn-sm">
-                            Kembali
-                        </a>
+                <h2>{{ $purchase->purchase_number }}</h2>
 
-                        @if ($purchase->status === 'completed')
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#voidPurchaseModal">
-                                Void Pembelian
-                            </button>
-                        @endif
-                    </div>
+                <p>
+                    {{ $purchase->supplier?->name ?? 'Supplier tidak ditemukan' }}
+                    ·
+                    {{ $purchase->purchase_date?->format('d F Y') ?? '-' }}
+                </p>
+            </div>
+
+            <div class="purchase-detail-total">
+                <span>Total Pembelian</span>
+
+                <strong>
+                    Rp {{ number_format($purchase->total, 0, ',', '.') }}
+                </strong>
+
+                @if ($purchase->status === 'completed')
+                    <span class="crud-status is-success">
+                        Selesai
+                    </span>
+                @else
+                    <span class="crud-status is-danger">
+                        Void
+                    </span>
+                @endif
+            </div>
+        </section>
+
+        @if ($isVoid)
+            <div class="purchase-void-notice">
+                <span>!</span>
+
+                <div>
+                    <strong>Pembelian telah dibatalkan</strong>
+
+                    <p>
+                        Stok dari transaksi ini telah dikurangi kembali sesuai
+                        proses void pembelian.
+                    </p>
                 </div>
+            </div>
+        @endif
 
-                <div class="card-body">
-                    @if ($purchase->status === 'void')
-                        <div class="alert alert-danger">
-                            <strong>VOID</strong>
-                            <br>
-                            Pembelian ini sudah dibatalkan.
-                        </div>
-                    @endif
+        <div class="purchase-detail-grid">
+            <div class="purchase-detail-main">
+                <section class="crud-panel">
+                    <div class="crud-panel-header">
+                        <div>
+                            <h2>Informasi Pembelian</h2>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <table class="table table-sm table-borderless mb-0">
-                                <tr>
-                                    <th style="width: 160px;">No. Pembelian</th>
-                                    <td>: {{ $purchase->purchase_number }}</td>
-                                </tr>
-
-                                <tr>
-                                    <th>Supplier</th>
-                                    <td>: {{ $purchase->supplier?->name ?? '-' }}</td>
-                                </tr>
-
-                                <tr>
-                                    <th>Tanggal</th>
-                                    <td>: {{ $purchase->purchase_date?->format('d/m/Y') ?? '-' }}</td>
-                                </tr>
-
-                                <tr>
-                                    <th>Status</th>
-                                    <td>
-                                        :
-                                        @if ($purchase->status === 'completed')
-                                            <span class="badge bg-success">COMPLETED</span>
-                                        @else
-                                            <span class="badge bg-danger">VOID</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <div class="col-md-6">
-                            <table class="table table-sm table-borderless mb-0">
-                                <tr>
-                                    <th style="width: 160px;">Diinput Oleh</th>
-                                    <td>: {{ $purchase->createdBy?->name ?? '-' }}</td>
-                                </tr>
-
-                                <tr>
-                                    <th>Diinput Pada</th>
-                                    <td>: {{ $purchase->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
-                                </tr>
-
-                                <tr>
-                                    <th>Catatan</th>
-                                    <td>: {{ $purchase->note ?? '-' }}</td>
-                                </tr>
-
-                                <tr>
-                                    <th>Total</th>
-                                    <td>
-                                        :
-                                        <strong>
-                                            Rp {{ number_format($purchase->total, 0, ',', '.') }}
-                                        </strong>
-                                    </td>
-                                </tr>
-                            </table>
+                            <p>
+                                Ringkasan transaksi dan audit pencatatan.
+                            </p>
                         </div>
                     </div>
 
-                    @if ($purchase->status === 'void')
-                        <hr>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <strong>Void Oleh</strong>
-                                <br>
-                                {{ $purchase->voidedBy?->name ?? '-' }}
-                            </div>
-
-                            <div class="col-md-6">
-                                <strong>Void Pada</strong>
-                                <br>
-                                {{ $purchase->voided_at?->format('d/m/Y H:i') ?? '-' }}
-                            </div>
-
-                            <div class="col-12 mt-2">
-                                <strong>Alasan Void</strong>
-                                <br>
-                                {{ $purchase->void_reason ?? '-' }}
-                            </div>
+                    <div class="purchase-information-grid">
+                        <div>
+                            <span>Supplier</span>
+                            <strong>
+                                {{ $purchase->supplier?->name ?? '-' }}
+                            </strong>
                         </div>
-                    @endif
 
-                    <hr>
+                        <div>
+                            <span>Tanggal Pembelian</span>
+                            <strong>
+                                {{ $purchase->purchase_date?->format('d M Y') ?? '-' }}
+                            </strong>
+                        </div>
 
-                    <h5 class="mb-3">
-                        Item Pembelian
-                    </h5>
+                        <div>
+                            <span>Diinput Oleh</span>
+                            <strong>
+                                {{ $purchase->createdBy?->name ?? '-' }}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Diinput Pada</span>
+                            <strong>
+                                {{ $purchase->created_at?->format('d M Y H:i') ?? '-' }}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Jumlah Jenis Produk</span>
+                            <strong>
+                                {{ $purchase->items->count() }} produk
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Total Qty</span>
+                            <strong>
+                                {{ number_format($totalQty, 0, ',', '.') }} unit
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="purchase-note-box">
+                        <span>Catatan Pembelian</span>
+
+                        <p>
+                            {{ $purchase->note ?: 'Tidak ada catatan pembelian.' }}
+                        </p>
+                    </div>
+                </section>
+
+                <section class="crud-panel purchase-detail-items">
+                    <div class="crud-panel-header">
+                        <div>
+                            <h2>Item Pembelian</h2>
+
+                            <p>
+                                Produk dan harga modal yang membentuk batch FIFO.
+                            </p>
+                        </div>
+
+                        <span class="crud-count-badge">
+                            {{ $purchase->items->count() }} produk
+                        </span>
+                    </div>
 
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover align-middle mb-0">
+                        <table class="table crud-table purchase-detail-table align-middle mb-0">
                             <thead>
                                 <tr>
-                                    <th style="width: 60px;" class="text-center">No</th>
                                     <th>Produk</th>
                                     <th>Kategori</th>
-                                    <th class="text-center">Qty</th>
-                                    <th class="text-end">Harga Modal</th>
-                                    <th class="text-end">Subtotal</th>
+                                    <th>Qty</th>
+                                    <th>Harga Modal</th>
+                                    <th>Subtotal</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 @foreach ($purchase->items as $item)
                                     <tr>
-                                        <td class="text-center">
-                                            {{ $loop->iteration }}
+                                        <td>
+                                            <div class="purchase-product-cell">
+                                                <span class="purchase-product-number">
+                                                    {{ $loop->iteration }}
+                                                </span>
+
+                                                <div>
+                                                    <strong>
+                                                        {{ $item->product?->name ?? '-' }}
+                                                    </strong>
+
+                                                    <small>
+                                                        SKU {{ $item->product?->sku ?? '-' }}
+                                                    </small>
+                                                </div>
+                                            </div>
                                         </td>
 
                                         <td>
-                                            <strong>{{ $item->product?->name ?? '-' }}</strong>
-                                            <br>
-                                            <small class="text-muted">
-                                                SKU: {{ $item->product?->sku ?? '-' }}
-                                            </small>
+                                            <span class="crud-neutral-badge">
+                                                {{ $item->product?->category?->name ?? '-' }}
+                                            </span>
                                         </td>
 
                                         <td>
-                                            {{ $item->product?->category?->name ?? '-' }}
+                                            <strong>
+                                                {{ number_format($item->qty, 0, ',', '.') }}
+                                            </strong>
                                         </td>
 
-                                        <td class="text-center">
-                                            {{ $item->qty }}
-                                        </td>
-
-                                        <td class="text-end text-nowrap">
+                                        <td>
                                             Rp {{ number_format($item->cost_price, 0, ',', '.') }}
                                         </td>
 
-                                        <td class="text-end text-nowrap">
-                                            Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                        <td>
+                                            <strong>
+                                                Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                            </strong>
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
 
                             <tfoot>
-                                <tr class="fw-bold">
-                                    <th colspan="5" class="text-end">
-                                        TOTAL
+                                <tr>
+                                    <th colspan="4">
+                                        Total Pembelian
                                     </th>
 
-                                    <th class="text-end text-nowrap">
+                                    <th>
                                         Rp {{ number_format($purchase->total, 0, ',', '.') }}
                                     </th>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
-                </div>
+                </section>
+
+                @if ($isVoid)
+                    <section class="crud-panel purchase-void-detail-panel">
+                        <div class="crud-panel-header">
+                            <div>
+                                <h2>Informasi Void</h2>
+
+                                <p>
+                                    Audit pembatalan transaksi pembelian.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="purchase-information-grid">
+                            <div>
+                                <span>Void Oleh</span>
+
+                                <strong>
+                                    {{ $purchase->voidedBy?->name ?? '-' }}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>Void Pada</span>
+
+                                <strong>
+                                    {{ $purchase->voided_at?->format('d M Y H:i') ?? '-' }}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div class="purchase-note-box is-danger">
+                            <span>Alasan Void</span>
+
+                            <p>
+                                {{ $purchase->void_reason ?? '-' }}
+                            </p>
+                        </div>
+                    </section>
+                @endif
             </div>
-        </div>
 
-        <div class="col-lg-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h3 class="card-title mb-0">
-                        Informasi FIFO
-                    </h3>
-                </div>
+            <aside class="purchase-detail-sidebar">
+                <section class="purchase-fifo-panel">
+                    <span class="purchase-fifo-label">
+                        FIFO
+                    </span>
 
-                <div class="card-body">
-                    <p class="mb-2">
-                        Setiap item pembelian membuat batch FIFO baru.
+                    <h3>Informasi Batch</h3>
+
+                    <p>
+                        Setiap item pembelian membuat batch FIFO baru
+                        berdasarkan tanggal dan harga modal pembelian.
                     </p>
 
-                    <ul class="mb-0">
-                        <li>Batch dipakai saat penjualan.</li>
-                        <li>Harga modal transaksi mengikuti batch.</li>
-                        <li>Pembelian hanya bisa di-void jika batch belum terjual.</li>
-                    </ul>
-                </div>
-            </div>
+                    <div class="purchase-fifo-list">
+                        <div>
+                            <span>01</span>
 
-            @if ($purchase->status === 'completed')
-                <div class="alert alert-warning">
-                    Void pembelian akan mengurangi stok kembali.
-                    Jika batch sudah pernah terjual, void akan ditolak sistem.
-                </div>
-            @endif
+                            <p>
+                                Batch paling lama akan digunakan terlebih dahulu
+                                pada transaksi penjualan.
+                            </p>
+                        </div>
+
+                        <div>
+                            <span>02</span>
+
+                            <p>
+                                HPP transaksi mengikuti cost price batch yang
+                                dikonsumsi.
+                            </p>
+                        </div>
+
+                        <div>
+                            <span>03</span>
+
+                            <p>
+                                Void hanya dapat dilakukan apabila batch belum
+                                pernah digunakan.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                @if ($purchase->status === 'completed')
+                    <section class="purchase-danger-panel">
+                        <strong>Sebelum melakukan void</strong>
+
+                        <p>
+                            Sistem akan mengurangi stok kembali. Proses akan
+                            ditolak jika salah satu batch sudah pernah terjual.
+                        </p>
+
+                        <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal"
+                            data-bs-target="#voidPurchaseModal">
+                            Void Pembelian
+                        </button>
+                    </section>
+                @endif
+            </aside>
         </div>
     </div>
 
     @if ($purchase->status === 'completed')
-        <div class="modal fade" id="voidPurchaseModal" tabindex="-1" aria-labelledby="voidPurchaseModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <form action="{{ route('admin.purchases.void', $purchase) }}" method="POST" class="modal-content">
+        <div class="modal fade crud-modal" id="voidPurchaseModal" tabindex="-1" aria-labelledby="voidPurchaseModalLabel"
+            aria-hidden="true" data-open-on-load="{{ $errors->has('void_reason') ? 'true' : 'false' }}">
+            <div class="modal-dialog modal-dialog-centered">
+                <form action="{{ route('admin.purchases.void', $purchase) }}" method="POST"
+                    class="modal-content js-submit-form">
                     @csrf
                     @method('PUT')
 
                     <div class="modal-header">
-                        <h5 class="modal-title" id="voidPurchaseModalLabel">
-                            Void Pembelian
-                        </h5>
+                        <div>
+                            <h5 class="modal-title" id="voidPurchaseModalLabel">
+                                Void Pembelian
+                            </h5>
 
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <p>
+                                Batalkan transaksi dan kembalikan kondisi stok.
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
 
                     <div class="modal-body">
-                        <div class="alert alert-danger">
-                            Yakin ingin membatalkan pembelian ini?
-                            Stok dari pembelian ini akan dikurangi kembali.
+                        <div class="purchase-modal-summary">
+                            <span>No. Pembelian</span>
+
+                            <strong>
+                                {{ $purchase->purchase_number }}
+                            </strong>
+
+                            <small>
+                                Rp {{ number_format($purchase->total, 0, ',', '.') }}
+                            </small>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="purchase-modal-warning">
+                            <strong>Tindakan ini memengaruhi persediaan</strong>
+
+                            <p>
+                                Stok akan dikurangi kembali dan batch FIFO dari
+                                pembelian ini akan dibatalkan.
+                            </p>
+                        </div>
+
+                        <div>
                             <label for="void_reason" class="form-label">
-                                Alasan Void <span class="text-danger">*</span>
+                                Alasan Void
+                                <span class="crud-required">*</span>
                             </label>
 
                             <textarea name="void_reason" id="void_reason" rows="4"
-                                class="form-control @error('void_reason') is-invalid @enderror"
-                                placeholder="Contoh: Salah input qty / salah supplier / salah harga modal..." required>{{ old('void_reason') }}</textarea>
+                                class="form-control crud-form-control
+                                    @error('void_reason') is-invalid @enderror"
+                                placeholder="Contoh: Salah supplier, qty, atau harga modal..." required>{{ old('void_reason') }}</textarea>
 
                             @error('void_reason')
                                 <div class="invalid-feedback">
@@ -259,18 +391,21 @@
                                 </div>
                             @enderror
 
-                            <small class="text-muted">
-                                Pembelian tidak bisa dibatalkan jika batch dari pembelian ini sudah terjual.
-                            </small>
+                            <div class="crud-field-help">
+                                <span>
+                                    Jelaskan alasan pembatalan untuk kebutuhan audit.
+                                </span>
+                            </div>
                         </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                             Batal
                         </button>
 
-                        <button type="submit" class="btn btn-danger">
+                        <button type="submit" class="btn btn-danger js-submit-button"
+                            data-loading-text="Memproses void...">
                             Ya, Void Pembelian
                         </button>
                     </div>
@@ -278,20 +413,4 @@
             </div>
         </div>
     @endif
-
 @endsection
-
-@push('scripts')
-    @if ($errors->has('void_reason'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const modalElement = document.getElementById('voidPurchaseModal');
-
-                if (modalElement) {
-                    const modal = new bootstrap.Modal(modalElement);
-                    modal.show();
-                }
-            });
-        </script>
-    @endif
-@endpush

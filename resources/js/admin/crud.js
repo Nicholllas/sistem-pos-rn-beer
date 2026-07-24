@@ -260,3 +260,155 @@ function updateProductPreview() {
     });
 
 updateProductPreview();
+
+/* =========================================================
+   PASSWORD VISIBILITY
+   ========================================================= */
+
+document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+    button.addEventListener("click", function () {
+        const inputId = this.dataset.passwordToggle;
+        const input = document.getElementById(inputId);
+
+        if (!input) {
+            return;
+        }
+
+        const isPassword = input.type === "password";
+
+        input.type = isPassword ? "text" : "password";
+        this.textContent = isPassword ? "Tutup" : "Lihat";
+    });
+});
+
+/* =========================================================
+   PASSWORD CONFIRMATION
+   ========================================================= */
+
+document
+    .querySelectorAll("[data-password-confirmation-for]")
+    .forEach((confirmationInput) => {
+        const passwordInput = document.getElementById(
+            confirmationInput.dataset.passwordConfirmationFor,
+        );
+
+        const message = document.getElementById(
+            confirmationInput.dataset.passwordMatchTarget,
+        );
+
+        if (!passwordInput || !message) {
+            return;
+        }
+
+        const updatePasswordMatch = () => {
+            const password = passwordInput.value;
+            const confirmation = confirmationInput.value;
+
+            message.classList.remove("is-valid", "is-invalid");
+
+            if (confirmation === "") {
+                message.textContent = "Password harus sama.";
+
+                return;
+            }
+
+            if (password === confirmation) {
+                message.textContent = "Password sudah sama.";
+
+                message.classList.add("is-valid");
+
+                return;
+            }
+
+            message.textContent = "Konfirmasi password belum sama.";
+
+            message.classList.add("is-invalid");
+        };
+
+        passwordInput.addEventListener("input", updatePasswordMatch);
+
+        confirmationInput.addEventListener("input", updatePasswordMatch);
+    });
+
+/* =========================================================
+   RESET PASSWORD MODAL
+   ========================================================= */
+
+const resetPasswordModal = document.getElementById("resetPasswordModal");
+
+const resetPasswordForm = document.getElementById("resetPasswordForm");
+
+resetPasswordModal?.addEventListener("show.bs.modal", function (event) {
+    const trigger = event.relatedTarget;
+
+    if (!trigger || !resetPasswordForm) {
+        return;
+    }
+
+    const actionUrl = trigger.dataset.resetPasswordUrl;
+
+    const userName = trigger.dataset.userName || "User";
+
+    const userEmail = trigger.dataset.userEmail || "-";
+
+    resetPasswordForm.action = actionUrl;
+
+    const nameElement = document.getElementById("resetUserName");
+
+    const emailElement = document.getElementById("resetUserEmail");
+
+    const avatarElement = document.getElementById("resetUserAvatar");
+
+    if (nameElement) {
+        nameElement.textContent = userName;
+    }
+
+    if (emailElement) {
+        emailElement.textContent = userEmail;
+    }
+
+    if (avatarElement) {
+        const initials = userName
+            .trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .map((word) => word.charAt(0).toUpperCase())
+            .join("");
+
+        avatarElement.textContent = initials || "U";
+    }
+});
+
+resetPasswordModal?.addEventListener("hidden.bs.modal", function () {
+    if (!resetPasswordForm) {
+        return;
+    }
+
+    resetPasswordForm.reset();
+    resetPasswordForm.action = "#";
+
+    resetPasswordForm
+        .querySelectorAll('input[type="text"]')
+        .forEach((input) => {
+            if (
+                input.id === "resetPassword" ||
+                input.id === "resetPasswordConfirmation"
+            ) {
+                input.type = "password";
+            }
+        });
+
+    resetPasswordForm
+        .querySelectorAll("[data-password-toggle]")
+        .forEach((button) => {
+            button.textContent = "Lihat";
+        });
+
+    const matchMessage = document.getElementById("resetPasswordMatch");
+
+    if (matchMessage) {
+        matchMessage.textContent = "Minimal 8 karakter.";
+
+        matchMessage.classList.remove("is-valid", "is-invalid");
+    }
+});

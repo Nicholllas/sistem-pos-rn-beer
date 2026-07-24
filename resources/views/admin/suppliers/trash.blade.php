@@ -1,99 +1,158 @@
 @extends('layouts.admin')
 
-@section('title', 'Trash Supplier')
-@section('page-title', 'Trash Supplier')
+@section('title', 'Supplier Terhapus')
+@section('page-title', 'Supplier Terhapus')
+@section('page-subtitle', 'Pulihkan supplier yang sebelumnya telah dihapus.')
+
+@section('page-actions')
+    <a href="{{ route('admin.suppliers.index') }}" class="btn btn-outline-secondary">
+        Kembali ke Supplier
+    </a>
+@endsection
 
 @section('content')
+    <div class="crud-page">
+        <div class="crud-notice">
+            <span class="crud-notice-avatar">
+                !
+            </span>
 
-    <div class="card">
-        <div class="card-header d-flex align-items-center justify-content-between">
-            <h3 class="card-title mb-0">
-                Trash Supplier
-            </h3>
+            <div>
+                <strong>Supplier belum terhapus permanen</strong>
 
-            <a href="{{ route('admin.suppliers.index') }}" class="btn btn-secondary btn-sm">
-                Kembali ke Supplier
-            </a>
+                <p>
+                    Supplier pada halaman ini tidak muncul dalam daftar aktif,
+                    tetapi masih dapat dipulihkan.
+                </p>
+            </div>
         </div>
 
-        <div class="card-body">
-            <div class="alert alert-info">
-                Supplier yang ada di trash tidak tampil sebagai supplier aktif.
-                Gunakan tombol restore jika ingin mengaktifkan kembali supplier.
+        <section class="crud-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Daftar Supplier Terhapus</h2>
+
+                    <p>
+                        Total {{ number_format($suppliers->total(), 0, ',', '.') }}
+                        supplier berada di trash.
+                    </p>
+                </div>
+
+                <span class="crud-count-badge is-danger">
+                    {{ $suppliers->total() }} terhapus
+                </span>
             </div>
 
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0">
+                <table class="table crud-table align-middle mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 60px;" class="text-center">No</th>
                             <th>Supplier</th>
                             <th>Kontak</th>
+                            <th>Alamat</th>
                             <th>Dihapus Pada</th>
-                            <th style="width: 140px;" class="text-center">Aksi</th>
+                            <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         @forelse ($suppliers as $supplier)
                             <tr>
-                                <td class="text-center">
-                                    {{ $suppliers->firstItem() + $loop->index }}
-                                </td>
-
                                 <td>
-                                    <strong>{{ $supplier->name }}</strong>
-                                    <br>
-                                    <small class="text-muted">
-                                        Alamat: {{ $supplier->address ?? '-' }}
-                                    </small>
-                                </td>
+                                    <div class="crud-record-cell">
+                                        <span class="crud-record-avatar is-danger">
+                                            {{ strtoupper(mb_substr($supplier->name, 0, 1)) }}
+                                        </span>
 
-                                <td>
-                                    <div>
-                                        <strong>HP:</strong>
-                                        {{ $supplier->phone ?? '-' }}
-                                    </div>
+                                        <div>
+                                            <strong>{{ $supplier->name }}</strong>
 
-                                    <div>
-                                        <strong>Email:</strong>
-                                        {{ $supplier->email ?? '-' }}
+                                            <small>
+                                                ID #{{ $supplier->id }}
+                                            </small>
+                                        </div>
                                     </div>
                                 </td>
 
                                 <td>
-                                    {{ $supplier->deleted_at?->format('d/m/Y H:i') ?? '-' }}
+                                    <div class="crud-audit-cell">
+                                        <strong>
+                                            {{ $supplier->phone ?: '-' }}
+                                        </strong>
+
+                                        <small>
+                                            {{ $supplier->email ?: 'Email belum tersedia' }}
+                                        </small>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    <form action="{{ route('admin.suppliers.restore', $supplier->id) }}" method="POST"
-                                        onsubmit="return confirm('Restore supplier ini?')">
-                                        @csrf
-                                        @method('PUT')
+                                    <div class="crud-text-wrap">
+                                        {{ $supplier->address ?: '-' }}
+                                    </div>
+                                </td>
 
-                                        <button type="submit" class="btn btn-success btn-sm w-100">
-                                            Restore
-                                        </button>
-                                    </form>
+                                <td>
+                                    <span class="crud-date-badge is-danger">
+                                        {{ $supplier->deleted_at?->format('d M Y H:i') ?? '-' }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="crud-actions">
+                                        <form action="{{ route('admin.suppliers.restore', $supplier->id) }}" method="POST"
+                                            class="js-confirm-action" data-confirm-icon="question"
+                                            data-confirm-title="Pulihkan supplier?"
+                                            data-confirm-message="Supplier {{ $supplier->name }} akan dikembalikan ke daftar supplier aktif."
+                                            data-confirm-button="Ya, Pulihkan" data-confirm-class="btn btn-success px-4">
+                                            @csrf
+                                            @method('PUT')
+
+                                            <button type="submit" class="btn btn-sm btn-outline-success">
+                                                Pulihkan
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted py-4">
-                                    Trash supplier kosong.
+                                <td colspan="5">
+                                    <div class="crud-empty-state">
+                                        <span class="crud-empty-avatar is-success">
+                                            ✓
+                                        </span>
+
+                                        <strong>Trash supplier kosong</strong>
+
+                                        <p>
+                                            Tidak ada supplier yang sedang menunggu
+                                            untuk dipulihkan.
+                                        </p>
+
+                                        <a href="{{ route('admin.suppliers.index') }}"
+                                            class="btn btn-outline-primary btn-sm">
+                                            Kembali ke Supplier
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        @if ($suppliers->hasPages())
-            <div class="card-footer">
-                {{ $suppliers->links() }}
-            </div>
-        @endif
+            @if ($suppliers->hasPages())
+                <div class="crud-pagination">
+                    <span>
+                        Menampilkan {{ $suppliers->firstItem() }}
+                        sampai {{ $suppliers->lastItem() }}
+                        dari {{ $suppliers->total() }} supplier
+                    </span>
+
+                    {{ $suppliers->links() }}
+                </div>
+            @endif
+        </section>
     </div>
-
 @endsection

@@ -2,97 +2,165 @@
 
 @section('title', 'Riwayat Pembelian')
 @section('page-title', 'Riwayat Pembelian')
+@section('page-subtitle', 'Pantau pembelian stok, supplier, nilai pembelian, dan status transaksi.')
+
+@section('page-actions')
+    <a href="{{ route('admin.purchases.create') }}" class="btn btn-primary">
+        Pembelian Stok Baru
+    </a>
+@endsection
 
 @section('content')
+    <div class="crud-page">
+        <section class="crud-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Riwayat Pembelian Stok</h2>
 
-    <div class="card">
-        <div class="card-header d-flex align-items-center justify-content-between">
-            <h3 class="card-title mb-0">
-                Riwayat Pembelian Stok
-            </h3>
-            <a href="{{ route('admin.purchases.create') }}" class="btn btn-primary btn-sm">
-                + Pembelian Stok
-            </a>
-        </div>
+                    <p>
+                        Total {{ number_format($purchases->total(), 0, ',', '.') }}
+                        transaksi pembelian tercatat.
+                    </p>
+                </div>
 
-        <div class="card-body">
+                <span class="crud-count-badge">
+                    {{ $purchases->total() }} pembelian
+                </span>
+            </div>
+
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0">
+                <table class="table crud-table purchase-history-table align-middle mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 60px;" class="text-center">No</th>
-                            <th>No. Pembelian</th>
+                            <th>Pembelian</th>
                             <th>Supplier</th>
-                            <th>Tanggal</th>
-                            <th class="text-end">Total</th>
-                            <th class="text-center">Status</th>
+                            <th>Total</th>
+                            <th>Status</th>
                             <th>Diinput Oleh</th>
-                            <th style="width: 120px;" class="text-center">Aksi</th>
+                            <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         @forelse ($purchases as $purchase)
-                            <tr>
-                                <td class="text-center">
-                                    {{ $purchases->firstItem() + $loop->index }}
+                            @php
+                                $isVoid = $purchase->status === 'void';
+                                $supplierName = $purchase->supplier?->name ?? 'Supplier tidak ditemukan';
+                            @endphp
+
+                            <tr @class(['is-void' => $isVoid])>
+                                <td>
+                                    <div class="purchase-number-cell">
+                                        <a href="{{ route('admin.purchases.show', $purchase) }}">
+                                            {{ $purchase->purchase_number }}
+                                        </a>
+
+                                        <span>
+                                            {{ $purchase->purchase_date?->format('d M Y') ?? '-' }}
+                                        </span>
+
+                                        <small>
+                                            Dibuat
+                                            {{ $purchase->created_at?->format('d M Y H:i') ?? '-' }}
+                                        </small>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    <strong>{{ $purchase->purchase_number }}</strong>
+                                    <div class="purchase-supplier-cell">
+                                        <span class="purchase-supplier-avatar">
+                                            {{ strtoupper(mb_substr($supplierName, 0, 1)) }}
+                                        </span>
+
+                                        <div>
+                                            <strong>{{ $supplierName }}</strong>
+                                            <small>Supplier pembelian</small>
+                                        </div>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    {{ $purchase->supplier?->name ?? '-' }}
+                                    <div class="purchase-total-cell">
+                                        <strong>
+                                            Rp {{ number_format($purchase->total, 0, ',', '.') }}
+                                        </strong>
+
+                                        <small>
+                                            {{ $isVoid ? 'Nilai dibatalkan' : 'Total pembelian' }}
+                                        </small>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    {{ $purchase->purchase_date?->format('d/m/Y') ?? '-' }}
-                                </td>
-
-                                <td class="text-end text-nowrap">
-                                    Rp {{ number_format($purchase->total, 0, ',', '.') }}
-                                </td>
-
-                                <td class="text-center">
                                     @if ($purchase->status === 'completed')
-                                        <span class="badge bg-success">COMPLETED</span>
+                                        <span class="crud-status is-success">
+                                            Selesai
+                                        </span>
                                     @else
-                                        <span class="badge bg-danger">VOID</span>
+                                        <span class="crud-status is-danger">
+                                            Void
+                                        </span>
                                     @endif
                                 </td>
 
                                 <td>
-                                    <small>
-                                        {{ $purchase->createdBy?->name ?? '-' }}
-                                        <br>
-                                        {{ $purchase->created_at?->format('d/m/Y H:i') ?? '-' }}
-                                    </small>
+                                    <div class="crud-audit-cell">
+                                        <strong>
+                                            {{ $purchase->createdBy?->name ?? '-' }}
+                                        </strong>
+
+                                        <small>
+                                            {{ $purchase->created_at?->format('d M Y H:i') ?? '-' }}
+                                        </small>
+                                    </div>
                                 </td>
 
-                                <td class="text-center">
-                                    <a href="{{ route('admin.purchases.show', $purchase) }}" class="btn btn-info btn-sm">
-                                        Detail
-                                    </a>
+                                <td>
+                                    <div class="crud-actions">
+                                        <a href="{{ route('admin.purchases.show', $purchase) }}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            Lihat Detail
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">
-                                    Belum ada data pembelian stok.
+                                <td colspan="6">
+                                    <div class="crud-empty-state">
+                                        <span class="crud-empty-avatar">
+                                            B
+                                        </span>
+
+                                        <strong>Belum ada pembelian stok</strong>
+
+                                        <p>
+                                            Catat pembelian pertama untuk menambah stok,
+                                            membuat batch FIFO, dan mencatat harga modal.
+                                        </p>
+
+                                        <a href="{{ route('admin.purchases.create') }}" class="btn btn-primary btn-sm">
+                                            Buat Pembelian
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        @if ($purchases->hasPages())
-            <div class="card-footer">
-                {{ $purchases->links() }}
-            </div>
-        @endif
+            @if ($purchases->hasPages())
+                <div class="crud-pagination">
+                    <span>
+                        Menampilkan {{ $purchases->firstItem() }}
+                        sampai {{ $purchases->lastItem() }}
+                        dari {{ $purchases->total() }} pembelian
+                    </span>
+
+                    {{ $purchases->links() }}
+                </div>
+            @endif
+        </section>
     </div>
-
 @endsection
