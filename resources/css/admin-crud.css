@@ -2579,3 +2579,1207 @@
         min-width: 0;
     }
 }
+
+/* =========================================================
+   INVENTORY STOCK IN
+   ========================================================= */
+
+.inventory-stock-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 18px;
+    align-items: start;
+}
+
+.inventory-product-reference {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 14px;
+    overflow: hidden;
+    background: #e5e7eb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.inventory-product-reference > div {
+    min-height: 72px;
+    padding: 12px 13px;
+    background: #f8fafc;
+}
+
+.inventory-product-reference span,
+.inventory-product-reference strong {
+    display: block;
+}
+
+.inventory-product-reference span {
+    color: #94a3b8;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.inventory-product-reference strong {
+    margin-top: 6px;
+    color: #334155;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   INVENTORY PREVIEW
+   ========================================================= */
+
+.inventory-stock-preview {
+    position: sticky;
+    top: 80px;
+    padding: 19px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.inventory-preview-label {
+    display: block;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+}
+
+.inventory-preview-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 62px;
+    height: 62px;
+    margin: 15px 0 12px;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 800;
+    background: #2563eb;
+    border-radius: 18px;
+}
+
+.inventory-stock-preview h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 750;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.inventory-stock-preview > p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.inventory-stock-flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
+    margin-top: 18px;
+}
+
+.inventory-stock-flow > div {
+    min-width: 0;
+    padding: 10px 6px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+}
+
+.inventory-stock-flow > div.is-result {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.inventory-stock-flow span,
+.inventory-stock-flow strong {
+    display: block;
+}
+
+.inventory-stock-flow > div span {
+    color: #94a3b8;
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.inventory-stock-flow > div strong {
+    margin-top: 5px;
+    color: #334155;
+    font-size: 14px;
+}
+
+.inventory-stock-flow > div.is-result strong {
+    color: #166534;
+}
+
+.inventory-stock-arrow {
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.inventory-preview-summary {
+    display: grid;
+    gap: 1px;
+    margin-top: 16px;
+    overflow: hidden;
+    text-align: left;
+    background: #e2e8f0;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.inventory-preview-summary > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 11px;
+    background: #ffffff;
+}
+
+.inventory-preview-summary span {
+    color: #64748b;
+    font-size: 8px;
+}
+
+.inventory-preview-summary strong {
+    color: #0f172a;
+    font-size: 9px;
+    text-align: right;
+}
+
+.inventory-preview-note {
+    padding: 11px 12px;
+    margin-top: 15px;
+    color: #075985;
+    text-align: left;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 9px;
+}
+
+.inventory-preview-note strong {
+    display: block;
+    font-size: 9px;
+}
+
+.inventory-preview-note p {
+    margin: 4px 0 0;
+    font-size: 8px;
+    line-height: 1.55;
+}
+
+/* =========================================================
+   INVENTORY RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 991.98px) {
+    .inventory-stock-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-stock-preview {
+        position: static;
+        order: -1;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .inventory-product-reference {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-stock-flow {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-stock-arrow {
+        transform: rotate(90deg);
+    }
+}
+
+/* =========================================================
+   INVENTORY ADJUSTMENT
+   ========================================================= */
+
+.inventory-adjustment-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 18px;
+    align-items: start;
+}
+
+.inventory-adjustment-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 13px 14px;
+    margin-bottom: 23px;
+    color: #854d0e;
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    border-radius: 10px;
+}
+
+.inventory-adjustment-notice > span {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    background: #d97706;
+    border-radius: 8px;
+}
+
+.inventory-adjustment-notice strong {
+    display: block;
+    font-size: 11px;
+}
+
+.inventory-adjustment-notice p {
+    margin: 3px 0 0;
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.inventory-adjustment-result {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 14px;
+    overflow: hidden;
+    background: #e5e7eb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.inventory-adjustment-result > div {
+    min-height: 70px;
+    padding: 12px 13px;
+    background: #f8fafc;
+}
+
+.inventory-adjustment-result span,
+.inventory-adjustment-result strong {
+    display: block;
+}
+
+.inventory-adjustment-result span {
+    color: #94a3b8;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.inventory-adjustment-result strong {
+    margin-top: 6px;
+    color: #334155;
+    font-size: 13px;
+}
+
+.inventory-difference-value.is-positive {
+    color: #15803d;
+}
+
+.inventory-difference-value.is-negative {
+    color: #dc2626;
+}
+
+.inventory-difference-value.is-neutral {
+    color: #64748b;
+}
+
+/* =========================================================
+   ADJUSTMENT PREVIEW
+   ========================================================= */
+
+.inventory-adjustment-preview {
+    position: sticky;
+    top: 80px;
+    padding: 19px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.inventory-adjustment-preview h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 750;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.inventory-adjustment-preview > p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.inventory-adjustment-comparison {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 9px;
+    margin-top: 18px;
+}
+
+.inventory-adjustment-comparison > div {
+    padding: 11px 8px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+}
+
+.inventory-adjustment-comparison > div.is-result {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.inventory-adjustment-comparison span,
+.inventory-adjustment-comparison strong {
+    display: block;
+}
+
+.inventory-adjustment-comparison > div span {
+    color: #94a3b8;
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.inventory-adjustment-comparison > div strong {
+    margin-top: 5px;
+    color: #334155;
+    font-size: 17px;
+}
+
+.inventory-adjustment-comparison > div.is-result strong {
+    color: #1d4ed8;
+}
+
+.inventory-adjustment-arrow {
+    color: #94a3b8;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.inventory-adjustment-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 11px 12px;
+    margin-top: 13px;
+    text-align: left;
+    border: 1px solid;
+    border-radius: 9px;
+}
+
+.inventory-adjustment-indicator span {
+    font-size: 9px;
+    font-weight: 650;
+}
+
+.inventory-adjustment-indicator strong {
+    font-size: 14px;
+}
+
+.inventory-adjustment-indicator.is-positive {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.inventory-adjustment-indicator.is-negative {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.inventory-adjustment-indicator.is-neutral {
+    color: #475569;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.inventory-stock-status {
+    display: inline-flex;
+    justify-content: flex-end;
+    font-size: 9px;
+}
+
+.inventory-stock-status.is-success {
+    color: #15803d;
+}
+
+.inventory-stock-status.is-warning {
+    color: #a16207;
+}
+
+.inventory-stock-status.is-danger {
+    color: #dc2626;
+}
+
+.inventory-stock-status.is-neutral {
+    color: #64748b;
+}
+
+/* =========================================================
+   ADJUSTMENT RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 991.98px) {
+    .inventory-adjustment-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-adjustment-preview {
+        position: static;
+        order: -1;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .inventory-adjustment-result {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-adjustment-comparison {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-adjustment-arrow {
+        transform: rotate(90deg);
+    }
+}
+
+/* =========================================================
+   LOW STOCK PAGE
+   ========================================================= */
+
+.low-stock-page {
+    display: grid;
+    gap: 15px;
+}
+
+/* =========================================================
+   WARNING NOTICE
+   ========================================================= */
+
+.low-stock-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    color: #854d0e;
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+}
+
+.low-stock-notice-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    background: #d97706;
+    border-radius: 8px;
+}
+
+.low-stock-notice > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.low-stock-notice strong {
+    display: block;
+    font-size: 11px;
+}
+
+.low-stock-notice p {
+    margin: 4px 0 0;
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.low-stock-notice-count {
+    display: inline-flex;
+    flex-shrink: 0;
+    padding: 5px 9px;
+    color: #92400e;
+    font-size: 9px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid #fcd34d;
+    border-radius: 999px;
+}
+
+/* =========================================================
+   COUNT BADGE
+   ========================================================= */
+
+.crud-count-badge.is-warning {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+/* =========================================================
+   LOW STOCK SUMMARY
+   ========================================================= */
+
+.low-stock-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    background: #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.low-stock-summary > div {
+    padding: 12px 16px;
+    background: #fafcff;
+}
+
+.low-stock-summary span,
+.low-stock-summary strong {
+    display: block;
+}
+
+.low-stock-summary span {
+    color: #94a3b8;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.low-stock-summary strong {
+    margin-top: 5px;
+    color: #0f172a;
+    font-size: 13px;
+}
+
+/* =========================================================
+   LOW STOCK TABLE
+   ========================================================= */
+
+.low-stock-table {
+    min-width: 1050px;
+}
+
+.low-stock-table tbody tr.is-out-of-stock {
+    background: #fffafa;
+}
+
+.low-stock-table tbody tr.is-out-of-stock:hover {
+    background: #fef2f2;
+}
+
+/* =========================================================
+   CURRENT STOCK
+   ========================================================= */
+
+.low-stock-current,
+.low-stock-minimum {
+    min-width: 100px;
+}
+
+.low-stock-current strong,
+.low-stock-current span,
+.low-stock-minimum strong,
+.low-stock-minimum span {
+    display: block;
+}
+
+.low-stock-current strong,
+.low-stock-minimum strong {
+    font-size: 14px;
+    font-weight: 750;
+}
+
+.low-stock-current strong.is-danger {
+    color: #dc2626;
+}
+
+.low-stock-current strong.is-warning {
+    color: #d97706;
+}
+
+.low-stock-minimum strong {
+    color: #334155;
+}
+
+.low-stock-current span,
+.low-stock-minimum span {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+/* =========================================================
+   STOCK CONDITION
+   ========================================================= */
+
+.crud-status.is-warning {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.low-stock-condition {
+    min-width: 170px;
+}
+
+.low-stock-gap {
+    margin-top: 6px;
+    color: #64748b;
+    font-size: 8px;
+    line-height: 1.4;
+}
+
+.low-stock-gap strong {
+    color: #334155;
+}
+
+.low-stock-progress {
+    position: relative;
+    width: 145px;
+    height: 5px;
+    margin-top: 7px;
+    overflow: hidden;
+    background: #e5e7eb;
+    border-radius: 999px;
+}
+
+.low-stock-progress > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    transition: width 0.2s ease;
+}
+
+.low-stock-progress > span.is-warning {
+    background: #f59e0b;
+}
+
+.low-stock-progress > span.is-danger {
+    background: #dc2626;
+}
+
+/* =========================================================
+   LOW STOCK RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 767.98px) {
+    .low-stock-notice {
+        flex-wrap: wrap;
+    }
+
+    .low-stock-notice-count {
+        margin-left: 40px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .low-stock-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .low-stock-notice-count {
+        margin-left: 0;
+    }
+}
+
+/* =========================================================
+   STOCK LOG PAGE
+   ========================================================= */
+
+.stock-log-page {
+    display: grid;
+    gap: 15px;
+}
+
+/* =========================================================
+   STOCK LOG NOTICE
+   ========================================================= */
+
+.stock-log-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    color: #075985;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+}
+
+.stock-log-notice-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    background: #0284c7;
+    border-radius: 8px;
+}
+
+.stock-log-notice > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.stock-log-notice strong {
+    display: block;
+    font-size: 11px;
+}
+
+.stock-log-notice p {
+    margin: 4px 0 0;
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.stock-log-notice-count {
+    display: inline-flex;
+    flex-shrink: 0;
+    padding: 5px 9px;
+    color: #075985;
+    font-size: 9px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid #7dd3fc;
+    border-radius: 999px;
+}
+
+/* =========================================================
+   STOCK LOG SUMMARY
+   ========================================================= */
+
+.stock-log-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.stock-log-summary > div {
+    padding: 12px 16px;
+    background: #fafcff;
+}
+
+.stock-log-summary span,
+.stock-log-summary strong {
+    display: block;
+}
+
+.stock-log-summary span {
+    color: #94a3b8;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.stock-log-summary strong {
+    margin-top: 5px;
+    color: #0f172a;
+    font-size: 13px;
+}
+
+.stock-log-summary strong.is-positive {
+    color: #15803d;
+}
+
+.stock-log-summary strong.is-negative {
+    color: #dc2626;
+}
+
+.stock-log-summary strong.is-warning {
+    color: #d97706;
+}
+
+/* =========================================================
+   STOCK LOG TABLE
+   ========================================================= */
+
+.stock-log-table {
+    min-width: 1250px;
+}
+
+/* Date */
+
+.stock-log-date {
+    min-width: 90px;
+}
+
+.stock-log-date strong,
+.stock-log-date span {
+    display: block;
+}
+
+.stock-log-date strong {
+    color: #334155;
+    font-size: 10px;
+}
+
+.stock-log-date span {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+/* =========================================================
+   STOCK LOG FILTER
+   ========================================================= */
+
+.stock-log-filter-panel {
+    margin: 0;
+}
+
+.stock-log-filter-body {
+    padding: 18px;
+}
+
+.stock-log-filter-body .form-label {
+    margin-bottom: 7px;
+    color: #334155;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.stock-log-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 2px;
+}
+
+.stock-log-filter-actions .btn {
+    min-width: 125px;
+    min-height: 41px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.stock-log-active-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 12px 18px;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+}
+
+.stock-log-filter-label {
+    margin-right: 2px;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.stock-log-filter-chip {
+    display: inline-flex;
+    padding: 5px 8px;
+    color: #1e40af;
+    font-size: 9px;
+    font-weight: 600;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+}
+
+/* =========================================================
+   STOCK LOG PRODUCT WITHOUT AVATAR
+   ========================================================= */
+
+.stock-log-product-info {
+    min-width: 225px;
+}
+
+.stock-log-product-info strong,
+.stock-log-product-info span,
+.stock-log-product-info small {
+    display: block;
+}
+
+.stock-log-product-info strong {
+    max-width: 260px;
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.stock-log-product-info span {
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 9px;
+}
+
+.stock-log-product-info small {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+@media (max-width: 575.98px) {
+    .stock-log-filter-body {
+        padding: 15px;
+    }
+
+    .stock-log-filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .stock-log-filter-actions .btn {
+        width: 100%;
+    }
+
+    .stock-log-active-filters {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+}
+
+/* Movement type */
+
+.stock-log-type {
+    display: inline-flex;
+    padding: 5px 8px;
+    font-size: 9px;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid;
+    border-radius: 999px;
+}
+
+.stock-log-type.is-in {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.stock-log-type.is-out {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.stock-log-type.is-adjustment {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.stock-log-type.is-default {
+    color: #475569;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+/* Quantity change */
+
+.stock-log-change {
+    display: inline-flex;
+    min-width: 46px;
+    justify-content: center;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 750;
+    border: 1px solid;
+    border-radius: 8px;
+}
+
+.stock-log-change.is-positive {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.stock-log-change.is-negative {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.stock-log-change.is-neutral {
+    color: #475569;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+/* Before and after */
+
+.stock-log-flow {
+    display: grid;
+    grid-template-columns: 58px auto 58px;
+    align-items: center;
+    gap: 6px;
+    min-width: 145px;
+}
+
+.stock-log-flow > div {
+    padding: 7px 6px;
+    text-align: center;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.stock-log-flow > div.is-result {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.stock-log-flow span,
+.stock-log-flow strong {
+    display: block;
+}
+
+.stock-log-flow > div span {
+    color: #94a3b8;
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.stock-log-flow > div strong {
+    margin-top: 3px;
+    color: #334155;
+    font-size: 10px;
+}
+
+.stock-log-flow > div.is-result strong {
+    color: #1d4ed8;
+}
+
+.stock-log-flow-arrow {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+/* User */
+
+.stock-log-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 125px;
+}
+
+.stock-log-user-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 29px;
+    height: 29px;
+    color: #475569;
+    font-size: 9px;
+    font-weight: 800;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.stock-log-user strong,
+.stock-log-user small {
+    display: block;
+}
+
+.stock-log-user strong {
+    max-width: 130px;
+    overflow: hidden;
+    color: #334155;
+    font-size: 9px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.stock-log-user small {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+/* Notes */
+
+.stock-log-note {
+    max-width: 290px;
+    min-width: 190px;
+    color: #475569;
+    font-size: 9px;
+    line-height: 1.55;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   STOCK LOG RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 767.98px) {
+    .stock-log-notice {
+        flex-wrap: wrap;
+    }
+
+    .stock-log-notice-count {
+        margin-left: 40px;
+    }
+
+    .stock-log-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .stock-log-notice-count {
+        margin-left: 0;
+    }
+
+    .stock-log-summary {
+        grid-template-columns: 1fr;
+    }
+}

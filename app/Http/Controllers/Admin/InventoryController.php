@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\StockBatch;
 use App\Models\StockMovement;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -177,11 +178,159 @@ class InventoryController extends Controller
         return view('admin.inventory.low-stock', compact('products'));
     }
 
-    public function logs()
+    public function logs(Request $request)
     {
-        $stockMovements = StockMovement::with(['product.category', 'createdBy'])->latest()->paginate(15);
+        $validated = $request->validate([
+            'search' => [
+                'nullable',
+                'string',
+                'max:150',
+            ],
 
-        return view('admin.inventory.logs', compact('stockMovements'));
+            'type' => [
+                'nullable',
+                Rule::in([
+                    'in',
+                    'out',
+                    'adjustment',
+                ]),
+            ],
+
+            'user_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
+
+            'start_date' => [
+                'nullable',
+                'date',
+            ],
+
+            'end_date' => [
+                'nullable',
+                'date',
+                'after_or_equal:start_date',
+            ],
+        ]);
+
+        $search = isset($validated['search'])
+            ? trim($validated['search'])
+            : null;
+
+        $query = StockMovement::query()
+            ->with([
+                'product.category',
+                'createdBy',
+            ])
+
+            /*
+             * Pencarian produk, SKU, barcode,
+             * catatan, atau ID log.
+             */
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query
+                        ->where('note', 'like', "%{$search}%")
+                        ->orWhereHas('product', function ($productQuery) use ($search) {
+                            $productQuery->where(function ($productQuery) use ($search) {
+                                $productQuery
+                                    ->where('name', 'like', "%{$search}%")
+                                    ->orWhere('sku', 'like', "%{$search}%")
+                                    ->orWhere('barcode', 'like', "%{$search}%");
+                            });
+                        });
+
+                    /*
+                     * Izinkan pencarian berdasarkan ID log
+                     * ketika input berupa angka.
+                     */
+                    if (ctype_digit($search)) {
+                        $query->orWhereKey((int) $search);
+                    }
+                });
+            })
+
+            /*
+             * Filter jenis pergerakan.
+             *
+             * Beberapa data lama mungkin menggunakan "adjust",
+             * sedangkan data baru menggunakan "adjustment".
+             */
+            ->when(
+                $validated['type'] ?? null,
+                function ($query, string $type) {
+                    if ($type === 'adjustment') {
+                        $query->whereIn('type', [
+                            'adjust',
+                            'adjustment',
+                        ]);
+
+                        return;
+                    }
+
+                    $query->where('type', $type);
+                }
+            )
+
+            /*
+             * Filter user yang melakukan perubahan stok.
+             */
+            ->when(
+                $validated['user_id'] ?? null,
+                fn ($query, $userId) => $query->where(
+                    'created_by',
+                    $userId
+                )
+            )
+
+            /*
+             * Filter tanggal awal.
+             */
+            ->when(
+                $validated['start_date'] ?? null,
+                fn ($query, $startDate) => $query->whereDate(
+                    'created_at',
+                    '>=',
+                    $startDate
+                )
+            )
+
+            /*
+             * Filter tanggal akhir.
+             */
+            ->when(
+                $validated['end_date'] ?? null,
+                fn ($query, $endDate) => $query->whereDate(
+                    'created_at',
+                    '<=',
+                    $endDate
+                )
+            );
+
+        $stockMovements = $query
+            ->latest('created_at')
+            ->latest('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        /*
+         * User aktif maupun nonaktif tetap ditampilkan
+         * karena log lama mungkin dibuat oleh user nonaktif.
+         */
+        $users = User::query()
+            ->select([
+                'id',
+                'name',
+                'is_active',
+            ])
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.inventory.logs', compact(
+            'stockMovements',
+            'users'
+        ));
     }
 
     public function batches(Request $request)
