@@ -1,126 +1,175 @@
 @extends('layouts.admin')
 
 @section('title', 'Kategori')
-@section('page-title', 'Kategori')
+@section('page-title', 'Kategori Produk')
+@section('page-subtitle', 'Kelola kategori yang digunakan untuk mengelompokkan produk.')
+
+@section('page-actions')
+    <a href="{{ route('admin.categories.trash') }}" class="btn btn-outline-secondary">
+        Kategori Terhapus
+    </a>
+
+    <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
+        Tambah Kategori
+    </a>
+@endsection
 
 @section('content')
+    <div class="crud-page">
+        <section class="crud-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Daftar Kategori</h2>
 
-    <div class="card">
+                    <p>
+                        Total {{ number_format($categories->total(), 0, ',', '.') }}
+                        kategori terdaftar.
+                    </p>
+                </div>
 
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0">
-                Daftar Kategori
-            </h3>
-
-            <div>
-                <a href="{{ route('admin.categories.trash') }}" class="btn btn-secondary btn-sm">
-                    Trash
-                </a>
-
-                <a href="{{ route('admin.categories.create') }}" class="btn btn-primary btn-sm">
-                    Tambah Kategori
-                </a>
+                <span class="crud-count-badge">
+                    {{ $categories->total() }} kategori
+                </span>
             </div>
-        </div>
-
-        <div class="card-body">
 
             <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle">
-
+                <table class="table crud-table align-middle mb-0">
                     <thead>
                         <tr>
-                            <th width="5%">ID</th>
-                            <th>Name</th>
-                            <th>Created By</th>
-                            <th>Updated By</th>
-                            <th>Created At</th>
-                            <th>Updated At</th>
-                            <th width="15%">Action</th>
+                            <th>Kategori</th>
+                            <th>Jumlah Produk</th>
+                            <th>Dibuat Oleh</th>
+                            <th>Terakhir Diubah</th>
+                            <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
 
                     <tbody>
+                        @forelse ($categories as $category)
+                            @php
+                                $productsCount = (int) ($category->products_count ?? 0);
+                            @endphp
 
-                        @forelse($categories as $category)
                             <tr>
                                 <td>
-                                    {{ $category->id }}
+                                    <div class="crud-record-cell">
+                                        <span class="crud-record-avatar">
+                                            {{ strtoupper(mb_substr($category->name, 0, 1)) }}
+                                        </span>
+
+                                        <div>
+                                            <strong>{{ $category->name }}</strong>
+
+                                            <small>
+                                                ID #{{ $category->id }}
+                                            </small>
+                                        </div>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    <strong>{{ $category->name }}</strong>
+                                    <div class="crud-count-value">
+                                        <strong>{{ $productsCount }}</strong>
+                                        <span>produk</span>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    {{ $category->createdBy?->name ?? '-' }}
+                                    <div class="crud-audit-cell">
+                                        <strong>
+                                            {{ $category->createdBy?->name ?? '-' }}
+                                        </strong>
+
+                                        <small>
+                                            {{ $category->created_at?->format('d M Y H:i') ?? '-' }}
+                                        </small>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    {{ $category->updatedBy?->name ?? '-' }}
+                                    <div class="crud-audit-cell">
+                                        <strong>
+                                            {{ $category->updatedBy?->name ?? '-' }}
+                                        </strong>
+
+                                        <small>
+                                            {{ $category->updated_at?->format('d M Y H:i') ?? '-' }}
+                                        </small>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    {{ $category->created_at?->format('d M Y H:i') ?? '-' }}
-                                </td>
-
-                                <td>
-                                    {{ $category->updated_at?->format('d M Y H:i') ?? '-' }}
-                                </td>
-
-                                <td>
-                                    <div class="d-flex flex-wrap gap-1">
+                                    <div class="crud-actions">
                                         <a href="{{ route('admin.categories.edit', $category) }}"
-                                            class="btn btn-warning btn-sm">
+                                            class="btn btn-sm btn-outline-primary">
                                             Edit
                                         </a>
 
-                                        @if (($category->products_count ?? 0) <= 0)
-                                            <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
-                                                onsubmit="return confirm('Yakin hapus kategori ini?')">
+                                        @if ($productsCount <= 0)
+                                            <form action="{{ route('admin.categories.destroy', $category) }}"
+                                                method="POST" class="js-confirm-action" data-confirm-icon="warning"
+                                                data-confirm-title="Hapus kategori?"
+                                                data-confirm-message="Kategori {{ $category->name }} akan dipindahkan ke trash dan masih dapat dipulihkan."
+                                                data-confirm-button="Ya, Hapus" data-confirm-class="btn btn-danger px-4">
                                                 @csrf
                                                 @method('DELETE')
 
-                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
                                                     Hapus
                                                 </button>
                                             </form>
                                         @else
-                                            <button type="button" class="btn btn-secondary btn-sm" disabled>
+                                            <button type="button" class="btn btn-sm btn-light crud-locked-button"
+                                                title="Kategori masih digunakan oleh produk" disabled>
                                                 Terkunci
                                             </button>
                                         @endif
                                     </div>
 
-                                    @if (($category->products_count ?? 0) > 0)
-                                        <div class="small text-muted mt-1">
-                                            Tidak bisa dihapus karena dipakai oleh
-                                            <strong>{{ $category->products_count }}</strong> produk.
-                                        </div>
+                                    @if ($productsCount > 0)
+                                        <small class="crud-lock-note">
+                                            Digunakan oleh {{ $productsCount }} produk
+                                        </small>
                                     @endif
                                 </td>
                             </tr>
-
                         @empty
-
                             <tr>
-                                <td colspan="7" class="text-center">
-                                    No Data
+                                <td colspan="5">
+                                    <div class="crud-empty-state">
+                                        <span class="crud-empty-avatar">
+                                            K
+                                        </span>
+
+                                        <strong>Belum ada kategori</strong>
+
+                                        <p>
+                                            Tambahkan kategori pertama untuk mulai
+                                            mengelompokkan produk.
+                                        </p>
+
+                                        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary btn-sm">
+                                            Tambah Kategori
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
-
                     </tbody>
-
                 </table>
             </div>
 
-            <div class="mt-3">
-                {{ $categories->links() }}
-            </div>
+            @if ($categories->hasPages())
+                <div class="crud-pagination">
+                    <span>
+                        Menampilkan {{ $categories->firstItem() }}
+                        sampai {{ $categories->lastItem() }}
+                        dari {{ $categories->total() }} kategori
+                    </span>
 
-        </div>
-
+                    {{ $categories->links() }}
+                </div>
+            @endif
+        </section>
     </div>
-
 @endsection

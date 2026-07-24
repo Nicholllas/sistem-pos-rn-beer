@@ -10,7 +10,6 @@
             <h3 class="card-title mb-0">
                 Riwayat Pembelian Stok
             </h3>
-
             <a href="{{ route('admin.purchases.create') }}" class="btn btn-primary btn-sm">
                 + Pembelian Stok
             </a>
