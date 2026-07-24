@@ -2,313 +2,665 @@
 
 @section('title', 'Laporan Pembelian')
 @section('page-title', 'Laporan Pembelian')
+@section('page-subtitle', 'Analisis transaksi pembelian, jumlah stok masuk, supplier, dan nilai pengadaan.')
+
+@section('page-actions')
+    <a href="{{ route('admin.reports.purchases.export', request()->query()) }}" class="btn btn-success">
+        Export Excel
+    </a>
+@endsection
 
 @section('content')
+    @php
+        $resolvedStartDate = request('start_date', $startDate);
+        $resolvedEndDate = request('end_date', $endDate);
 
-    <div class="row mb-3">
-        <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-primary">
-                <div class="inner">
-                    <h3>{{ $totalPurchaseTransactions }}</h3>
-                    <p>Total Transaksi Pembelian</p>
+        $filterKeys = ['start_date', 'end_date', 'supplier_id', 'status'];
+
+        $activeFilterCount = collect($filterKeys)->filter(fn($key) => request()->filled($key))->count();
+
+        $hasActiveFilters = $activeFilterCount > 0;
+
+        $selectedSupplier = $supplierId ? $suppliers->firstWhere('id', (int) $supplierId) : null;
+
+        $statusLabels = [
+            'completed' => 'Selesai',
+            'void' => 'Void',
+        ];
+
+        $averagePurchase = $totalPurchaseTransactions > 0 ? $totalPurchaseAmount / $totalPurchaseTransactions : 0;
+
+        $averageItemsPerPurchase =
+            $totalPurchaseTransactions > 0 ? $totalPurchaseItems / $totalPurchaseTransactions : 0;
+
+        $pagePurchases = $purchases->getCollection();
+
+        $pageTotalQty = $pagePurchases->sum(fn($purchase) => (int) ($purchase->total_qty ?? 0));
+
+        $pageTotalAmount = $pagePurchases->sum(fn($purchase) => (float) $purchase->total);
+    @endphp
+
+    <div class="crud-page purchase-report-page">
+
+        {{-- Summary --}}
+        <section class="purchase-report-summary">
+            <article class="purchase-report-summary-card">
+                <span>Transaksi Pembelian</span>
+
+                <strong class="is-primary">
+                    {{ number_format($totalPurchaseTransactions, 0, ',', '.') }}
+                </strong>
+
+                <small>
+                    Pembelian selesai pada periode ini
+                </small>
+            </article>
+
+            <article class="purchase-report-summary-card">
+                <span>Total Pembelian</span>
+
+                <strong class="is-success">
+                    Rp
+                    {{ number_format($totalPurchaseAmount, 0, ',', '.') }}
+                </strong>
+
+                <small>
+                    Rata-rata Rp
+                    {{ number_format($averagePurchase, 0, ',', '.') }}
+                    per transaksi
+                </small>
+            </article>
+
+            <article class="purchase-report-summary-card">
+                <span>Total Item Dibeli</span>
+
+                <strong class="is-warning">
+                    {{ number_format($totalPurchaseItems, 0, ',', '.') }}
+                </strong>
+
+                <small>
+                    Rata-rata
+                    {{ number_format($averageItemsPerPurchase, 1, ',', '.') }}
+                    item per pembelian
+                </small>
+            </article>
+
+            <article class="purchase-report-summary-card">
+                <span>Pembelian Void</span>
+
+                <strong class="is-danger">
+                    {{ number_format($totalVoidTransactions, 0, ',', '.') }}
+                </strong>
+
+                <small>
+                    Rp
+                    {{ number_format($totalVoidAmount, 0, ',', '.') }}
+                    dibatalkan
+                </small>
+            </article>
+        </section>
+
+        {{-- Filter --}}
+        <section class="crud-panel purchase-report-filter-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Filter Laporan</h2>
+
+                    <p>
+                        Tentukan periode, supplier, dan status pembelian
+                        yang ingin dianalisis.
+                    </p>
                 </div>
+
+                @if ($hasActiveFilters)
+                    <span class="crud-count-badge">
+                        {{ $activeFilterCount }} filter aktif
+                    </span>
+                @endif
             </div>
-        </div>
 
-        <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-success">
-                <div class="inner">
-                    <h3>Rp {{ number_format($totalPurchaseAmount, 0, ',', '.') }}</h3>
-                    <p>Total Pembelian</p>
-                </div>
-            </div>
-        </div>
+            <form method="GET" action="{{ route('admin.reports.purchases') }}">
+                <div class="purchase-report-filter-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6 col-xl-3">
+                            <label for="start_date" class="form-label">
+                                Tanggal Awal
+                            </label>
 
-        <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-warning">
-                <div class="inner">
-                    <h3>{{ $totalPurchaseItems }}</h3>
-                    <p>Total Item Dibeli</p>
-                </div>
-            </div>
-        </div>
+                            <input type="date" name="start_date" id="start_date"
+                                class="form-control crud-form-control
+                                    @error('start_date') is-invalid @enderror"
+                                value="{{ $resolvedStartDate }}">
 
-        <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-danger">
-                <div class="inner">
-                    <h3>{{ $totalVoidTransactions }}</h3>
-                    <p>Pembelian Void</p>
-                </div>
-            </div>
-        </div>
-    </div>
+                            @error('start_date')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
 
-    <div class="card mb-3">
-        <div class="card-header d-flex align-items-center justify-content-between">
-            <h3 class="card-title mb-0">
-                Filter Laporan Pembelian
-            </h3>
+                        <div class="col-12 col-md-6 col-xl-3">
+                            <label for="end_date" class="form-label">
+                                Tanggal Akhir
+                            </label>
 
-            <a href="{{ route('admin.reports.purchases.export', request()->query()) }}" class="btn btn-success btn-sm">
-                Export Excel
-            </a>
-        </div>
+                            <input type="date" name="end_date" id="end_date"
+                                class="form-control crud-form-control
+                                    @error('end_date') is-invalid @enderror"
+                                value="{{ $resolvedEndDate }}">
 
-        <form method="GET" action="{{ route('admin.reports.purchases') }}">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label for="start_date" class="form-label">
-                            Tanggal Awal
-                        </label>
+                            @error('end_date')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
 
-                        <input type="date" name="start_date" id="start_date" class="form-control"
-                            value="{{ $startDate }}">
-                    </div>
+                        <div class="col-12 col-md-6 col-xl-4">
+                            <label for="supplier_id" class="form-label">
+                                Supplier
+                            </label>
 
-                    <div class="col-md-3 mb-3">
-                        <label for="end_date" class="form-label">
-                            Tanggal Akhir
-                        </label>
-
-                        <input type="date" name="end_date" id="end_date" class="form-control"
-                            value="{{ $endDate }}">
-                    </div>
-
-                    <div class="col-md-3 mb-3">
-                        <label for="supplier_id" class="form-label">
-                            Supplier
-                        </label>
-
-                        <select name="supplier_id" id="supplier_id" class="form-select">
-                            <option value="">Semua Supplier</option>
-
-                            @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}" @selected((string) $supplierId === (string) $supplier->id)>
-                                    {{ $supplier->name }}
+                            <select name="supplier_id" id="supplier_id"
+                                class="form-select crud-form-control
+                                    @error('supplier_id') is-invalid @enderror">
+                                <option value="">
+                                    Semua supplier
                                 </option>
-                            @endforeach
-                        </select>
+
+                                @foreach ($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}" @selected((string) $supplierId === (string) $supplier->id)>
+                                        {{ $supplier->name }}
+
+                                        @if (!$supplier->is_active)
+                                            — Nonaktif
+                                        @endif
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            @error('supplier_id')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12 col-md-6 col-xl-2">
+                            <label for="status" class="form-label">
+                                Status
+                            </label>
+
+                            <select name="status" id="status"
+                                class="form-select crud-form-control
+                                    @error('status') is-invalid @enderror">
+                                <option value="">
+                                    Semua status
+                                </option>
+
+                                <option value="completed" @selected($status === 'completed')>
+                                    Selesai
+                                </option>
+
+                                <option value="void" @selected($status === 'void')>
+                                    Void
+                                </option>
+                            </select>
+
+                            @error('status')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <div class="purchase-report-filter-footer">
+                    <div class="purchase-report-period">
+                        <span>Periode laporan</span>
+
+                        <strong>
+                            {{ \Carbon\Carbon::parse($resolvedStartDate)->format('d M Y') }}
+                            –
+                            {{ \Carbon\Carbon::parse($resolvedEndDate)->format('d M Y') }}
+                        </strong>
                     </div>
 
-                    <div class="col-md-2 mb-3">
-                        <label for="status" class="form-label">
-                            Status
-                        </label>
+                    <div class="purchase-report-filter-actions">
+                        <a href="{{ route('admin.reports.purchases') }}" class="btn btn-outline-secondary">
+                            Reset
+                        </a>
 
-                        <select name="status" id="status" class="form-select">
-                            <option value="">Semua Status</option>
-                            <option value="completed" @selected($status === 'completed')>
-                                Completed
-                            </option>
-                            <option value="void" @selected($status === 'void')>
-                                Void
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-1 mb-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">
-                            Filter
+                        <button type="submit" class="btn btn-primary">
+                            Tampilkan Laporan
                         </button>
                     </div>
                 </div>
+            </form>
 
-                <div class="d-flex justify-content-end">
-                    <a href="{{ route('admin.reports.purchases') }}" class="btn btn-secondary btn-sm">
-                        Reset Filter
-                    </a>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card mb-3">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <h3 class="card-title mb-0">
-                        Detail Pembelian
-                    </h3>
-
-                    <span class="badge bg-info">
-                        Periode: {{ \Carbon\Carbon::parse($startDate)->format('d/m/Y') }}
-                        s/d
-                        {{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }}
+            @if ($hasActiveFilters)
+                <div class="purchase-report-active-filters">
+                    <span class="purchase-report-filter-label">
+                        Filter:
                     </span>
-                </div>
 
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th style="width: 60px;" class="text-center">No</th>
-                                    <th>No. Pembelian</th>
-                                    <th>Tanggal</th>
-                                    <th>Supplier</th>
-                                    <th class="text-center">Qty</th>
-                                    <th class="text-end">Total</th>
-                                    <th class="text-center">Status</th>
-                                    <th>Input Oleh</th>
-                                    <th style="width: 90px;" class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
+                    @if (request()->filled('start_date'))
+                        <span class="purchase-report-filter-chip">
+                            Mulai:
+                            {{ \Carbon\Carbon::parse(request('start_date'))->format('d/m/Y') }}
+                        </span>
+                    @endif
 
-                            <tbody>
-                                @forelse ($purchases as $purchase)
-                                    <tr>
-                                        <td class="text-center">
-                                            {{ $purchases->firstItem() + $loop->index }}
-                                        </td>
+                    @if (request()->filled('end_date'))
+                        <span class="purchase-report-filter-chip">
+                            Sampai:
+                            {{ \Carbon\Carbon::parse(request('end_date'))->format('d/m/Y') }}
+                        </span>
+                    @endif
 
-                                        <td>
-                                            <strong>{{ $purchase->purchase_number }}</strong>
-                                        </td>
+                    @if ($selectedSupplier)
+                        <span class="purchase-report-filter-chip">
+                            Supplier: {{ $selectedSupplier->name }}
+                        </span>
+                    @endif
 
-                                        <td class="text-nowrap">
-                                            {{ $purchase->purchase_date?->format('d/m/Y') ?? '-' }}
-                                        </td>
-
-                                        <td>
-                                            {{ $purchase->supplier?->name ?? '-' }}
-                                        </td>
-
-                                        <td class="text-center">
-                                            {{ $purchase->total_qty ?? 0 }}
-                                        </td>
-
-                                        <td class="text-end text-nowrap">
-                                            Rp {{ number_format($purchase->total, 0, ',', '.') }}
-                                        </td>
-
-                                        <td class="text-center">
-                                            @if ($purchase->status === 'completed')
-                                                <span class="badge bg-success">COMPLETED</span>
-                                            @else
-                                                <span class="badge bg-danger">VOID</span>
-                                            @endif
-                                        </td>
-
-                                        <td>
-                                            <small>
-                                                {{ $purchase->createdBy?->name ?? '-' }}
-                                                <br>
-                                                {{ $purchase->created_at?->format('d/m/Y H:i') ?? '-' }}
-                                            </small>
-                                        </td>
-
-                                        <td class="text-center">
-                                            <a href="{{ route('admin.purchases.show', $purchase) }}"
-                                                class="btn btn-info btn-sm">
-                                                Detail
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="9" class="text-center text-muted py-4">
-                                            Tidak ada data pembelian pada filter ini.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-
-                            @if ($purchases->count() > 0)
-                                @php
-                                    $pagePurchases = $purchases->getCollection();
-                                @endphp
-
-                                <tfoot>
-                                    <tr class="fw-bold">
-                                        <th colspan="4" class="text-end">
-                                            TOTAL HALAMAN INI
-                                        </th>
-
-                                        <th class="text-center">
-                                            {{ $pagePurchases->sum('total_qty') }}
-                                        </th>
-
-                                        <th class="text-end text-nowrap">
-                                            Rp {{ number_format($pagePurchases->sum('total'), 0, ',', '.') }}
-                                        </th>
-
-                                        <th colspan="3"></th>
-                                    </tr>
-                                </tfoot>
-                            @endif
-                        </table>
-                    </div>
-                </div>
-
-                @if ($purchases->hasPages())
-                    <div class="card-footer">
-                        {{ $purchases->links() }}
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h3 class="card-title mb-0">
-                        Ringkasan Supplier
-                    </h3>
-                </div>
-
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover mb-0 align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Supplier</th>
-                                    <th class="text-center">Transaksi</th>
-                                    <th class="text-end">Total</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                @forelse ($supplierSummary as $supplier)
-                                    <tr>
-                                        <td>
-                                            {{ $supplier->supplier_name }}
-                                        </td>
-
-                                        <td class="text-center">
-                                            {{ $supplier->total_transactions }}
-                                        </td>
-
-                                        <td class="text-end text-nowrap">
-                                            Rp {{ number_format($supplier->total_amount, 0, ',', '.') }}
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center text-muted py-3">
-                                            Belum ada pembelian completed.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="alert alert-info">
-                Ringkasan hanya menghitung pembelian dengan status <strong>completed</strong>.
-                Pembelian void tidak dihitung sebagai total pembelian aktif.
-            </div>
-
-            @if ($totalVoidTransactions > 0)
-                <div class="alert alert-warning">
-                    Ada {{ $totalVoidTransactions }} pembelian void dengan total
-                    <strong>Rp {{ number_format($totalVoidAmount, 0, ',', '.') }}</strong>
-                    pada periode ini.
+                    @if ($status)
+                        <span class="purchase-report-filter-chip">
+                            Status:
+                            {{ $statusLabels[$status] ?? $status }}
+                        </span>
+                    @endif
                 </div>
             @endif
-        </div>
-    </div>
+        </section>
 
+        {{-- Detail purchases --}}
+        <section class="crud-panel purchase-report-detail-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Detail Pembelian</h2>
+
+                    <p>
+                        Daftar transaksi pembelian berdasarkan periode
+                        dan filter yang diterapkan.
+                    </p>
+                </div>
+
+                <span class="crud-count-badge">
+                    {{ number_format($purchases->total(), 0, ',', '.') }}
+                    pembelian
+                </span>
+            </div>
+
+            <div class="purchase-report-result-summary">
+                <div>
+                    <span>Pembelian Ditampilkan</span>
+
+                    <strong>
+                        {{ number_format($purchases->count(), 0, ',', '.') }}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Qty Halaman Ini</span>
+
+                    <strong>
+                        {{ number_format($pageTotalQty, 0, ',', '.') }}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Nilai Halaman Ini</span>
+
+                    <strong>
+                        Rp
+                        {{ number_format($pageTotalAmount, 0, ',', '.') }}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Halaman</span>
+
+                    <strong>
+                        {{ $purchases->currentPage() }}
+                        dari
+                        {{ $purchases->lastPage() }}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table crud-table purchase-report-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Pembelian</th>
+                            <th>Supplier</th>
+                            <th>Jumlah Barang</th>
+                            <th>Total Pembelian</th>
+                            <th>Status</th>
+                            <th>Diinput Oleh</th>
+                            <th class="text-end">Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse ($purchases as $purchase)
+                            @php
+                                $isVoid = $purchase->status === 'void';
+                            @endphp
+
+                            <tr @class([
+                                'is-void' => $isVoid,
+                            ])>
+                                <td>
+                                    <div class="purchase-report-number-cell">
+                                        <a
+                                            href="{{ route('admin.purchases.show', $purchase) }}">
+                                            {{ $purchase->purchase_number }}
+                                        </a>
+
+                                        <span>
+                                            {{ $purchase->purchase_date?->format('d M Y') ?? '-' }}
+                                        </span>
+
+                                        <small>
+                                            Dicatat
+                                            {{ $purchase->created_at?->format('d M Y H:i') ?? '-' }}
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="purchase-report-supplier-cell">
+                                        <strong>
+                                            {{ $purchase->supplier?->name ?? 'Supplier tidak ditemukan' }}
+                                        </strong>
+
+                                        <small>
+                                            Supplier pembelian
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="purchase-report-qty-cell">
+                                        <strong>
+                                            {{ number_format($purchase->total_qty ?? 0, 0, ',', '.') }}
+                                        </strong>
+
+                                        <small>
+                                            unit dibeli
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="purchase-report-money-cell">
+                                        <strong>
+                                            Rp
+                                            {{ number_format($purchase->total, 0, ',', '.') }}
+                                        </strong>
+
+                                        <small>
+                                            {{ $isVoid ? 'Nilai dibatalkan' : 'Total pengadaan' }}
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @if ($purchase->status === 'completed')
+                                        <span class="crud-status is-success">
+                                            Selesai
+                                        </span>
+                                    @elseif ($purchase->status === 'void')
+                                        <span class="crud-status is-danger">
+                                            Void
+                                        </span>
+                                    @else
+                                        <span class="crud-status is-muted">
+                                            {{ ucfirst($purchase->status ?? '-') }}
+                                        </span>
+                                    @endif
+                                </td>
+
+                                <td>
+                                    <div class="crud-audit-cell">
+                                        <strong>
+                                            {{ $purchase->createdBy?->name ?? '-' }}
+                                        </strong>
+
+                                        <small>
+                                            {{ $purchase->created_at?->format('d M Y H:i') ?? '-' }}
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="crud-actions">
+                                        <a href="{{ route('admin.purchases.show', $purchase) }}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            Lihat Detail
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7">
+                                    <div class="crud-empty-state">
+                                        @if ($hasActiveFilters)
+                                            <strong>Pembelian tidak ditemukan</strong>
+
+                                            <p>
+                                                Tidak ada transaksi pembelian
+                                                yang sesuai dengan filter tersebut.
+                                            </p>
+
+                                            <a href="{{ route('admin.reports.purchases') }}"
+                                                class="btn btn-outline-primary btn-sm">
+                                                Reset Filter
+                                            </a>
+                                        @else
+                                            <strong>Belum ada pembelian</strong>
+
+                                            <p>
+                                                Transaksi pembelian stok akan
+                                                ditampilkan di laporan ini.
+                                            </p>
+
+                                            <a href="{{ route('admin.purchases.create') }}"
+                                                class="btn btn-primary btn-sm">
+                                                Buat Pembelian
+                                            </a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+
+                    @if ($purchases->count() > 0)
+                        <tfoot>
+                            <tr>
+                                <th colspan="2">
+                                    Total halaman ini
+                                </th>
+
+                                <th>
+                                    {{ number_format($pageTotalQty, 0, ',', '.') }}
+                                    unit
+                                </th>
+
+                                <th>
+                                    Rp
+                                    {{ number_format($pageTotalAmount, 0, ',', '.') }}
+                                </th>
+
+                                <th colspan="3"></th>
+                            </tr>
+                        </tfoot>
+                    @endif
+                </table>
+            </div>
+
+            @if ($purchases->hasPages())
+                <div class="crud-pagination">
+                    <span>
+                        Menampilkan {{ $purchases->firstItem() }}
+                        sampai {{ $purchases->lastItem() }}
+                        dari {{ $purchases->total() }} pembelian
+                    </span>
+
+                    {{ $purchases->withQueryString()->links() }}
+                </div>
+            @endif
+        </section>
+
+        {{-- Supplier summary --}}
+        <section class="crud-panel purchase-supplier-summary-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Ringkasan Supplier</h2>
+
+                    <p>
+                        Kontribusi pembelian selesai berdasarkan supplier.
+                    </p>
+                </div>
+
+                <span class="crud-count-badge">
+                    {{ $supplierSummary->count() }} supplier
+                </span>
+            </div>
+
+            <div class="purchase-supplier-notice">
+                Ringkasan hanya menghitung transaksi dengan status selesai.
+                Pembelian void tidak dimasukkan ke nominal pengadaan aktif.
+            </div>
+
+            <div class="table-responsive">
+                <table class="table crud-table purchase-supplier-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Supplier</th>
+                            <th>Jumlah Transaksi</th>
+                            <th>Total Pembelian</th>
+                            <th>Rata-rata Pembelian</th>
+                            <th>Kontribusi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse ($supplierSummary as $supplier)
+                            @php
+                                $averageSupplierPurchase =
+                                    $supplier->total_transactions > 0
+                                        ? $supplier->total_amount / $supplier->total_transactions
+                                        : 0;
+
+                                $supplierPercentage =
+                                    $totalPurchaseAmount > 0
+                                        ? min(100, max(0, ($supplier->total_amount / $totalPurchaseAmount) * 100))
+                                        : 0;
+                            @endphp
+
+                            <tr>
+                                <td>
+                                    <div class="purchase-supplier-name">
+                                        <strong>
+                                            {{ $supplier->supplier_name }}
+                                        </strong>
+
+                                        <small>
+                                            Supplier pengadaan
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="purchase-report-qty-cell">
+                                        <strong>
+                                            {{ number_format($supplier->total_transactions, 0, ',', '.') }}
+                                        </strong>
+
+                                        <small>transaksi</small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="purchase-report-money-cell">
+                                        <strong>
+                                            Rp
+                                            {{ number_format($supplier->total_amount, 0, ',', '.') }}
+                                        </strong>
+
+                                        <small>total pembelian</small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="purchase-report-money-cell">
+                                        <strong>
+                                            Rp
+                                            {{ number_format($averageSupplierPurchase, 0, ',', '.') }}
+                                        </strong>
+
+                                        <small>per transaksi</small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="purchase-supplier-contribution">
+                                        <div>
+                                            <span>Kontribusi</span>
+
+                                            <strong>
+                                                {{ number_format($supplierPercentage, 1, ',', '.') }}%
+                                            </strong>
+                                        </div>
+
+                                        <div class="purchase-supplier-progress">
+                                            <span
+                                                style="width:
+                                                    {{ $supplierPercentage }}%"></span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5">
+                                    <div class="crud-empty-state">
+                                        <strong>Belum ada ringkasan supplier</strong>
+
+                                        <p>
+                                            Tidak ada pembelian selesai pada
+                                            periode dan filter laporan ini.
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        @if ($totalVoidTransactions > 0)
+            <div class="purchase-report-void-notice">
+                <strong>
+                    Terdapat
+                    {{ number_format($totalVoidTransactions, 0, ',', '.') }}
+                    pembelian void
+                </strong>
+
+                <p>
+                    Total nominal pembelian yang dibatalkan pada periode ini
+                    adalah
+                    Rp
+                    {{ number_format($totalVoidAmount, 0, ',', '.') }}.
+                </p>
+            </div>
+        @endif
+    </div>
 @endsection
