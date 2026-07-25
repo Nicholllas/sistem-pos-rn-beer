@@ -1,0 +1,690 @@
+/* =========================================================
+   LOW STOCK PAGE
+   ========================================================= */
+
+.low-stock-page {
+    display: grid;
+    gap: 15px;
+}
+
+/* =========================================================
+   WARNING NOTICE
+   ========================================================= */
+
+.low-stock-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    color: #854d0e;
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+}
+
+.low-stock-notice-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    background: #d97706;
+    border-radius: 8px;
+}
+
+.low-stock-notice > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.low-stock-notice strong {
+    display: block;
+    font-size: 11px;
+}
+
+.low-stock-notice p {
+    margin: 4px 0 0;
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.low-stock-notice-count {
+    display: inline-flex;
+    flex-shrink: 0;
+    padding: 5px 9px;
+    color: #92400e;
+    font-size: 9px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid #fcd34d;
+    border-radius: 999px;
+}
+
+/* =========================================================
+   LOW STOCK SUMMARY
+   ========================================================= */
+
+.low-stock-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    background: #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.low-stock-summary > div {
+    padding: 12px 16px;
+    background: #fafcff;
+}
+
+.low-stock-summary span,
+.low-stock-summary strong {
+    display: block;
+}
+
+.low-stock-summary span {
+    color: #94a3b8;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.low-stock-summary strong {
+    margin-top: 5px;
+    color: #0f172a;
+    font-size: 13px;
+}
+
+/* =========================================================
+   LOW STOCK TABLE
+   ========================================================= */
+
+.low-stock-table {
+    min-width: 1050px;
+}
+
+.low-stock-table tbody tr.is-out-of-stock {
+    background: #fffafa;
+}
+
+.low-stock-table tbody tr.is-out-of-stock:hover {
+    background: #fef2f2;
+}
+
+/* =========================================================
+   CURRENT STOCK
+   ========================================================= */
+
+.low-stock-current,
+.low-stock-minimum {
+    min-width: 100px;
+}
+
+.low-stock-current strong,
+.low-stock-current span,
+.low-stock-minimum strong,
+.low-stock-minimum span {
+    display: block;
+}
+
+.low-stock-current strong,
+.low-stock-minimum strong {
+    font-size: 14px;
+    font-weight: 750;
+}
+
+.low-stock-current strong.is-danger {
+    color: #dc2626;
+}
+
+.low-stock-current strong.is-warning {
+    color: #d97706;
+}
+
+.low-stock-minimum strong {
+    color: #334155;
+}
+
+.low-stock-current span,
+.low-stock-minimum span {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+/* =========================================================
+   STOCK CONDITION
+   ========================================================= */
+
+.low-stock-condition {
+    min-width: 170px;
+}
+
+.low-stock-gap {
+    margin-top: 6px;
+    color: #64748b;
+    font-size: 8px;
+    line-height: 1.4;
+}
+
+.low-stock-gap strong {
+    color: #334155;
+}
+
+.low-stock-progress {
+    position: relative;
+    width: 145px;
+    height: 5px;
+    margin-top: 7px;
+    overflow: hidden;
+    background: #e5e7eb;
+    border-radius: 999px;
+}
+
+.low-stock-progress > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    transition: width 0.2s ease;
+}
+
+.low-stock-progress > span.is-warning {
+    background: #f59e0b;
+}
+
+.low-stock-progress > span.is-danger {
+    background: #dc2626;
+}
+
+/* =========================================================
+   LOW STOCK RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 767.98px) {
+    .low-stock-notice {
+        flex-wrap: wrap;
+    }
+
+    .low-stock-notice-count {
+        margin-left: 40px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .low-stock-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .low-stock-notice-count {
+        margin-left: 0;
+    }
+}
+
+/* =========================================================
+   STOCK LOG PAGE
+   ========================================================= */
+
+.stock-log-page {
+    display: grid;
+    gap: 15px;
+}
+
+/* =========================================================
+   STOCK LOG NOTICE
+   ========================================================= */
+
+.stock-log-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    color: #075985;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+}
+
+.stock-log-notice-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    background: #0284c7;
+    border-radius: 8px;
+}
+
+.stock-log-notice > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.stock-log-notice strong {
+    display: block;
+    font-size: 11px;
+}
+
+.stock-log-notice p {
+    margin: 4px 0 0;
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.stock-log-notice-count {
+    display: inline-flex;
+    flex-shrink: 0;
+    padding: 5px 9px;
+    color: #075985;
+    font-size: 9px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid #7dd3fc;
+    border-radius: 999px;
+}
+
+/* =========================================================
+   STOCK LOG SUMMARY
+   ========================================================= */
+
+.stock-log-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.stock-log-summary > div {
+    padding: 12px 16px;
+    background: #fafcff;
+}
+
+.stock-log-summary span,
+.stock-log-summary strong {
+    display: block;
+}
+
+.stock-log-summary span {
+    color: #94a3b8;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.stock-log-summary strong {
+    margin-top: 5px;
+    color: #0f172a;
+    font-size: 13px;
+}
+
+.stock-log-summary strong.is-positive {
+    color: #15803d;
+}
+
+.stock-log-summary strong.is-negative {
+    color: #dc2626;
+}
+
+.stock-log-summary strong.is-warning {
+    color: #d97706;
+}
+
+/* =========================================================
+   STOCK LOG TABLE
+   ========================================================= */
+
+.stock-log-table {
+    min-width: 1250px;
+}
+
+/* Date */
+
+.stock-log-date {
+    min-width: 90px;
+}
+
+.stock-log-date strong,
+.stock-log-date span {
+    display: block;
+}
+
+.stock-log-date strong {
+    color: #334155;
+    font-size: 10px;
+}
+
+.stock-log-date span {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+/* =========================================================
+   STOCK LOG FILTER
+   ========================================================= */
+
+.stock-log-filter-panel {
+    margin: 0;
+}
+
+.stock-log-filter-body {
+    padding: 18px;
+}
+
+.stock-log-filter-body .form-label {
+    margin-bottom: 7px;
+    color: #334155;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.stock-log-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 2px;
+}
+
+.stock-log-filter-actions .btn {
+    min-width: 125px;
+    min-height: 41px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.stock-log-active-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 12px 18px;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+}
+
+.stock-log-filter-label {
+    margin-right: 2px;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.stock-log-filter-chip {
+    display: inline-flex;
+    padding: 5px 8px;
+    color: #1e40af;
+    font-size: 9px;
+    font-weight: 600;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+}
+
+/* =========================================================
+   STOCK LOG PRODUCT WITHOUT AVATAR
+   ========================================================= */
+
+.stock-log-product-info {
+    min-width: 225px;
+}
+
+.stock-log-product-info strong,
+.stock-log-product-info span,
+.stock-log-product-info small {
+    display: block;
+}
+
+.stock-log-product-info strong {
+    max-width: 260px;
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.stock-log-product-info span {
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 9px;
+}
+
+.stock-log-product-info small {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+@media (max-width: 575.98px) {
+    .stock-log-filter-body {
+        padding: 15px;
+    }
+
+    .stock-log-filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .stock-log-filter-actions .btn {
+        width: 100%;
+    }
+
+    .stock-log-active-filters {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+}
+
+/* Movement type */
+
+.stock-log-type {
+    display: inline-flex;
+    padding: 5px 8px;
+    font-size: 9px;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid;
+    border-radius: 999px;
+}
+
+.stock-log-type.is-in {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.stock-log-type.is-out {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.stock-log-type.is-adjustment {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.stock-log-type.is-default {
+    color: #475569;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+/* Quantity change */
+
+.stock-log-change {
+    display: inline-flex;
+    min-width: 46px;
+    justify-content: center;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 750;
+    border: 1px solid;
+    border-radius: 8px;
+}
+
+.stock-log-change.is-positive {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.stock-log-change.is-negative {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.stock-log-change.is-neutral {
+    color: #475569;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+/* Before and after */
+
+.stock-log-flow {
+    display: grid;
+    grid-template-columns: 58px auto 58px;
+    align-items: center;
+    gap: 6px;
+    min-width: 145px;
+}
+
+.stock-log-flow > div {
+    padding: 7px 6px;
+    text-align: center;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.stock-log-flow > div.is-result {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.stock-log-flow span,
+.stock-log-flow strong {
+    display: block;
+}
+
+.stock-log-flow > div span {
+    color: #94a3b8;
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.stock-log-flow > div strong {
+    margin-top: 3px;
+    color: #334155;
+    font-size: 10px;
+}
+
+.stock-log-flow > div.is-result strong {
+    color: #1d4ed8;
+}
+
+.stock-log-flow-arrow {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+/* User */
+
+.stock-log-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 125px;
+}
+
+.stock-log-user-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 29px;
+    height: 29px;
+    color: #475569;
+    font-size: 9px;
+    font-weight: 800;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.stock-log-user strong,
+.stock-log-user small {
+    display: block;
+}
+
+.stock-log-user strong {
+    max-width: 130px;
+    overflow: hidden;
+    color: #334155;
+    font-size: 9px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.stock-log-user small {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+/* Notes */
+
+.stock-log-note {
+    max-width: 290px;
+    min-width: 190px;
+    color: #475569;
+    font-size: 9px;
+    line-height: 1.55;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   STOCK LOG RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 767.98px) {
+    .stock-log-notice {
+        flex-wrap: wrap;
+    }
+
+    .stock-log-notice-count {
+        margin-left: 40px;
+    }
+
+    .stock-log-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .stock-log-notice-count {
+        margin-left: 0;
+    }
+
+    .stock-log-summary {
+        grid-template-columns: 1fr;
+    }
+}

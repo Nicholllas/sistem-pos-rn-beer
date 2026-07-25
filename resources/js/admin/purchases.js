@@ -1,7 +1,11 @@
 import Swal from "sweetalert2";
-import { Modal } from "bootstrap";
+
+/* =========================================================
+   DOM ELEMENTS
+   ========================================================= */
 
 const purchaseForm = document.getElementById("purchaseForm");
+
 const purchaseItemsBody = document.getElementById("purchaseItemsBody");
 
 const addPurchaseItemButton = document.getElementById("addPurchaseItemButton");
@@ -18,10 +22,55 @@ const purchaseGrandTotalSummary = document.getElementById(
     "purchaseGrandTotalSummary",
 );
 
+const purchaseSupplierSelect = document.getElementById("supplier_id");
+
+const purchaseFinanceAccountSelect =
+    document.getElementById("finance_account_id");
+
+const purchaseDateInput = document.getElementById("purchase_date");
+
+/* Finance account preview */
+
+const purchaseFinanceReference = document.getElementById(
+    "purchaseFinanceReference",
+);
+
+const purchaseFinanceAccountName = document.getElementById(
+    "purchaseFinanceAccountName",
+);
+
+const purchaseFinanceAccountCode = document.getElementById(
+    "purchaseFinanceAccountCode",
+);
+
+const purchaseFinanceCurrentBalance = document.getElementById(
+    "purchaseFinanceCurrentBalance",
+);
+
+const purchaseFinancePurchaseTotal = document.getElementById(
+    "purchaseFinancePurchaseTotal",
+);
+
+const purchaseFinanceRemainingBalance = document.getElementById(
+    "purchaseFinanceRemainingBalance",
+);
+
+const purchaseFinanceBalanceMessage = document.getElementById(
+    "purchaseFinanceBalanceMessage",
+);
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
 let purchaseProducts = [];
 let oldPurchaseItems = [];
 let purchaseItemIndex = 0;
 let isPurchaseSubmitting = false;
+
+/* =========================================================
+   GENERAL HELPERS
+   ========================================================= */
 
 function parseJsonElement(elementId) {
     const element = document.getElementById(elementId);
@@ -41,20 +90,24 @@ function parseJsonElement(elementId) {
 
 function escapeHtml(value) {
     return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 function formatRupiah(value) {
+    const number = Number(value);
+
+    const safeValue = Number.isFinite(number) ? number : 0;
+
     return new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-    }).format(Number(value) || 0);
+    }).format(safeValue);
 }
 
 function parseInteger(value) {
@@ -69,6 +122,52 @@ function parseAmount(value) {
     return Number.isFinite(number) ? number : 0;
 }
 
+function updatePurchaseSelectTitle(selectElement) {
+    if (!selectElement) {
+        return;
+    }
+
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+    if (!selectedOption || !selectElement.value) {
+        selectElement.removeAttribute("title");
+
+        return;
+    }
+
+    selectElement.title =
+        selectedOption.dataset.fullLabel || selectedOption.textContent.trim();
+}
+
+/* =========================================================
+   SWEETALERT HELPER
+   ========================================================= */
+
+async function showPurchaseAlert({
+    icon = "warning",
+    title,
+    text,
+    focusElement = null,
+}) {
+    await Swal.fire({
+        icon,
+        title,
+        text,
+        confirmButtonText: "Mengerti",
+        customClass: {
+            popup: "crud-alert-popup",
+            confirmButton: "btn btn-primary px-4",
+        },
+        buttonsStyling: false,
+    });
+
+    focusElement?.focus();
+}
+
+/* =========================================================
+   PRODUCT OPTIONS
+   ========================================================= */
+
 function buildProductOptions(selectedProductId = "") {
     let options = `
         <option value="">
@@ -80,26 +179,35 @@ function buildProductOptions(selectedProductId = "") {
         const selected =
             String(product.id) === String(selectedProductId) ? "selected" : "";
 
-        const category = product.category
-            ? ` · ${escapeHtml(product.category)}`
-            : "";
+        const productName = String(product.name || "Produk");
+
+        const productStock = Math.max(parseInteger(product.stock), 0);
+
+        /*
+         * Tampilan pilihan produk:
+         * Nama produk + stok tersisa.
+         */
+        const productLabel = `${productName} · Stok tersisa ${productStock}`;
 
         options += `
             <option
-                value="${product.id}"
-                data-cost-price="${product.cost_price}"
+                value="${escapeHtml(product.id)}"
+                data-cost-price="${escapeHtml(product.cost_price ?? 0)}"
+                data-stock="${productStock}"
+                data-full-label="${escapeHtml(productLabel)}"
                 ${selected}
             >
-                ${escapeHtml(product.name)}
-                · ${escapeHtml(product.sku || "-")}
-                · Stok ${product.stock}
-                ${category}
+                ${escapeHtml(productLabel)}
             </option>
         `;
     });
 
     return options;
 }
+
+/* =========================================================
+   PURCHASE ITEM ROW
+   ========================================================= */
 
 function createPurchaseRow(item = {}) {
     const rowIndex = purchaseItemIndex++;
@@ -108,11 +216,16 @@ function createPurchaseRow(item = {}) {
     const quantity = item.qty ?? 1;
     const costPrice = item.cost_price ?? "";
 
-    const row = document.createElement("tr");
+    const row = document.createElement("div");
+
     row.className = "purchase-item-row";
 
     row.innerHTML = `
-        <td>
+        <div class="purchase-item-field purchase-item-product">
+            <span class="purchase-item-mobile-label">
+                Produk
+            </span>
+
             <select
                 name="items[${rowIndex}][product_id]"
                 class="form-select crud-form-control purchase-product-select"
@@ -120,9 +233,13 @@ function createPurchaseRow(item = {}) {
             >
                 ${buildProductOptions(productId)}
             </select>
-        </td>
+        </div>
 
-        <td>
+        <div class="purchase-item-field purchase-item-quantity">
+            <span class="purchase-item-mobile-label">
+                Qty
+            </span>
+
             <input
                 type="number"
                 name="items[${rowIndex}][qty]"
@@ -132,16 +249,22 @@ function createPurchaseRow(item = {}) {
                 value="${escapeHtml(quantity)}"
                 required
             >
-        </td>
+        </div>
 
-        <td>
-            <div class="input-group">
-                <span class="input-group-text">Rp</span>
+        <div class="purchase-item-field purchase-item-cost">
+            <span class="purchase-item-mobile-label">
+                Harga Modal
+            </span>
+
+            <div class="purchase-cost-input-group">
+                <span class="purchase-cost-prefix">
+                    Rp
+                </span>
 
                 <input
                     type="number"
                     name="items[${rowIndex}][cost_price]"
-                    class="form-control crud-form-control purchase-cost-input"
+                    class="form-control purchase-cost-input"
                     min="0"
                     step="1"
                     value="${escapeHtml(costPrice)}"
@@ -149,13 +272,19 @@ function createPurchaseRow(item = {}) {
                     required
                 >
             </div>
-        </td>
+        </div>
 
-        <td class="purchase-subtotal">
-            Rp 0
-        </td>
+        <div class="purchase-item-field purchase-item-subtotal-wrapper">
+            <span class="purchase-item-mobile-label">
+                Subtotal
+            </span>
 
-        <td class="text-end">
+            <strong class="purchase-subtotal">
+                Rp 0
+            </strong>
+        </div>
+
+        <div class="purchase-item-action">
             <button
                 type="button"
                 class="purchase-remove-button"
@@ -164,10 +293,14 @@ function createPurchaseRow(item = {}) {
             >
                 &times;
             </button>
-        </td>
+        </div>
     `;
 
     purchaseItemsBody?.appendChild(row);
+
+    const productSelect = row.querySelector(".purchase-product-select");
+
+    updatePurchaseSelectTitle(productSelect);
     updatePurchaseRow(row);
     updatePurchaseSummary();
 
@@ -193,8 +326,11 @@ function getRowValues(row) {
         productSelect,
         quantityInput,
         costPriceInput,
+
         productId: productSelect?.value || "",
+
         quantity: parseInteger(quantityInput?.value),
+
         costPrice: parseAmount(costPriceInput?.value),
     };
 }
@@ -202,7 +338,11 @@ function getRowValues(row) {
 function updatePurchaseRow(row) {
     const { quantity, costPrice } = getRowValues(row);
 
-    const subtotal = Math.max(quantity, 0) * Math.max(costPrice, 0);
+    const safeQuantity = Math.max(quantity, 0);
+
+    const safeCostPrice = Math.max(costPrice, 0);
+
+    const subtotal = safeQuantity * safeCostPrice;
 
     const subtotalElement = row.querySelector(".purchase-subtotal");
 
@@ -210,6 +350,10 @@ function updatePurchaseRow(row) {
         subtotalElement.textContent = formatRupiah(subtotal);
     }
 }
+
+/* =========================================================
+   PURCHASE SUMMARY
+   ========================================================= */
 
 function getPurchaseSummary() {
     let itemCount = 0;
@@ -219,13 +363,20 @@ function getPurchaseSummary() {
     getPurchaseRows().forEach((row) => {
         const { productId, quantity, costPrice } = getRowValues(row);
 
-        if (productId) {
-            itemCount++;
+        /*
+         * Baris kosong tidak ikut dihitung.
+         */
+        if (!productId) {
+            return;
         }
 
-        totalQuantity += Math.max(quantity, 0);
+        const safeQuantity = Math.max(quantity, 0);
 
-        grandTotal += Math.max(quantity, 0) * Math.max(costPrice, 0);
+        const safeCostPrice = Math.max(costPrice, 0);
+
+        itemCount++;
+        totalQuantity += safeQuantity;
+        grandTotal += safeQuantity * safeCostPrice;
     });
 
     return {
@@ -253,7 +404,13 @@ function updatePurchaseSummary() {
     if (grandTotalText) {
         grandTotalText.textContent = formatRupiah(grandTotal);
     }
+
+    updatePurchaseFinancePreview();
 }
+
+/* =========================================================
+   DUPLICATE PRODUCT
+   ========================================================= */
 
 function getDuplicateProductIds() {
     const selectedProductIds = getPurchaseRows()
@@ -276,45 +433,173 @@ function getDuplicateProductIds() {
     return [...duplicates];
 }
 
-async function validatePurchaseForm() {
-    const supplierInput = document.getElementById("supplier_id");
+/* =========================================================
+   FINANCE ACCOUNT
+   ========================================================= */
 
-    if (!supplierInput?.value) {
-        await Swal.fire({
-            icon: "warning",
+function getSelectedFinanceAccount() {
+    if (!purchaseFinanceAccountSelect?.value) {
+        return null;
+    }
+
+    const selectedOption =
+        purchaseFinanceAccountSelect.options[
+            purchaseFinanceAccountSelect.selectedIndex
+        ];
+
+    if (!selectedOption) {
+        return null;
+    }
+
+    return {
+        id: purchaseFinanceAccountSelect.value,
+
+        code: selectedOption.dataset.code || "-",
+
+        name: selectedOption.dataset.name || "-",
+
+        balance: Number(selectedOption.dataset.balance) || 0,
+    };
+}
+
+function setPurchaseFinanceState(element, state) {
+    if (!element) {
+        return;
+    }
+
+    element.classList.remove("is-success", "is-danger", "is-neutral");
+
+    element.classList.add(state);
+}
+
+function updatePurchaseFinancePreview() {
+    const account = getSelectedFinanceAccount();
+
+    const { grandTotal } = getPurchaseSummary();
+
+    if (purchaseFinanceReference) {
+        purchaseFinanceReference.hidden = !account;
+    }
+
+    if (!account) {
+        return;
+    }
+
+    const remainingBalance = account.balance - grandTotal;
+
+    if (purchaseFinanceAccountName) {
+        purchaseFinanceAccountName.textContent = account.name;
+    }
+
+    if (purchaseFinanceAccountCode) {
+        purchaseFinanceAccountCode.textContent = account.code;
+    }
+
+    if (purchaseFinanceCurrentBalance) {
+        purchaseFinanceCurrentBalance.textContent = formatRupiah(
+            account.balance,
+        );
+    }
+
+    if (purchaseFinancePurchaseTotal) {
+        purchaseFinancePurchaseTotal.textContent = formatRupiah(grandTotal);
+    }
+
+    if (purchaseFinanceRemainingBalance) {
+        purchaseFinanceRemainingBalance.textContent =
+            formatRupiah(remainingBalance);
+
+        setPurchaseFinanceState(
+            purchaseFinanceRemainingBalance,
+            remainingBalance < 0 ? "is-danger" : "is-success",
+        );
+    }
+
+    if (!purchaseFinanceBalanceMessage) {
+        return;
+    }
+
+    if (grandTotal <= 0) {
+        purchaseFinanceBalanceMessage.textContent =
+            "Tambahkan produk untuk melihat estimasi saldo setelah pembelian.";
+
+        setPurchaseFinanceState(purchaseFinanceBalanceMessage, "is-neutral");
+
+        return;
+    }
+
+    if (remainingBalance < 0) {
+        purchaseFinanceBalanceMessage.textContent = `Saldo akun kurang ${formatRupiah(
+            Math.abs(remainingBalance),
+        )} untuk membayar pembelian ini.`;
+
+        setPurchaseFinanceState(purchaseFinanceBalanceMessage, "is-danger");
+
+        return;
+    }
+
+    purchaseFinanceBalanceMessage.textContent = `Saldo mencukupi. Estimasi sisa saldo ${formatRupiah(
+        remainingBalance,
+    )}.`;
+
+    setPurchaseFinanceState(purchaseFinanceBalanceMessage, "is-success");
+}
+
+/* =========================================================
+   FORM VALIDATION
+   ========================================================= */
+
+async function validatePurchaseForm() {
+    if (!purchaseSupplierSelect?.value) {
+        await showPurchaseAlert({
             title: "Supplier belum dipilih",
             text: "Pilih supplier untuk transaksi pembelian ini.",
-            confirmButtonText: "Mengerti",
-            customClass: {
-                popup: "crud-alert-popup",
-                confirmButton: "btn btn-primary px-4",
-            },
-            buttonsStyling: false,
+            focusElement: purchaseSupplierSelect,
         });
 
-        supplierInput?.focus();
+        return false;
+    }
+
+    if (!purchaseFinanceAccountSelect?.value) {
+        await showPurchaseAlert({
+            title: "Akun pembayaran belum dipilih",
+            text: "Pilih akun yang digunakan untuk membayar pembelian ini.",
+            focusElement: purchaseFinanceAccountSelect,
+        });
+
+        return false;
+    }
+
+    if (!purchaseDateInput?.value) {
+        await showPurchaseAlert({
+            title: "Tanggal pembelian belum diisi",
+            text: "Masukkan tanggal transaksi pembelian.",
+            focusElement: purchaseDateInput,
+        });
 
         return false;
     }
 
     const rows = getPurchaseRows();
 
-    if (rows.length === 0) {
-        await Swal.fire({
-            icon: "warning",
+    const selectedRows = rows.filter((row) => {
+        return Boolean(getRowValues(row).productId);
+    });
+
+    if (selectedRows.length === 0) {
+        await showPurchaseAlert({
             title: "Produk belum ditambahkan",
-            text: "Tambahkan minimal satu produk ke pembelian.",
-            confirmButtonText: "Mengerti",
-            customClass: {
-                popup: "crud-alert-popup",
-                confirmButton: "btn btn-primary px-4",
-            },
-            buttonsStyling: false,
+            text: "Pilih minimal satu produk untuk transaksi pembelian.",
+            focusElement: rows[0]?.querySelector(".purchase-product-select"),
         });
 
         return false;
     }
 
+    /*
+     * Semua baris harus lengkap.
+     * Baris tambahan yang masih kosong juga dianggap belum valid.
+     */
     for (const row of rows) {
         const {
             productSelect,
@@ -326,66 +611,85 @@ async function validatePurchaseForm() {
         } = getRowValues(row);
 
         if (!productId) {
-            await Swal.fire({
-                icon: "warning",
+            await showPurchaseAlert({
                 title: "Produk belum dipilih",
-                text: "Pastikan setiap baris memiliki produk.",
-                confirmButtonText: "Mengerti",
-                customClass: {
-                    popup: "crud-alert-popup",
-                    confirmButton: "btn btn-primary px-4",
-                },
-                buttonsStyling: false,
+                text: "Pilih produk atau hapus baris yang tidak digunakan.",
+                focusElement: productSelect,
             });
-
-            productSelect?.focus();
 
             return false;
         }
 
-        if (quantity < 1) {
-            await Swal.fire({
-                icon: "warning",
+        if (quantityInput?.value === "" || quantity < 1) {
+            await showPurchaseAlert({
                 title: "Qty tidak valid",
                 text: "Jumlah pembelian minimal 1 unit.",
-                confirmButtonText: "Mengerti",
-                customClass: {
-                    popup: "crud-alert-popup",
-                    confirmButton: "btn btn-primary px-4",
-                },
-                buttonsStyling: false,
+                focusElement: quantityInput,
             });
-
-            quantityInput?.focus();
 
             return false;
         }
 
-        if (costPrice < 0) {
-            await Swal.fire({
-                icon: "warning",
+        if (costPriceInput?.value === "" || costPrice < 0) {
+            await showPurchaseAlert({
                 title: "Harga modal tidak valid",
-                text: "Harga modal tidak boleh bernilai negatif.",
-                confirmButtonText: "Mengerti",
-                customClass: {
-                    popup: "crud-alert-popup",
-                    confirmButton: "btn btn-primary px-4",
-                },
-                buttonsStyling: false,
+                text: "Harga modal wajib diisi dan tidak boleh negatif.",
+                focusElement: costPriceInput,
             });
-
-            costPriceInput?.focus();
 
             return false;
         }
     }
 
     if (getDuplicateProductIds().length > 0) {
-        await Swal.fire({
-            icon: "warning",
+        await showPurchaseAlert({
             title: "Produk tercatat lebih dari sekali",
             text: "Gabungkan produk yang sama menjadi satu baris dan sesuaikan qty-nya.",
-            confirmButtonText: "Mengerti",
+        });
+
+        return false;
+    }
+
+    const financeAccount = getSelectedFinanceAccount();
+
+    const { grandTotal } = getPurchaseSummary();
+
+    if (financeAccount && grandTotal > financeAccount.balance) {
+        const shortage = grandTotal - financeAccount.balance;
+
+        await Swal.fire({
+            icon: "error",
+            title: "Saldo akun tidak mencukupi",
+            html: `
+                <div class="pos-confirmation">
+                    <div class="pos-confirmation-row">
+                        <span>Saldo tersedia</span>
+
+                        <strong>
+                            ${formatRupiah(financeAccount.balance)}
+                        </strong>
+                    </div>
+
+                    <div class="pos-confirmation-row">
+                        <span>Total pembelian</span>
+
+                        <strong>
+                            ${formatRupiah(grandTotal)}
+                        </strong>
+                    </div>
+
+                    <div class="pos-confirmation-divider"></div>
+
+                    <div class="pos-confirmation-row">
+                        <span>Kekurangan saldo</span>
+
+                        <strong>
+                            ${formatRupiah(shortage)}
+                        </strong>
+                    </div>
+                </div>
+            `,
+            confirmButtonText: "Periksa Kembali",
             customClass: {
                 popup: "crud-alert-popup",
                 confirmButton: "btn btn-primary px-4",
@@ -393,17 +697,27 @@ async function validatePurchaseForm() {
             buttonsStyling: false,
         });
 
+        purchaseFinanceAccountSelect?.focus();
+
         return false;
     }
 
     return true;
 }
 
+/* =========================================================
+   ADD PRODUCT
+   ========================================================= */
+
 addPurchaseItemButton?.addEventListener("click", function () {
     const newRow = createPurchaseRow();
 
     newRow.querySelector(".purchase-product-select")?.focus();
 });
+
+/* =========================================================
+   PRODUCT CHANGE
+   ========================================================= */
 
 purchaseItemsBody?.addEventListener("change", async function (event) {
     const productSelect = event.target.closest(".purchase-product-select");
@@ -428,55 +742,81 @@ purchaseItemsBody?.addEventListener("change", async function (event) {
 
         productSelect.value = "";
 
-        await Swal.fire({
-            icon: "warning",
+        const costPriceInput = row.querySelector(".purchase-cost-input");
+
+        if (costPriceInput) {
+            costPriceInput.value = "";
+        }
+
+        updatePurchaseSelectTitle(productSelect);
+
+        updatePurchaseRow(row);
+        updatePurchaseSummary();
+
+        await showPurchaseAlert({
             title: "Produk sudah ditambahkan",
             text: `${productName} sudah ada di daftar pembelian.`,
-            confirmButtonText: "Mengerti",
-            customClass: {
-                popup: "crud-alert-popup",
-                confirmButton: "btn btn-primary px-4",
-            },
-            buttonsStyling: false,
+            focusElement: productSelect,
         });
 
-        productSelect.focus();
+        return;
+    }
+
+    updatePurchaseSelectTitle(productSelect);
+
+    const costPriceInput = row.querySelector(".purchase-cost-input");
+
+    const selectedOption = productSelect.options[productSelect.selectedIndex];
+
+    if (!productSelect.value) {
+        if (costPriceInput) {
+            costPriceInput.value = "";
+        }
+
         updatePurchaseRow(row);
         updatePurchaseSummary();
 
         return;
     }
 
-    const costPriceInput = row.querySelector(".purchase-cost-input");
-
-    const selectedOption = productSelect.options[productSelect.selectedIndex];
-
     const defaultCostPrice = parseAmount(selectedOption?.dataset.costPrice);
 
-    if (
-        costPriceInput &&
-        parseAmount(costPriceInput.value) <= 0 &&
-        defaultCostPrice > 0
-    ) {
-        costPriceInput.value = Math.round(defaultCostPrice);
+    /*
+     * Saat produk diganti, harga modal awal
+     * mengikuti cost price produk terpilih.
+     * User masih dapat mengubahnya manual.
+     */
+    if (costPriceInput) {
+        costPriceInput.value =
+            defaultCostPrice > 0 ? Math.round(defaultCostPrice) : 0;
     }
 
     updatePurchaseRow(row);
     updatePurchaseSummary();
 });
 
+/* =========================================================
+   QTY AND COST INPUT
+   ========================================================= */
+
 purchaseItemsBody?.addEventListener("input", function (event) {
+    if (!event.target.matches(".purchase-qty-input, .purchase-cost-input")) {
+        return;
+    }
+
     const row = event.target.closest(".purchase-item-row");
 
     if (!row) {
         return;
     }
 
-    if (event.target.matches(".purchase-qty-input, .purchase-cost-input")) {
-        updatePurchaseRow(row);
-        updatePurchaseSummary();
-    }
+    updatePurchaseRow(row);
+    updatePurchaseSummary();
 });
+
+/* =========================================================
+   REMOVE PRODUCT
+   ========================================================= */
 
 purchaseItemsBody?.addEventListener("click", function (event) {
     const removeButton = event.target.closest(".purchase-remove-button");
@@ -489,12 +829,29 @@ purchaseItemsBody?.addEventListener("click", function (event) {
 
     row?.remove();
 
+    /*
+     * Form selalu menyisakan minimal
+     * satu baris produk.
+     */
     if (getPurchaseRows().length === 0) {
         createPurchaseRow();
     }
 
     updatePurchaseSummary();
 });
+
+/* =========================================================
+   FINANCE ACCOUNT CHANGE
+   ========================================================= */
+
+purchaseFinanceAccountSelect?.addEventListener("change", function () {
+    updatePurchaseSelectTitle(this);
+    updatePurchaseFinancePreview();
+});
+
+/* =========================================================
+   FORM SUBMIT
+   ========================================================= */
 
 purchaseForm?.addEventListener("submit", async function (event) {
     event.preventDefault();
@@ -511,12 +868,20 @@ purchaseForm?.addEventListener("submit", async function (event) {
 
     const { itemCount, totalQuantity, grandTotal } = getPurchaseSummary();
 
-    const supplierSelect = document.getElementById("supplier_id");
-
     const supplierName =
-        supplierSelect?.options[
-            supplierSelect.selectedIndex
+        purchaseSupplierSelect?.options[
+            purchaseSupplierSelect.selectedIndex
         ]?.textContent?.trim() || "-";
+
+    const financeAccount = getSelectedFinanceAccount();
+
+    const financeAccountLabel = financeAccount
+        ? `${financeAccount.code} · ${financeAccount.name}`
+        : "-";
+
+    const remainingBalance = financeAccount
+        ? financeAccount.balance - grandTotal
+        : 0;
 
     const result = await Swal.fire({
         icon: "question",
@@ -525,24 +890,52 @@ purchaseForm?.addEventListener("submit", async function (event) {
                 <div class="pos-confirmation">
                     <div class="pos-confirmation-row">
                         <span>Supplier</span>
-                        <strong>${escapeHtml(supplierName)}</strong>
+
+                        <strong>
+                            ${escapeHtml(supplierName)}
+                        </strong>
+                    </div>
+
+                    <div class="pos-confirmation-row">
+                        <span>Akun pembayaran</span>
+
+                        <strong>
+                            ${escapeHtml(financeAccountLabel)}
+                        </strong>
                     </div>
 
                     <div class="pos-confirmation-row">
                         <span>Jenis produk</span>
-                        <strong>${itemCount}</strong>
+
+                        <strong>
+                            ${itemCount.toLocaleString("id-ID")}
+                        </strong>
                     </div>
 
                     <div class="pos-confirmation-row">
                         <span>Total qty</span>
-                        <strong>${totalQuantity}</strong>
+
+                        <strong>
+                            ${totalQuantity.toLocaleString("id-ID")}
+                        </strong>
                     </div>
 
                     <div class="pos-confirmation-divider"></div>
 
                     <div class="pos-confirmation-row">
                         <span>Total pembelian</span>
-                        <strong>${formatRupiah(grandTotal)}</strong>
+
+                        <strong>
+                            ${formatRupiah(grandTotal)}
+                        </strong>
+                    </div>
+
+                    <div class="pos-confirmation-row">
+                        <span>Estimasi sisa saldo</span>
+
+                        <strong>
+                            ${formatRupiah(remainingBalance)}
+                        </strong>
                     </div>
                 </div>
             `,
@@ -568,14 +961,19 @@ purchaseForm?.addEventListener("submit", async function (event) {
 
     if (purchaseSubmitButton) {
         purchaseSubmitButton.disabled = true;
+
         purchaseSubmitButton.textContent = "Menyimpan pembelian...";
     }
 
+    /*
+     * Native submit tidak memicu kembali
+     * event listener submit di atas.
+     */
     purchaseForm.submit();
 });
 
 /* =========================================================
-   INITIAL PURCHASE ITEMS
+   INITIAL PURCHASE DATA
    ========================================================= */
 
 if (purchaseItemsBody) {
@@ -595,7 +993,15 @@ if (purchaseItemsBody) {
 }
 
 /* =========================================================
-   AUTO OPEN VOID MODAL AFTER VALIDATION ERROR
+   INITIAL FINANCE PREVIEW
+   ========================================================= */
+
+updatePurchaseSelectTitle(purchaseFinanceAccountSelect);
+
+updatePurchaseFinancePreview();
+
+/* =========================================================
+   AUTO OPEN VOID MODAL
    ========================================================= */
 
 const voidPurchaseModal = document.getElementById("voidPurchaseModal");

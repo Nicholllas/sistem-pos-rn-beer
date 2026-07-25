@@ -11,6 +11,7 @@ use App\Models\SalePayment;
 use App\Models\StockBatch;
 use App\Models\StockMovement;
 use App\Models\User;
+use App\Services\Finance\FinancePostingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,10 @@ use Illuminate\Validation\ValidationException;
 
 class SaleController extends Controller
 {
+    public function __construct(
+        private readonly FinancePostingService $financePostingService
+    ) {}
+
     public function pos()
     {
         $products = Product::with('category')
@@ -174,7 +179,10 @@ class SaleController extends Controller
                 $product = $item['product'];
                 $qty = $item['qty'];
 
-                $fifoCost = $this->consumeFifoBatches($product, $qty);
+                $fifoCost = $this->consumeFifoBatches(
+                    $product,
+                    $qty
+                );
 
                 $saleItem = SaleItem::create([
                     'sale_id' => $sale->id,
@@ -212,6 +220,16 @@ class SaleController extends Controller
                     'created_by' => Auth::id(),
                 ]);
             }
+
+            /*
+             * Posting Finance dilakukan masih di dalam DB transaction.
+             *
+             * Jika mapping Finance belum lengkap, seluruh checkout akan rollback:
+             * sale, payment, sale item, FIFO, stok, dan stock movement.
+             *
+             * Tidak akan ada transaksi setengah tersimpan.
+             */
+            $this->financePostingService->postSale($sale);
 
             return $sale;
         });
@@ -442,6 +460,11 @@ class SaleController extends Controller
                 'voided_by' => Auth::id(),
                 'void_reason' => $validated['void_reason'],
             ]);
+
+            $this->financePostingService->voidSale(
+                $sale,
+                $validated['void_reason']
+            );
         });
 
         return redirect()

@@ -2,7 +2,7 @@
 
 @section('title', 'Riwayat Pembelian')
 @section('page-title', 'Riwayat Pembelian')
-@section('page-subtitle', 'Pantau pembelian stok, supplier, nilai pembelian, dan status transaksi.')
+@section('page-subtitle', 'Pantau pembelian stok, supplier, nilai pembelian, akun pembayaran, dan status transaksi.')
 
 @section('page-actions')
     <a href="{{ route('admin.purchases.create') }}" class="btn btn-primary">
@@ -11,20 +11,22 @@
 @endsection
 
 @section('content')
-    <div class="crud-page">
-        <section class="crud-panel">
+    <div class="crud-page purchase-history-page">
+        <section class="crud-panel purchase-history-panel">
             <div class="crud-panel-header">
                 <div>
                     <h2>Riwayat Pembelian Stok</h2>
 
                     <p>
-                        Total {{ number_format($purchases->total(), 0, ',', '.') }}
+                        Total
+                        {{ number_format($purchases->total(), 0, ',', '.') }}
                         transaksi pembelian tercatat.
                     </p>
                 </div>
 
                 <span class="crud-count-badge">
-                    {{ $purchases->total() }} pembelian
+                    {{ number_format($purchases->total(), 0, ',', '.') }}
+                    pembelian
                 </span>
             </div>
 
@@ -35,6 +37,7 @@
                             <th>Pembelian</th>
                             <th>Supplier</th>
                             <th>Total</th>
+                            <th>Akun Pembayaran</th>
                             <th>Status</th>
                             <th>Diinput Oleh</th>
                             <th class="text-end">Aksi</th>
@@ -45,13 +48,17 @@
                         @forelse ($purchases as $purchase)
                             @php
                                 $isVoid = $purchase->status === 'void';
+
                                 $supplierName = $purchase->supplier?->name ?? 'Supplier tidak ditemukan';
                             @endphp
 
-                            <tr @class(['is-void' => $isVoid])>
+                            <tr @class([
+                                'is-void' => $isVoid,
+                            ])>
                                 <td>
                                     <div class="purchase-number-cell">
-                                        <a href="{{ route('admin.purchases.show', $purchase) }}">
+                                        <a
+                                            href="{{ route('admin.purchases.show', $purchase) }}">
                                             {{ $purchase->purchase_number }}
                                         </a>
 
@@ -67,22 +74,22 @@
                                 </td>
 
                                 <td>
-                                    <div class="purchase-supplier-cell">
-                                        <span class="purchase-supplier-avatar">
-                                            {{ strtoupper(mb_substr($supplierName, 0, 1)) }}
-                                        </span>
+                                    <div class="purchase-supplier-info">
+                                        <strong>
+                                            {{ $supplierName }}
+                                        </strong>
 
-                                        <div>
-                                            <strong>{{ $supplierName }}</strong>
-                                            <small>Supplier pembelian</small>
-                                        </div>
+                                        <small>
+                                            Supplier pembelian
+                                        </small>
                                     </div>
                                 </td>
 
                                 <td>
                                     <div class="purchase-total-cell">
                                         <strong>
-                                            Rp {{ number_format($purchase->total, 0, ',', '.') }}
+                                            Rp
+                                            {{ number_format($purchase->total, 0, ',', '.') }}
                                         </strong>
 
                                         <small>
@@ -92,13 +99,43 @@
                                 </td>
 
                                 <td>
+                                    <div class="purchase-account-cell">
+                                        @if ($purchase->financeAccount)
+                                            <strong>
+                                                {{ $purchase->financeAccount->code }}
+                                            </strong>
+
+                                            <span>
+                                                {{ $purchase->financeAccount->name }}
+                                            </span>
+
+                                            <small>
+                                                Akun pembayaran
+                                            </small>
+                                        @else
+                                            <strong class="is-muted">
+                                                Tidak terhubung
+                                            </strong>
+
+                                            <small>
+                                                Pembelian lama
+                                            </small>
+                                        @endif
+                                    </div>
+                                </td>
+
+                                <td>
                                     @if ($purchase->status === 'completed')
                                         <span class="crud-status is-success">
                                             Selesai
                                         </span>
-                                    @else
+                                    @elseif ($purchase->status === 'void')
                                         <span class="crud-status is-danger">
                                             Void
+                                        </span>
+                                    @else
+                                        <span class="crud-status is-muted">
+                                            {{ ucfirst($purchase->status ?? '-') }}
                                         </span>
                                     @endif
                                 </td>
@@ -126,20 +163,20 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
                                     <div class="crud-empty-state">
-                                        <span class="crud-empty-avatar">
-                                            B
-                                        </span>
-
-                                        <strong>Belum ada pembelian stok</strong>
+                                        <strong>
+                                            Belum ada pembelian stok
+                                        </strong>
 
                                         <p>
-                                            Catat pembelian pertama untuk menambah stok,
-                                            membuat batch FIFO, dan mencatat harga modal.
+                                            Catat pembelian pertama untuk
+                                            menambah stok, membuat batch FIFO,
+                                            dan mencatat harga modal.
                                         </p>
 
-                                        <a href="{{ route('admin.purchases.create') }}" class="btn btn-primary btn-sm">
+                                        <a href="{{ route('admin.purchases.create') }}"
+                                            class="btn btn-primary btn-sm">
                                             Buat Pembelian
                                         </a>
                                     </div>
@@ -158,7 +195,7 @@
                         dari {{ $purchases->total() }} pembelian
                     </span>
 
-                    {{ $purchases->links() }}
+                    {{ $purchases->withQueryString()->links() }}
                 </div>
             @endif
         </section>

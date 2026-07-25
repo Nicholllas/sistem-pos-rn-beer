@@ -1,0 +1,317 @@
+/* =========================================================
+   SALES HISTORY
+   ========================================================= */
+
+.sales-history-page {
+    display: grid;
+    gap: 18px;
+}
+
+.sales-filter-panel,
+.sales-result-panel {
+    margin: 0;
+}
+
+/* Filter */
+
+.sales-filter-body {
+    padding: 18px;
+}
+
+.sales-filter-form .form-label {
+    margin-bottom: 7px;
+    color: #334155;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.sales-filter-actions {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.sales-filter-actions .btn {
+    min-width: 125px;
+    min-height: 43px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.sales-active-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 12px 18px;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+}
+
+.sales-active-filter-label {
+    margin-right: 2px;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.sales-filter-chip {
+    display: inline-flex;
+    padding: 5px 8px;
+    color: #1e40af;
+    font-size: 9px;
+    font-weight: 600;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+}
+
+/* Result summary */
+
+.sales-result-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 18px;
+    color: #64748b;
+    font-size: 9px;
+    background: #fafcff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.sales-result-summary strong {
+    color: #334155;
+}
+
+/* Table */
+
+.sales-history-table {
+    min-width: 1050px;
+}
+
+.sales-history-table tbody tr.is-void {
+    background: #fffafa;
+}
+
+.sales-history-table tbody tr.is-void:hover {
+    background: #fef2f2;
+}
+
+/* Invoice */
+
+.sales-invoice-cell {
+    min-width: 170px;
+}
+
+.sales-invoice-cell a,
+.sales-invoice-cell span,
+.sales-invoice-cell small {
+    display: block;
+}
+
+.sales-invoice-cell a {
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.sales-invoice-cell a:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.sales-invoice-cell span {
+    margin-top: 4px;
+    color: #475569;
+    font-size: 9px;
+}
+
+.sales-invoice-cell small {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+/* Cashier */
+
+.sales-cashier-cell {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 150px;
+}
+
+.sales-cashier-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 31px;
+    height: 31px;
+    color: #1d4ed8;
+    font-size: 10px;
+    font-weight: 800;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 9px;
+}
+
+.sales-cashier-cell strong,
+.sales-cashier-cell small {
+    display: block;
+}
+
+.sales-cashier-cell strong {
+    max-width: 145px;
+    overflow: hidden;
+    color: #334155;
+    font-size: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sales-cashier-cell small {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+/* Total */
+
+.sales-total-cell {
+    min-width: 125px;
+}
+
+.sales-total-cell strong,
+.sales-total-cell small {
+    display: block;
+}
+
+.sales-total-cell strong {
+    color: #0f172a;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.sales-total-cell small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+.is-void .sales-total-cell strong {
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+
+.is-void .sales-total-cell small {
+    color: #b91c1c;
+}
+
+/* Payment values */
+
+.sales-payment-cell {
+    display: grid;
+    gap: 5px;
+    min-width: 150px;
+}
+
+.sales-payment-cell > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.sales-payment-cell span {
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+.sales-payment-cell strong {
+    color: #334155;
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+/* Payment method */
+
+.sales-payment-badge {
+    display: inline-flex;
+    padding: 5px 8px;
+    font-size: 9px;
+    font-weight: 700;
+    border: 1px solid;
+    border-radius: 999px;
+}
+
+.sales-payment-badge.is-cash {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.sales-payment-badge.is-qris {
+    color: #1d4ed8;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.sales-payment-badge.is-transfer {
+    color: #0e7490;
+    background: #ecfeff;
+    border-color: #a5f3fc;
+}
+
+.sales-payment-badge.is-split {
+    color: #5b21b6;
+    background: #f5f3ff;
+    border-color: #ddd6fe;
+}
+
+.sales-payment-badge.is-default {
+    color: #475569;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+/* Responsive */
+
+@media (max-width: 991.98px) {
+    .sales-filter-actions {
+        padding-top: 3px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .sales-filter-body {
+        padding: 15px;
+    }
+
+    .sales-filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .sales-filter-actions .btn {
+        width: 100%;
+    }
+
+    .sales-active-filters {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .sales-result-summary {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+}

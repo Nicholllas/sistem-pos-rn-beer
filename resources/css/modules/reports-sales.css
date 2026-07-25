@@ -1,0 +1,474 @@
+/* =========================================================
+   SALES REPORT PAGE
+   ========================================================= */
+
+.sales-report-page {
+    display: grid;
+    gap: 16px;
+}
+
+/* =========================================================
+   REPORT SUMMARY
+   ========================================================= */
+
+.sales-report-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.sales-report-summary-card {
+    min-width: 0;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 13px;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.035);
+}
+
+.sales-report-summary-card > span,
+.sales-report-summary-card > strong,
+.sales-report-summary-card > small {
+    display: block;
+}
+
+.sales-report-summary-card > span {
+    color: #64748b;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+}
+
+.sales-report-summary-card > strong {
+    margin-top: 7px;
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 17px;
+    font-weight: 750;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sales-report-summary-card > strong.is-success {
+    color: #15803d;
+}
+
+.sales-report-summary-card > strong.is-primary {
+    color: #1d4ed8;
+}
+
+.sales-report-summary-card > strong.is-danger {
+    color: #dc2626;
+}
+
+.sales-report-summary-card > small {
+    margin-top: 5px;
+    color: #94a3b8;
+    font-size: 8px;
+    line-height: 1.45;
+}
+
+/* =========================================================
+   REPORT FILTER
+   ========================================================= */
+
+.sales-report-filter-panel,
+.sales-payment-summary-panel,
+.sales-report-detail-panel {
+    margin: 0;
+}
+
+.sales-report-filter-body {
+    padding: 18px;
+}
+
+.sales-report-filter-body .form-label {
+    margin-bottom: 7px;
+    color: #334155;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.sales-report-filter-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 13px 18px;
+    background: #fafcff;
+    border-top: 1px solid #e5e7eb;
+}
+
+.sales-report-period span,
+.sales-report-period strong {
+    display: block;
+}
+
+.sales-report-period span {
+    color: #94a3b8;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.sales-report-period strong {
+    margin-top: 4px;
+    color: #334155;
+    font-size: 10px;
+}
+
+.sales-report-filter-actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 8px;
+}
+
+.sales-report-filter-actions .btn {
+    min-width: 125px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.sales-report-active-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 11px 18px;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+}
+
+.sales-report-filter-label {
+    color: #64748b;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.sales-report-filter-chip {
+    display: inline-flex;
+    padding: 5px 8px;
+    color: #1e40af;
+    font-size: 8px;
+    font-weight: 650;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+}
+
+/* =========================================================
+   PAYMENT SUMMARY
+   ========================================================= */
+
+.sales-payment-summary-table {
+    min-width: 850px;
+}
+
+.sales-report-payment-badge {
+    display: inline-flex;
+    padding: 5px 8px;
+    font-size: 8px;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid;
+    border-radius: 999px;
+}
+
+.sales-report-payment-badge.is-cash {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.sales-report-payment-badge.is-qris {
+    color: #1d4ed8;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.sales-report-payment-badge.is-transfer {
+    color: #0e7490;
+    background: #ecfeff;
+    border-color: #a5f3fc;
+}
+
+.sales-report-payment-badge.is-split {
+    color: #5b21b6;
+    background: #f5f3ff;
+    border-color: #ddd6fe;
+}
+
+.sales-report-payment-badge.is-default {
+    color: #475569;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.sales-report-number-cell strong,
+.sales-report-number-cell small,
+.sales-report-money-cell strong,
+.sales-report-money-cell small {
+    display: block;
+}
+
+.sales-report-number-cell strong,
+.sales-report-money-cell strong {
+    color: #0f172a;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.sales-report-number-cell small,
+.sales-report-money-cell small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+.sales-report-split-list {
+    display: grid;
+    gap: 6px;
+    min-width: 180px;
+}
+
+.sales-report-split-list > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.sales-report-split-list strong {
+    color: #334155;
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+.sales-report-empty-value {
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+/* =========================================================
+   REPORT RESULT
+   ========================================================= */
+
+.sales-report-result-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 10px 18px;
+    color: #64748b;
+    font-size: 9px;
+    background: #fafcff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.sales-report-result-summary strong {
+    color: #334155;
+}
+
+.sales-report-detail-table {
+    min-width: 1100px;
+}
+
+.sales-report-detail-table tbody tr.is-void {
+    background: #fffafa;
+}
+
+.sales-report-detail-table tbody tr.is-void:hover {
+    background: #fef2f2;
+}
+
+/* Invoice */
+
+.sales-report-invoice-cell {
+    min-width: 165px;
+}
+
+.sales-report-invoice-cell a,
+.sales-report-invoice-cell span,
+.sales-report-invoice-cell small {
+    display: block;
+}
+
+.sales-report-invoice-cell a {
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.sales-report-invoice-cell a:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.sales-report-invoice-cell span {
+    margin-top: 4px;
+    color: #475569;
+    font-size: 9px;
+}
+
+.sales-report-invoice-cell small {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+/* Cashier */
+
+.sales-report-cashier-cell {
+    min-width: 135px;
+}
+
+.sales-report-cashier-cell strong,
+.sales-report-cashier-cell small {
+    display: block;
+}
+
+.sales-report-cashier-cell strong {
+    max-width: 170px;
+    overflow: hidden;
+    color: #334155;
+    font-size: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sales-report-cashier-cell small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+/* Transaction value */
+
+.sales-report-transaction-value {
+    min-width: 130px;
+}
+
+.sales-report-transaction-value strong,
+.sales-report-transaction-value small {
+    display: block;
+}
+
+.sales-report-transaction-value strong {
+    color: #0f172a;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.sales-report-transaction-value small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+.is-void .sales-report-transaction-value strong {
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+
+.is-void .sales-report-transaction-value small {
+    color: #b91c1c;
+}
+
+/* Payment amounts */
+
+.sales-report-payment-values {
+    display: grid;
+    gap: 5px;
+    min-width: 145px;
+}
+
+.sales-report-payment-values > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.sales-report-payment-values span {
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+.sales-report-payment-values strong {
+    color: #334155;
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+/* Split detail */
+
+.sales-report-detail-split {
+    display: grid;
+    gap: 3px;
+    margin-top: 6px;
+}
+
+.sales-report-detail-split span {
+    color: #64748b;
+    font-size: 8px;
+    white-space: nowrap;
+}
+
+.sales-report-detail-split strong {
+    color: #334155;
+}
+
+/* =========================================================
+   SALES REPORT RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1199.98px) {
+    .sales-report-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .sales-report-filter-footer,
+    .sales-report-result-summary {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .sales-report-filter-actions {
+        width: 100%;
+    }
+
+    .sales-report-filter-actions .btn {
+        flex: 1;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .sales-report-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .sales-report-filter-body {
+        padding: 15px;
+    }
+
+    .sales-report-filter-actions {
+        flex-direction: column;
+    }
+
+    .sales-report-filter-actions .btn {
+        width: 100%;
+    }
+
+    .sales-report-active-filters {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+}

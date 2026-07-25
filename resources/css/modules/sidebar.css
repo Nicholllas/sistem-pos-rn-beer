@@ -1,0 +1,23 @@
+/* =========================================================
+   SIDEBAR SCROLL POSITION
+   ========================================================= */
+
+.app-sidebar [data-sidebar-scroll] {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+}
+
+/*
+ * Memberikan ruang agar menu terakhir tidak tertutup
+ * panel status yang menempel di bawah sidebar.
+ */
+.app-sidebar [data-sidebar-scroll] {
+    padding-bottom: 92px;
+}
+
+.app-sidebar .nav-link.active {
+    scroll-margin-top: 16px;
+    scroll-margin-bottom: 100px;
+}

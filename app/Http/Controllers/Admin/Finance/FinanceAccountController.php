@@ -80,6 +80,7 @@ class FinanceAccountController extends Controller
             'code' => $validated['code'],
             'name' => $validated['name'],
             'type' => $validated['type'],
+            'sales_payment_method' => $validated['sales_payment_method'] ?? null,
             'opening_balance' => $validated['opening_balance'],
             'is_active' => $request->boolean('is_active'),
             'created_by' => auth()->id(),
@@ -150,6 +151,7 @@ class FinanceAccountController extends Controller
             'code' => $validated['code'],
             'name' => $validated['name'],
             'type' => $validated['type'],
+            'sales_payment_method' => $validated['sales_payment_method'] ?? null,
             'opening_balance' => $validated['opening_balance'],
             'is_active' => $request->boolean('is_active'),
             'updated_by' => auth()->id(),
@@ -247,6 +249,19 @@ class FinanceAccountController extends Controller
                 ]),
             ],
 
+            'sales_payment_method' => [
+                'nullable',
+                Rule::in([
+                    'cash',
+                    'qris',
+                    'transfer',
+                ]),
+                Rule::unique(
+                    'finance_accounts',
+                    'sales_payment_method'
+                )->ignore($account?->id),
+            ],
+
             'opening_balance' => [
                 'required',
                 'numeric',
@@ -266,6 +281,8 @@ class FinanceAccountController extends Controller
             'code.regex' => 'Kode hanya boleh berisi huruf A-Z, angka, strip, dan underscore.',
             'code.unique' => 'Kode akun finance sudah digunakan.',
             'name.regex' => 'Nama akun mengandung karakter yang tidak diizinkan.',
+            'sales_payment_method.unique' => 'Metode pembayaran tersebut sudah dipetakan ke akun Finance lain.',
+            'sales_payment_method.in' => 'Mapping metode pembayaran tidak valid.',
         ];
     }
 }

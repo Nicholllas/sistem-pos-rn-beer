@@ -1,0 +1,535 @@
+/* =========================================================
+   FIFO BATCH PAGE
+   ========================================================= */
+
+.fifo-batch-page {
+    display: grid;
+    gap: 16px;
+}
+
+/* =========================================================
+   FIFO SUMMARY
+   ========================================================= */
+
+.fifo-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.fifo-summary-card {
+    min-width: 0;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 13px;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.035);
+}
+
+.fifo-summary-card > span,
+.fifo-summary-card > strong,
+.fifo-summary-card > small {
+    display: block;
+}
+
+.fifo-summary-card > span {
+    color: #64748b;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+}
+
+.fifo-summary-card > strong {
+    margin-top: 6px;
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 750;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.fifo-summary-card > strong.is-success {
+    color: #15803d;
+}
+
+.fifo-summary-card > strong.is-muted {
+    color: #64748b;
+}
+
+.fifo-summary-card > strong.is-warning {
+    color: #b45309;
+    font-size: 14px;
+}
+
+.fifo-summary-card > small {
+    margin-top: 4px;
+    color: #94a3b8;
+    font-size: 8px;
+    line-height: 1.4;
+}
+
+/* =========================================================
+   FIFO FILTER
+   ========================================================= */
+
+.fifo-filter-panel,
+.fifo-result-panel {
+    margin: 0;
+}
+
+.fifo-filter-body {
+    padding: 18px;
+}
+
+.fifo-filter-body .form-label {
+    margin-bottom: 7px;
+    color: #334155;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.fifo-filter-actions {
+    display: flex;
+    align-items: flex-end;
+    gap: 7px;
+}
+
+.fifo-filter-actions .btn {
+    min-width: 0;
+    min-height: 41px;
+    flex: 1;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.fifo-active-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 11px 18px;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+}
+
+.fifo-active-filter-label {
+    color: #64748b;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.fifo-filter-chip {
+    display: inline-flex;
+    padding: 5px 8px;
+    color: #1e40af;
+    font-size: 8px;
+    font-weight: 650;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+}
+
+/* =========================================================
+   FIFO INFORMATION
+   ========================================================= */
+
+.fifo-information-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 17px;
+    color: #5b21b6;
+    background: #faf5ff;
+    border-bottom: 1px solid #e9d5ff;
+}
+
+.fifo-information-banner > span {
+    display: inline-flex;
+    flex-shrink: 0;
+    padding: 4px 7px;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    border-radius: 999px;
+}
+
+.fifo-information-banner p {
+    margin: 2px 0 0;
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+/* =========================================================
+   FIFO PAGE SUMMARY
+   ========================================================= */
+
+.fifo-page-summary {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1px;
+    background: #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.fifo-page-summary > div {
+    min-width: 0;
+    padding: 11px 14px;
+    background: #fafcff;
+}
+
+.fifo-page-summary span,
+.fifo-page-summary strong {
+    display: block;
+}
+
+.fifo-page-summary span {
+    color: #94a3b8;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.fifo-page-summary strong {
+    margin-top: 5px;
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 11px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.fifo-page-summary strong.is-warning {
+    color: #d97706;
+}
+
+.fifo-page-summary strong.is-success {
+    color: #15803d;
+}
+
+/* =========================================================
+   FIFO TABLE
+   ========================================================= */
+
+.fifo-batch-table {
+    min-width: 1220px;
+}
+
+.fifo-batch-table tbody tr.is-empty {
+    background: #fafafa;
+}
+
+.fifo-batch-table tbody tr.is-empty:hover {
+    background: #f8fafc;
+}
+
+/* Product */
+
+.fifo-product-cell {
+    min-width: 225px;
+}
+
+.fifo-product-cell strong,
+.fifo-product-cell span,
+.fifo-product-cell small {
+    display: block;
+}
+
+.fifo-product-cell strong {
+    max-width: 260px;
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.fifo-product-cell span {
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 9px;
+}
+
+.fifo-product-cell small {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+/* Batch identity */
+
+.fifo-batch-identity {
+    min-width: 100px;
+}
+
+.fifo-batch-identity strong,
+.fifo-batch-identity span {
+    display: block;
+}
+
+.fifo-batch-identity strong {
+    color: #334155;
+    font-size: 10px;
+}
+
+.fifo-batch-identity span {
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 8px;
+    white-space: nowrap;
+}
+
+/* Sources */
+
+.fifo-source-badge {
+    display: inline-flex;
+    padding: 5px 8px;
+    font-size: 8px;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid;
+    border-radius: 999px;
+}
+
+.fifo-source-badge.is-initial {
+    color: #475569;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.fifo-source-badge.is-stock-in {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.fifo-source-badge.is-purchase {
+    color: #1d4ed8;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.fifo-source-badge.is-adjustment {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.fifo-source-badge.is-sale-void {
+    color: #5b21b6;
+    background: #f5f3ff;
+    border-color: #ddd6fe;
+}
+
+.fifo-source-badge.is-default {
+    color: #475569;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.fifo-source-reference {
+    display: block;
+    margin-top: 5px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+/* Usage */
+
+.fifo-usage-cell {
+    min-width: 240px;
+}
+
+.fifo-usage-values {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+}
+
+.fifo-usage-values > div {
+    padding: 6px 7px;
+    text-align: center;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+}
+
+.fifo-usage-values span,
+.fifo-usage-values strong {
+    display: block;
+}
+
+.fifo-usage-values span {
+    color: #94a3b8;
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.fifo-usage-values strong {
+    margin-top: 3px;
+    color: #334155;
+    font-size: 9px;
+}
+
+.fifo-usage-values strong.is-remaining {
+    color: #15803d;
+}
+
+.fifo-usage-progress {
+    width: 100%;
+    height: 5px;
+    margin-top: 7px;
+    overflow: hidden;
+    background: #e5e7eb;
+    border-radius: 999px;
+}
+
+.fifo-usage-progress > span {
+    display: block;
+    height: 100%;
+    background: #f59e0b;
+    border-radius: inherit;
+}
+
+.fifo-usage-cell > small {
+    display: block;
+    margin-top: 4px;
+    color: #94a3b8;
+    font-size: 7px;
+}
+
+/* Money */
+
+.fifo-money-cell {
+    min-width: 125px;
+}
+
+.fifo-money-cell strong,
+.fifo-money-cell small {
+    display: block;
+}
+
+.fifo-money-cell strong {
+    color: #0f172a;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.fifo-money-cell small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+/* Status */
+
+.fifo-status-badge {
+    display: inline-flex;
+    padding: 5px 8px;
+    font-size: 8px;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid;
+    border-radius: 999px;
+}
+
+.fifo-status-badge.is-active {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.fifo-status-badge.is-partial {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.fifo-status-badge.is-empty {
+    color: #64748b;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+/* Footer */
+
+.fifo-batch-table tfoot th {
+    padding: 12px 14px;
+    color: #334155;
+    font-size: 9px;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+}
+
+.fifo-footer-quantity {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.fifo-footer-quantity span {
+    color: #64748b;
+    font-size: 8px;
+}
+
+.fifo-footer-quantity strong {
+    color: #0f172a;
+}
+
+/* =========================================================
+   FIFO RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1199.98px) {
+    .fifo-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .fifo-page-summary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .fifo-page-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .fifo-summary-grid,
+    .fifo-page-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .fifo-filter-body {
+        padding: 15px;
+    }
+
+    .fifo-filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .fifo-filter-actions .btn {
+        width: 100%;
+    }
+
+    .fifo-active-filters {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .fifo-information-banner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

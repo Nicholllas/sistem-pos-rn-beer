@@ -3,6 +3,7 @@ import "admin-lte/dist/js/adminlte.min.js";
 import "./admin/crud.js";
 import "./admin/purchases.js";
 import "./admin/inventory.js";
+import "./admin/sidebar.js";
 
 import Alpine from "alpinejs";
 

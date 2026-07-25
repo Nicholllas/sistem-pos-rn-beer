@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'code',
     'name',
     'type',
+    'sales_payment_method',
     'opening_balance',
     'is_active',
     'created_by',

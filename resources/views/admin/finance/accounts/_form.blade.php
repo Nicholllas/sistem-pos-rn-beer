@@ -3,6 +3,8 @@
 
     $selectedType = old('type', $isEdit ? $account->type : 'cash');
 
+    $selectedSalesPaymentMethod = old('sales_payment_method', $isEdit ? $account->sales_payment_method : null);
+
     $isActive = old('is_active', $isEdit ? $account->is_active : true);
 @endphp
 
@@ -47,6 +49,40 @@
         <label for="type" class="form-label">
             Jenis Akun <span class="text-danger">*</span>
         </label>
+        <div class="col-md-6 mb-3">
+            <label for="sales_payment_method" class="form-label">
+                Mapping Pembayaran Penjualan
+            </label>
+
+            <select name="sales_payment_method" id="sales_payment_method"
+                class="form-select @error('sales_payment_method') is-invalid @enderror">
+                <option value="">
+                    Tidak digunakan untuk penjualan
+                </option>
+
+                <option value="cash" @selected($selectedSalesPaymentMethod === 'cash')>
+                    Pembayaran Cash
+                </option>
+
+                <option value="qris" @selected($selectedSalesPaymentMethod === 'qris')>
+                    Pembayaran QRIS
+                </option>
+
+                <option value="transfer" @selected($selectedSalesPaymentMethod === 'transfer')>
+                    Pembayaran Transfer
+                </option>
+            </select>
+
+            <div class="form-text">
+                Setiap metode pembayaran hanya dapat dipetakan ke satu akun.
+            </div>
+
+            @error('sales_payment_method')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
 
         <select name="type" id="type" class="form-select @error('type') is-invalid @enderror" required>
             <option value="cash" @selected($selectedType === 'cash')>

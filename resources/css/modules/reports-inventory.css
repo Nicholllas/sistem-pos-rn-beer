@@ -1,0 +1,682 @@
+/* =========================================================
+   INVENTORY REPORT PAGE
+   ========================================================= */
+
+.inventory-report-page {
+    display: grid;
+    gap: 16px;
+}
+
+/* Summary */
+
+.inventory-report-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.inventory-report-summary-card,
+.inventory-value-summary > article {
+    min-width: 0;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 13px;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.035);
+}
+
+.inventory-report-summary-card > span,
+.inventory-report-summary-card > strong,
+.inventory-report-summary-card > small,
+.inventory-value-summary span,
+.inventory-value-summary strong,
+.inventory-value-summary small {
+    display: block;
+}
+
+.inventory-report-summary-card > span,
+.inventory-value-summary span {
+    color: #64748b;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+}
+
+.inventory-report-summary-card > strong,
+.inventory-value-summary strong {
+    margin-top: 7px;
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 17px;
+    font-weight: 750;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.inventory-report-summary-card > strong.is-primary,
+.inventory-value-summary strong.is-primary {
+    color: #1d4ed8;
+}
+
+.inventory-report-summary-card > strong.is-success,
+.inventory-value-summary strong.is-success {
+    color: #15803d;
+}
+
+.inventory-report-summary-card > strong.is-danger,
+.inventory-value-summary strong.is-danger {
+    color: #dc2626;
+}
+
+.inventory-report-summary-card > small,
+.inventory-value-summary small {
+    margin-top: 5px;
+    color: #94a3b8;
+    font-size: 8px;
+    line-height: 1.45;
+}
+
+/* Filter */
+
+.inventory-report-filter-panel,
+.inventory-reconciliation-panel,
+.inventory-report-detail-panel {
+    margin: 0;
+}
+
+.inventory-report-filter-body {
+    padding: 18px;
+}
+
+.inventory-report-filter-body .form-label {
+    margin-bottom: 7px;
+    color: #334155;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.inventory-report-filter-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 13px 18px;
+    background: #fafcff;
+    border-top: 1px solid #e5e7eb;
+}
+
+.inventory-report-filter-description span,
+.inventory-report-filter-description strong {
+    display: block;
+}
+
+.inventory-report-filter-description span {
+    color: #94a3b8;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.inventory-report-filter-description strong {
+    margin-top: 4px;
+    color: #334155;
+    font-size: 10px;
+}
+
+.inventory-report-filter-actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 8px;
+}
+
+.inventory-report-filter-actions .btn {
+    min-width: 125px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.inventory-report-active-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 11px 18px;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+}
+
+.inventory-report-filter-label {
+    color: #64748b;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.inventory-report-filter-chip {
+    display: inline-flex;
+    padding: 5px 8px;
+    color: #1e40af;
+    font-size: 8px;
+    font-weight: 650;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+}
+
+/* Sync warning */
+
+.inventory-report-sync-warning {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 16px;
+    color: #991b1b;
+    background: #fffafa;
+    border: 1px solid #fecaca;
+    border-radius: 11px;
+}
+
+.inventory-report-sync-warning > div {
+    min-width: 0;
+}
+
+.inventory-report-sync-warning strong {
+    display: block;
+    font-size: 11px;
+}
+
+.inventory-report-sync-warning p {
+    margin: 4px 0 0;
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+/* Reconciliation */
+
+.inventory-reconciliation-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: #e5e7eb;
+}
+
+.inventory-reconciliation-card {
+    min-width: 0;
+    padding: 17px;
+    background: #ffffff;
+}
+
+.inventory-reconciliation-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.inventory-reconciliation-header span,
+.inventory-reconciliation-header strong {
+    display: block;
+}
+
+.inventory-reconciliation-header > div > span {
+    color: #94a3b8;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.inventory-reconciliation-header > div > strong {
+    margin-top: 4px;
+    color: #0f172a;
+    font-size: 13px;
+}
+
+.inventory-reconciliation-status {
+    display: inline-flex !important;
+    flex-shrink: 0;
+    padding: 5px 8px;
+    font-size: 8px;
+    font-weight: 700;
+    border: 1px solid;
+    border-radius: 999px;
+}
+
+.inventory-reconciliation-status.is-success {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.inventory-reconciliation-status.is-warning {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.inventory-reconciliation-status.is-danger {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.inventory-comparison-values {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 17px;
+}
+
+.inventory-comparison-values > div {
+    padding: 11px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+}
+
+.inventory-comparison-values span,
+.inventory-comparison-values strong,
+.inventory-comparison-values small {
+    display: block;
+}
+
+.inventory-comparison-values span {
+    color: #94a3b8;
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.inventory-comparison-values strong {
+    margin-top: 5px;
+    color: #334155;
+    font-size: 14px;
+}
+
+.inventory-comparison-values strong.is-success {
+    color: #15803d;
+}
+
+.inventory-comparison-values strong.is-danger {
+    color: #dc2626;
+}
+
+.inventory-comparison-values small {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 7px;
+}
+
+.inventory-sync-progress {
+    margin-top: 15px;
+}
+
+.inventory-sync-progress > div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.inventory-sync-progress span {
+    color: #64748b;
+    font-size: 8px;
+}
+
+.inventory-sync-progress strong {
+    color: #334155;
+    font-size: 9px;
+}
+
+.inventory-sync-progress-bar {
+    width: 100%;
+    height: 5px;
+    margin-top: 7px;
+    overflow: hidden;
+    background: #e5e7eb;
+    border-radius: 999px;
+}
+
+.inventory-sync-progress-bar > span {
+    display: block;
+    height: 100%;
+    background: #2563eb;
+    border-radius: inherit;
+}
+
+.inventory-value-comparison {
+    display: grid;
+    gap: 8px;
+    margin-top: 17px;
+}
+
+.inventory-value-comparison > div {
+    padding: 11px 12px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+}
+
+.inventory-value-comparison span,
+.inventory-value-comparison strong,
+.inventory-value-comparison small {
+    display: block;
+}
+
+.inventory-value-comparison span {
+    color: #94a3b8;
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.inventory-value-comparison strong {
+    margin-top: 5px;
+    color: #334155;
+    font-size: 11px;
+}
+
+.inventory-value-comparison strong.is-success {
+    color: #15803d;
+}
+
+.inventory-value-comparison strong.is-warning {
+    color: #b45309;
+}
+
+.inventory-value-comparison small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 7px;
+}
+
+.inventory-reconciliation-note {
+    margin: 14px 0 0;
+    color: #64748b;
+    font-size: 8px;
+    line-height: 1.55;
+}
+
+/* Value summary */
+
+.inventory-value-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+/* Page summary */
+
+.inventory-report-page-summary {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1px;
+    background: #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.inventory-report-page-summary > div {
+    min-width: 0;
+    padding: 11px 14px;
+    background: #fafcff;
+}
+
+.inventory-report-page-summary span,
+.inventory-report-page-summary strong {
+    display: block;
+}
+
+.inventory-report-page-summary span {
+    color: #94a3b8;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.inventory-report-page-summary strong {
+    margin-top: 5px;
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.inventory-report-page-summary strong.is-success {
+    color: #15803d;
+}
+
+/* Detail table */
+
+.inventory-report-detail-table {
+    min-width: 1350px;
+}
+
+.inventory-report-detail-table tbody tr.has-stock-mismatch {
+    background: #fffafa;
+}
+
+.inventory-report-detail-table tbody tr.has-stock-mismatch:hover {
+    background: #fef2f2;
+}
+
+.inventory-report-detail-table tbody tr.is-inactive {
+    opacity: 0.75;
+}
+
+.inventory-report-product-cell {
+    min-width: 215px;
+}
+
+.inventory-report-product-cell strong,
+.inventory-report-product-cell span,
+.inventory-report-product-cell small {
+    display: block;
+}
+
+.inventory-report-product-cell > strong {
+    max-width: 250px;
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.inventory-report-product-cell > span {
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 9px;
+}
+
+.inventory-report-product-cell small {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+.inventory-product-inactive {
+    display: inline-flex !important;
+    width: fit-content;
+    padding: 3px 6px;
+    margin-top: 5px !important;
+    color: #64748b !important;
+    font-size: 7px !important;
+    font-weight: 700;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+}
+
+.inventory-price-comparison {
+    display: grid;
+    gap: 5px;
+    min-width: 160px;
+}
+
+.inventory-price-comparison > div,
+.inventory-stock-comparison > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.inventory-price-comparison span,
+.inventory-stock-comparison span {
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+.inventory-price-comparison strong,
+.inventory-stock-comparison strong {
+    color: #334155;
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+.inventory-stock-comparison {
+    display: grid;
+    gap: 5px;
+    min-width: 125px;
+}
+
+.inventory-stock-mismatch {
+    padding: 5px 7px;
+    margin-top: 7px;
+    color: #991b1b;
+    font-size: 8px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+}
+
+.inventory-status-list {
+    display: grid;
+    justify-items: start;
+    gap: 5px;
+}
+
+.inventory-money-cell {
+    min-width: 130px;
+}
+
+.inventory-money-cell strong,
+.inventory-money-cell small {
+    display: block;
+}
+
+.inventory-money-cell strong {
+    color: #0f172a;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.inventory-money-cell strong.is-success {
+    color: #15803d;
+}
+
+.inventory-money-cell strong.is-danger {
+    color: #dc2626;
+}
+
+.inventory-money-cell small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 8px;
+    line-height: 1.4;
+}
+
+.inventory-report-detail-table tfoot th {
+    padding: 12px 14px;
+    color: #334155;
+    font-size: 9px;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+}
+
+.inventory-footer-stock {
+    display: grid;
+    gap: 3px;
+}
+
+.inventory-footer-stock span {
+    color: #64748b;
+    font-size: 8px;
+}
+
+.inventory-footer-stock strong {
+    color: #0f172a;
+}
+
+/* Responsive */
+
+@media (max-width: 1199.98px) {
+    .inventory-report-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .inventory-report-page-summary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 991.98px) {
+    .inventory-reconciliation-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .inventory-report-filter-footer,
+    .inventory-report-sync-warning {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .inventory-report-filter-actions {
+        width: 100%;
+    }
+
+    .inventory-report-filter-actions .btn {
+        flex: 1;
+    }
+
+    .inventory-value-summary,
+    .inventory-report-page-summary {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .inventory-report-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-report-filter-body {
+        padding: 15px;
+    }
+
+    .inventory-report-filter-actions {
+        flex-direction: column;
+    }
+
+    .inventory-report-filter-actions .btn {
+        width: 100%;
+    }
+
+    .inventory-report-active-filters {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .inventory-comparison-values {
+        grid-template-columns: 1fr;
+    }
+}

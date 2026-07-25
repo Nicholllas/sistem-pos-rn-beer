@@ -173,7 +173,7 @@
                 </a>
             </div>
 
-            <div class="sidebar-wrapper">
+            <div class="sidebar-wrapper" data-sidebar-scroll>
                 <nav class="mt-2">
                     <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
                         <li class="nav-header">

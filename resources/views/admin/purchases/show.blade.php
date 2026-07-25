@@ -2,7 +2,7 @@
 
 @section('title', 'Detail Pembelian')
 @section('page-title', 'Detail Pembelian')
-@section('page-subtitle', 'Periksa informasi supplier, item, batch FIFO, dan status pembelian.')
+@section('page-subtitle', 'Periksa informasi supplier, item, batch FIFO, akun pembayaran, dan status pembelian.')
 
 @section('page-actions')
     <a href="{{ route('admin.purchases.index') }}" class="btn btn-outline-secondary">
@@ -20,10 +20,16 @@
     @php
         $isVoid = $purchase->status === 'void';
         $totalQty = $purchase->items->sum('qty');
+        $statusLabel =
+            $purchase->status === 'completed'
+                ? 'Selesai'
+                : ($purchase->status === 'void'
+                    ? 'Void'
+                    : ucfirst($purchase->status ?? '-'));
     @endphp
 
     <div class="crud-page purchase-detail-page">
-        <section class="purchase-detail-hero {{ $isVoid ? 'is-void' : '' }}">
+        <section @class(['purchase-detail-hero', 'is-void' => $isVoid])>
             <div class="purchase-detail-primary">
                 <span class="purchase-detail-eyebrow">
                     Nomor Pembelian
@@ -33,7 +39,7 @@
 
                 <p>
                     {{ $purchase->supplier?->name ?? 'Supplier tidak ditemukan' }}
-                    ·
+                    <span aria-hidden="true">·</span>
                     {{ $purchase->purchase_date?->format('d F Y') ?? '-' }}
                 </p>
             </div>
@@ -45,88 +51,151 @@
                     Rp {{ number_format($purchase->total, 0, ',', '.') }}
                 </strong>
 
-                @if ($purchase->status === 'completed')
-                    <span class="crud-status is-success">
-                        Selesai
-                    </span>
-                @else
-                    <span class="crud-status is-danger">
-                        Void
-                    </span>
-                @endif
+                <span @class([
+                    'crud-status',
+                    'is-success' => $purchase->status === 'completed',
+                    'is-danger' => $purchase->status === 'void',
+                    'is-muted' => !in_array($purchase->status, ['completed', 'void'], true),
+                ])>
+                    {{ $statusLabel }}
+                </span>
             </div>
         </section>
 
         @if ($isVoid)
-            <div class="purchase-void-notice">
-                <span>!</span>
+            <section class="purchase-void-notice">
+                <strong>Pembelian telah dibatalkan</strong>
 
-                <div>
-                    <strong>Pembelian telah dibatalkan</strong>
-
-                    <p>
-                        Stok dari transaksi ini telah dikurangi kembali sesuai
-                        proses void pembelian.
-                    </p>
-                </div>
-            </div>
+                <p>
+                    Stok dari transaksi ini telah dikurangi kembali sesuai proses
+                    void pembelian.
+                </p>
+            </section>
         @endif
 
-        <div class="purchase-detail-grid">
-            <div class="purchase-detail-main">
-                <section class="crud-panel">
+        <div class="purchase-detail-layout">
+            <main class="purchase-detail-main">
+                <section class="crud-panel purchase-detail-information-panel">
                     <div class="crud-panel-header">
                         <div>
                             <h2>Informasi Pembelian</h2>
 
                             <p>
-                                Ringkasan transaksi dan audit pencatatan.
+                                Ringkasan transaksi, akun pembayaran, dan audit pencatatan.
                             </p>
                         </div>
                     </div>
 
-                    <div class="purchase-information-grid">
-                        <div>
+                    <div class="purchase-detail-info-grid">
+                        <article class="purchase-detail-info-card">
                             <span>Supplier</span>
+
                             <strong>
                                 {{ $purchase->supplier?->name ?? '-' }}
                             </strong>
-                        </div>
 
-                        <div>
+                            <small>
+                                Supplier transaksi pembelian
+                            </small>
+                        </article>
+
+                        <article class="purchase-detail-info-card purchase-detail-info-card--wide">
+                            <span>Akun Pembayaran</span>
+
+                            @if ($purchase->financeAccount)
+                                <strong>
+                                    {{ $purchase->financeAccount->code }}
+                                    <span aria-hidden="true">·</span>
+                                    {{ $purchase->financeAccount->name }}
+                                </strong>
+
+                                <small>
+                                    Akun yang digunakan untuk membayar pembelian
+                                </small>
+                            @else
+                                <strong class="is-muted">
+                                    Belum terhubung ke akun keuangan
+                                </strong>
+
+                                <small>
+                                    Pembelian lama sebelum modul keuangan diterapkan
+                                </small>
+                            @endif
+                        </article>
+
+                        <article class="purchase-detail-info-card">
                             <span>Tanggal Pembelian</span>
+
                             <strong>
                                 {{ $purchase->purchase_date?->format('d M Y') ?? '-' }}
                             </strong>
-                        </div>
 
-                        <div>
+                            <small>
+                                Tanggal pembentukan batch FIFO
+                            </small>
+                        </article>
+
+                        <article class="purchase-detail-info-card">
                             <span>Diinput Oleh</span>
+
                             <strong>
                                 {{ $purchase->createdBy?->name ?? '-' }}
                             </strong>
-                        </div>
 
-                        <div>
+                            <small>
+                                Pengguna pencatat transaksi
+                            </small>
+                        </article>
+
+                        <article class="purchase-detail-info-card">
                             <span>Diinput Pada</span>
+
                             <strong>
                                 {{ $purchase->created_at?->format('d M Y H:i') ?? '-' }}
                             </strong>
-                        </div>
 
-                        <div>
+                            <small>
+                                Waktu pencatatan sistem
+                            </small>
+                        </article>
+
+                        <article class="purchase-detail-info-card">
                             <span>Jumlah Jenis Produk</span>
-                            <strong>
-                                {{ $purchase->items->count() }} produk
-                            </strong>
-                        </div>
 
-                        <div>
-                            <span>Total Qty</span>
                             <strong>
-                                {{ number_format($totalQty, 0, ',', '.') }} unit
+                                {{ number_format($purchase->items->count(), 0, ',', '.') }}
+                                produk
                             </strong>
-                        </div>
+
+                            <small>
+                                Produk berbeda dalam pembelian
+                            </small>
+                        </article>
+
+                        <article class="purchase-detail-info-card">
+                            <span>Total Qty</span>
+
+                            <strong>
+                                {{ number_format($totalQty, 0, ',', '.') }}
+                                unit
+                            </strong>
+
+                            <small>
+                                Total unit stok yang dibeli
+                            </small>
+                        </article>
+
+                        <article class="purchase-detail-info-card">
+                            <span>Status Transaksi</span>
+
+                            <strong>
+                                {{ $statusLabel }}
+                            </strong>
+
+                            <small>
+                                Status pembelian saat ini
+                            </small>
+                        </article>
                     </div>
 
                     <div class="purchase-note-box">
@@ -149,7 +218,8 @@
                         </div>
 
                         <span class="crud-count-badge">
-                            {{ $purchase->items->count() }} produk
+                            {{ number_format($purchase->items->count(), 0, ',', '.') }}
+                            produk
                         </span>
                     </div>
 
@@ -166,49 +236,73 @@
                             </thead>
 
                             <tbody>
-                                @foreach ($purchase->items as $item)
+                                @forelse ($purchase->items as $item)
                                     <tr>
                                         <td>
                                             <div class="purchase-product-cell">
-                                                <span class="purchase-product-number">
-                                                    {{ $loop->iteration }}
+                                                <strong>
+                                                    {{ $item->product?->name ?? 'Produk tidak ditemukan' }}
+                                                </strong>
+
+                                                <span>
+                                                    SKU {{ $item->product?->sku ?? '-' }}
                                                 </span>
 
-                                                <div>
-                                                    <strong>
-                                                        {{ $item->product?->name ?? '-' }}
-                                                    </strong>
-
-                                                    <small>
-                                                        SKU {{ $item->product?->sku ?? '-' }}
-                                                    </small>
-                                                </div>
+                                                <small>
+                                                    Item pembelian
+                                                </small>
                                             </div>
                                         </td>
 
                                         <td>
                                             <span class="crud-neutral-badge">
-                                                {{ $item->product?->category?->name ?? '-' }}
+                                                {{ $item->product?->category?->name ?? 'Tanpa kategori' }}
                                             </span>
                                         </td>
 
                                         <td>
-                                            <strong>
-                                                {{ number_format($item->qty, 0, ',', '.') }}
-                                            </strong>
+                                            <div class="purchase-item-quantity">
+                                                <strong>
+                                                    {{ number_format($item->qty, 0, ',', '.') }}
+                                                </strong>
+
+                                                <small>unit</small>
+                                            </div>
                                         </td>
 
                                         <td>
-                                            Rp {{ number_format($item->cost_price, 0, ',', '.') }}
+                                            <div class="purchase-item-money">
+                                                <strong>
+                                                    Rp {{ number_format($item->cost_price, 0, ',', '.') }}
+                                                </strong>
+
+                                                <small>modal per unit</small>
+                                            </div>
                                         </td>
 
                                         <td>
-                                            <strong>
-                                                Rp {{ number_format($item->subtotal, 0, ',', '.') }}
-                                            </strong>
+                                            <div class="purchase-item-money">
+                                                <strong>
+                                                    Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                                </strong>
+
+                                                <small>subtotal item</small>
+                                            </div>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="crud-empty-state">
+                                                <strong>Tidak ada item pembelian</strong>
+
+                                                <p>
+                                                    Item pada transaksi ini tidak tersedia.
+                                                </p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
 
                             <tfoot>
@@ -238,34 +332,42 @@
                             </div>
                         </div>
 
-                        <div class="purchase-information-grid">
-                            <div>
+                        <div class="purchase-detail-info-grid purchase-detail-info-grid--two">
+                            <article class="purchase-detail-info-card">
                                 <span>Void Oleh</span>
 
                                 <strong>
                                     {{ $purchase->voidedBy?->name ?? '-' }}
                                 </strong>
-                            </div>
 
-                            <div>
+                                <small>
+                                    Pengguna yang membatalkan transaksi
+                                </small>
+                            </article>
+
+                            <article class="purchase-detail-info-card">
                                 <span>Void Pada</span>
 
                                 <strong>
                                     {{ $purchase->voided_at?->format('d M Y H:i') ?? '-' }}
                                 </strong>
-                            </div>
+
+                                <small>
+                                    Waktu pembatalan transaksi
+                                </small>
+                            </article>
                         </div>
 
                         <div class="purchase-note-box is-danger">
                             <span>Alasan Void</span>
 
                             <p>
-                                {{ $purchase->void_reason ?? '-' }}
+                                {{ $purchase->void_reason ?: '-' }}
                             </p>
                         </div>
                     </section>
                 @endif
-            </div>
+            </main>
 
             <aside class="purchase-detail-sidebar">
                 <section class="purchase-fifo-panel">
@@ -276,8 +378,8 @@
                     <h3>Informasi Batch</h3>
 
                     <p>
-                        Setiap item pembelian membuat batch FIFO baru
-                        berdasarkan tanggal dan harga modal pembelian.
+                        Setiap item pembelian membuat batch FIFO baru berdasarkan
+                        tanggal dan harga modal pembelian.
                     </p>
 
                     <div class="purchase-fifo-list">
@@ -285,8 +387,8 @@
                             <span>01</span>
 
                             <p>
-                                Batch paling lama akan digunakan terlebih dahulu
-                                pada transaksi penjualan.
+                                Batch paling lama digunakan lebih dahulu pada
+                                transaksi penjualan.
                             </p>
                         </div>
 
@@ -315,8 +417,8 @@
                         <strong>Sebelum melakukan void</strong>
 
                         <p>
-                            Sistem akan mengurangi stok kembali. Proses akan
-                            ditolak jika salah satu batch sudah pernah terjual.
+                            Sistem akan mengurangi stok kembali. Proses ditolak
+                            jika salah satu batch sudah pernah terjual.
                         </p>
 
                         <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal"
@@ -366,7 +468,9 @@
                         </div>
 
                         <div class="purchase-modal-warning">
-                            <strong>Tindakan ini memengaruhi persediaan</strong>
+                            <strong>
+                                Tindakan ini memengaruhi persediaan
+                            </strong>
 
                             <p>
                                 Stok akan dikurangi kembali dan batch FIFO dari
