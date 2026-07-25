@@ -1,0 +1,25 @@
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.app-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 52px;
+    padding: 0 20px;
+    color: #64748b;
+    font-size: 11px;
+    background: #ffffff;
+    border-top: 1px solid var(--rn-border);
+}
+
+@media (max-width: 767.98px) {
+
+    .app-footer {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+}

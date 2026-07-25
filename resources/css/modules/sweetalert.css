@@ -1,0 +1,38 @@
+
+
+/* =========================================================
+   SWEETALERT
+   ========================================================= */
+
+.crud-alert-popup {
+    width: min(420px, calc(100% - 28px));
+    padding: 22px;
+    border-radius: 15px;
+}
+
+.crud-alert-popup .swal2-title {
+    padding: 0;
+    color: #0f172a;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.crud-alert-popup .swal2-html-container {
+    margin: 12px 0 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.crud-alert-popup .swal2-actions {
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.crud-alert-popup .swal2-actions .btn {
+    min-height: 39px;
+    margin: 0;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+}

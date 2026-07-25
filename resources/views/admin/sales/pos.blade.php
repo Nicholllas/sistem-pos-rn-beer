@@ -3,10 +3,6 @@
 @section('title', 'Penjualan / Kasir')
 @section('page-title', 'Penjualan / Kasir')
 @section('page-subtitle', 'Pilih produk, tentukan metode pembayaran, lalu proses transaksi.')
-@push('styles')
-    @vite(['resources/css/pos.css'])
-@endpush
-
 @section('content')
 
     <div class="pos-page">

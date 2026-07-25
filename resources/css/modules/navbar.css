@@ -1,0 +1,65 @@
+/* =========================================================
+   TOP NAVBAR
+   ========================================================= */
+
+.app-header {
+    min-height: 62px;
+    background: #ffffff !important;
+    border-bottom: 1px solid var(--rn-border);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+}
+
+.app-sidebar-toggle {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 38px;
+    height: 38px;
+    padding: 9px;
+    background: #f8fafc;
+    border: 1px solid var(--rn-border);
+    border-radius: 9px;
+}
+
+.app-sidebar-toggle span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: #475569;
+    border-radius: 999px;
+}
+
+.app-sidebar-toggle:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.app-header-brand {
+    align-items: center;
+    gap: 8px;
+    color: var(--rn-text);
+    text-decoration: none;
+}
+
+.app-header-brand:hover {
+    color: var(--rn-text);
+}
+
+.app-header-brand-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.app-header-brand-module {
+    padding-left: 8px;
+    color: var(--rn-text-muted);
+    font-size: 12px;
+    border-left: 1px solid var(--rn-border);
+}
+
+@media (max-width: 767.98px) {
+    .app-header {
+        min-height: 58px;
+    }
+}

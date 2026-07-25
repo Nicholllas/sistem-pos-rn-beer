@@ -1,0 +1,130 @@
+
+
+/* =========================================================
+   USER MENU
+   ========================================================= */
+
+.app-user-menu {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 5px 7px;
+    color: var(--rn-text);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+}
+
+.app-user-menu:hover,
+.app-user-menu[aria-expanded="true"] {
+    background: #f8fafc;
+    border-color: var(--rn-border);
+}
+
+.app-user-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--rn-primary);
+    border-radius: 10px;
+}
+
+.app-user-avatar-large {
+    width: 42px;
+    height: 42px;
+    font-size: 13px;
+    border-radius: 12px;
+}
+
+.app-user-info {
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    line-height: 1.2;
+}
+
+.app-user-info strong {
+    max-width: 150px;
+    overflow: hidden;
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.app-user-info small {
+    margin-top: 3px;
+    color: var(--rn-text-muted);
+    font-size: 10px;
+}
+
+.app-user-chevron {
+    color: var(--rn-text-muted);
+    font-size: 11px;
+}
+
+.app-user-dropdown {
+    width: 250px;
+    padding: 8px;
+    margin-top: 8px !important;
+    border: 1px solid var(--rn-border);
+    border-radius: 12px;
+    box-shadow: 0 16px 35px rgba(15, 23, 42, 0.12);
+}
+
+.app-user-dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 8px;
+}
+
+.app-user-dropdown-header div {
+    min-width: 0;
+}
+
+.app-user-dropdown-header strong,
+.app-user-dropdown-header small {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.app-user-dropdown-header strong {
+    color: var(--rn-text);
+    font-size: 13px;
+}
+
+.app-user-dropdown-header small {
+    margin-top: 3px;
+    color: var(--rn-text-muted);
+    font-size: 10px;
+}
+
+.app-user-dropdown .dropdown-item {
+    padding: 9px 10px;
+    color: #334155;
+    font-size: 12px;
+    border-radius: 8px;
+}
+
+.app-user-dropdown .dropdown-item:hover {
+    background: #f1f5f9;
+}
+
+.app-logout-button {
+    width: 100%;
+    color: #b91c1c !important;
+    text-align: left;
+}
+
+.app-logout-button:hover {
+    color: #991b1b !important;
+    background: #fef2f2 !important;
+}

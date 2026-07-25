@@ -1,0 +1,36 @@
+
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.crud-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 18px;
+    color: #64748b;
+    font-size: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.crud-pagination nav {
+    margin-left: auto;
+}
+
+.crud-pagination .pagination {
+    margin: 0;
+}
+
+@media (max-width: 767.98px) {
+
+    .crud-pagination {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .crud-pagination nav {
+        margin-left: 0;
+    }
+}

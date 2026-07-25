@@ -12,7 +12,7 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 
-    @vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')
 </head>
@@ -497,4 +497,3 @@
 </body>
 
 </html>
-

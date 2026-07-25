@@ -1,0 +1,243 @@
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.crud-form-header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 18px 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.crud-form-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    background: #2563eb;
+    border-radius: 12px;
+}
+
+.crud-form-body {
+    padding: 22px 20px;
+}
+
+.crud-form-group {
+    max-width: 620px;
+}
+
+.crud-form-group .form-label {
+    margin-bottom: 7px;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.crud-required {
+    color: #dc2626;
+}
+
+.crud-form-control {
+    min-height: 45px;
+    padding-right: 13px;
+    padding-left: 13px;
+    border-color: #dbe2ea;
+    border-radius: 9px;
+    font-size: 13px;
+}
+
+.crud-form-control:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.crud-field-help {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 7px;
+    color: #94a3b8;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.crud-field-help span:last-child {
+    flex-shrink: 0;
+}
+
+.crud-info-box {
+    max-width: 620px;
+    padding: 12px 14px;
+    margin-top: 18px;
+    color: #475569;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+}
+
+.crud-info-box strong {
+    display: block;
+    color: #334155;
+    font-size: 10px;
+}
+
+.crud-info-box p {
+    margin: 4px 0 0;
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.crud-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 15px 20px;
+    background: #fafcff;
+    border-top: 1px solid #e5e7eb;
+}
+
+.crud-form-footer .btn {
+    min-width: 110px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* =========================================================
+   FORM SECTION
+   ========================================================= */
+
+.crud-form-section {
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.crud-form-section:last-child {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-bottom: 0;
+}
+
+.crud-form-section-header {
+    margin-bottom: 16px;
+}
+
+.crud-form-section-header h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.crud-form-section-header p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 10px;
+}
+
+.crud-form-section .form-label {
+    margin-bottom: 7px;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.crud-form-section .input-group-text {
+    color: #64748b;
+    font-size: 11px;
+    background: #f8fafc;
+    border-color: #dbe2ea;
+}
+
+/* =========================================================
+   GENERIC STATUS SETTING
+   ========================================================= */
+
+.crud-status-setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 15px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.crud-status-setting strong,
+.crud-status-setting small {
+    display: block;
+}
+
+.crud-status-setting strong {
+    color: #334155;
+    font-size: 11px;
+}
+
+.crud-status-setting small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.crud-status-setting .form-check {
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.crud-status-setting .form-check-label {
+    color: #475569;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.crud-status-setting .form-check-input {
+    cursor: pointer;
+}
+
+@media (max-width: 575.98px) {
+    .crud-status-setting {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 767.98px) {
+
+    .crud-form-body {
+        padding: 18px 15px;
+    }
+
+    .crud-form-header,
+    .crud-form-footer {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .crud-field-help {
+        flex-direction: column;
+        gap: 3px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .crud-form-footer {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .crud-form-footer .btn {
+        width: 100%;
+    }
+}

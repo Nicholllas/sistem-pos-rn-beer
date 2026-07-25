@@ -1,3 +1,211 @@
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.app-sidebar {
+    background: var(--rn-sidebar-bg) !important;
+    border-right: 0;
+}
+
+.sidebar-brand {
+    height: 62px;
+    background: rgba(15, 23, 42, 0.98);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 100%;
+    padding: 0 16px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.brand-link:hover {
+    color: #ffffff;
+}
+
+.brand-mark {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    background: var(--rn-primary);
+    border-radius: 10px;
+}
+
+.brand-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.brand-content strong {
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.brand-content small {
+    margin-top: 2px;
+    color: var(--rn-sidebar-muted);
+    font-size: 9px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.sidebar-wrapper {
+    padding: 6px 9px 72px;
+}
+
+.sidebar-menu .nav-header {
+    padding: 18px 10px 7px;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+}
+
+.sidebar-menu .nav-item {
+    margin-bottom: 3px;
+}
+
+.sidebar-menu .nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 9px 10px;
+    color: #cbd5e1;
+    border-radius: 9px;
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.sidebar-menu .nav-link:hover {
+    color: #ffffff;
+    background: rgba(148, 163, 184, 0.1);
+}
+
+.sidebar-menu .nav-link.active {
+    color: #ffffff;
+    background: rgba(37, 99, 235, 0.22);
+    box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.16);
+}
+
+.sidebar-menu .nav-link p {
+    flex: 1;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.nav-link-marker {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    margin-right: 10px;
+    background: #475569;
+    border-radius: 999px;
+}
+
+.nav-link:hover .nav-link-marker {
+    background: #94a3b8;
+}
+
+.nav-link.active .nav-link-marker {
+    background: #60a5fa;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.12);
+}
+
+.nav-link-primary .nav-link-marker {
+    background: #22c55e;
+}
+
+.nav-link-badge {
+    padding: 3px 6px;
+    color: #bfdbfe;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    background: rgba(37, 99, 235, 0.25);
+    border-radius: 999px;
+}
+
+.sidebar-footer {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 11px;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: 10px;
+}
+
+.sidebar-footer-status {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 999px;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+}
+
+.sidebar-footer div {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-footer strong {
+    color: #e2e8f0;
+    font-size: 10px;
+}
+
+.sidebar-footer small {
+    margin-top: 2px;
+    color: #64748b;
+    font-size: 9px;
+}
+
+/* =========================================================
+   SIDEBAR COLLAPSED
+   ========================================================= */
+
+.sidebar-collapse .brand-content,
+.sidebar-collapse .sidebar-menu .nav-header,
+.sidebar-collapse .sidebar-menu .nav-link p,
+.sidebar-collapse .nav-link-badge,
+.sidebar-collapse .sidebar-footer {
+    display: none;
+}
+
+.sidebar-collapse .brand-link {
+    justify-content: center;
+    padding: 0;
+}
+
+.sidebar-collapse .sidebar-menu .nav-link {
+    justify-content: center;
+}
+
+.sidebar-collapse .nav-link-marker {
+    width: 8px;
+    height: 8px;
+    margin-right: 0;
+}
+
 /* =========================================================
    SIDEBAR SCROLL POSITION
    ========================================================= */
@@ -13,6 +221,7 @@
  * Memberikan ruang agar menu terakhir tidak tertutup
  * panel status yang menempel di bawah sidebar.
  */
+
 .app-sidebar [data-sidebar-scroll] {
     padding-bottom: 92px;
 }

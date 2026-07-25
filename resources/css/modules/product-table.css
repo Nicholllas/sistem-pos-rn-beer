@@ -1,0 +1,160 @@
+
+
+/* CSS untuk tabel produk */
+.product-table th,
+.product-table td {
+    vertical-align: middle;
+}
+/* Default: kolom lain tetap tidak pecah */
+.product-table th:not(:first-child),
+.product-table td:not(:first-child) {
+    white-space: nowrap;
+}
+/* Kolom produk boleh turun baris agar tabel tidak terlalu lebar */
+.product-table td:first-child {
+    white-space: normal;
+}
+/* Kontrol lebar info produk */
+.product-table .product-name {
+    width: 220px;
+    max-width: 220px;
+    white-space: normal;
+    word-break: break-word;
+}
+/* Nama produk boleh wrap */
+.product-table .product-name strong {
+    white-space: normal;
+    line-height: 1.3;
+}
+/* Detail kecil juga boleh wrap */
+.product-table .product-name small {
+    white-space: normal;
+    line-height: 1.4;
+}
+/* Supaya gambar produk tidak mengecil */
+.product-table img,
+.product-table .product-image-placeholder {
+    flex-shrink: 0;
+}
+/* Tombol tetap rapi */
+.product-table .btn {
+    white-space: nowrap;
+}
+/* =========================================================
+   PRODUCT TABLE
+   ========================================================= */
+.product-crud-table {
+    min-width: 1050px;
+}
+.product-record-cell {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 245px;
+}
+.product-table-image,
+.product-table-image-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 11px;
+}
+.product-table-image {
+    flex-shrink: 0;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+}
+.product-table-image.is-trash {
+    filter: grayscale(0.7);
+    opacity: 0.75;
+}
+.product-table-image-placeholder {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    color: #1d4ed8;
+    font-size: 14px;
+    font-weight: 800;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+}
+.product-table-image-placeholder.is-trash {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+.product-record-info {
+    min-width: 0;
+}
+.product-record-info strong,
+.product-record-info span,
+.product-record-info small {
+    display: block;
+}
+.product-record-info strong {
+    max-width: 245px;
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 11px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.product-record-info span {
+    margin-top: 3px;
+    color: #64748b;
+    font-size: 9px;
+}
+.product-record-info small {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+.product-price-cell strong,
+.product-price-cell span,
+.product-price-cell small {
+    display: block;
+}
+.product-price-cell strong {
+    color: #0f172a;
+    font-size: 11px;
+}
+.product-price-cell span {
+    margin-top: 3px;
+    color: #64748b;
+    font-size: 9px;
+}
+.product-price-cell small {
+    margin-top: 2px;
+    color: #16a34a;
+    font-size: 8px;
+}
+.product-stock-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+.product-stock-badge {
+    display: inline-flex;
+    min-width: 38px;
+    justify-content: center;
+    padding: 5px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    border: 1px solid;
+    border-radius: 8px;
+}
+.product-stock-badge.is-success {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+.product-stock-badge.is-danger {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+.product-stock-cell small {
+    color: #94a3b8;
+    font-size: 8px;
+}

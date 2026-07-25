@@ -2,9 +2,6 @@
 
 @section('title', 'Struk Penjualan')
 @section('page-title', 'Struk Penjualan')
-@push('styles')
-    @vite('resources/css/receipt.css')
-@endpush
 @section('content')
     @php
         $isCompleted = $sale->status === 'completed';

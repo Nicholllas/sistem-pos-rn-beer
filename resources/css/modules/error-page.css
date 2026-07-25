@@ -1,0 +1,24 @@
+
+
+/* CSS 404 NOT FOUND PAGE */
+.error-wrap {
+    text-align: center;
+}
+.error-code {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(4rem, 9vw, 6.5rem);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--amber);
+    text-shadow: 0 0 28px rgba(232, 160, 32, 0.28);
+    margin-bottom: 1rem;
+}
+.error-actions {
+    margin-top: 1.75rem;
+}
+.error-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}

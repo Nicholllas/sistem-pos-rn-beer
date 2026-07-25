@@ -1,0 +1,65 @@
+
+
+/* =========================================================
+   FLASH ALERT
+   ========================================================= */
+
+.app-alert {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 42px 13px 15px;
+    overflow: hidden;
+    border-radius: 11px;
+}
+
+.app-alert-indicator {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    margin-top: 6px;
+    border-radius: 999px;
+}
+
+.app-alert-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.app-alert-content strong {
+    font-size: 13px;
+}
+
+.app-alert-content span {
+    margin-top: 2px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.app-alert-content ul {
+    padding-left: 18px;
+    margin: 7px 0 0;
+    font-size: 11px;
+}
+
+.app-alert-success {
+    color: #166534;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+
+.app-alert-success .app-alert-indicator {
+    background: #22c55e;
+}
+
+.app-alert-danger {
+    color: #991b1b;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.app-alert-danger .app-alert-indicator {
+    background: #ef4444;
+}

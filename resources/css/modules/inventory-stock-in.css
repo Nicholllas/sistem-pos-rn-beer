@@ -1,0 +1,231 @@
+/* =========================================================
+   INVENTORY STOCK IN
+   ========================================================= */
+
+.inventory-stock-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 18px;
+    align-items: start;
+}
+
+.inventory-product-reference {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 14px;
+    overflow: hidden;
+    background: #e5e7eb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.inventory-product-reference > div {
+    min-height: 72px;
+    padding: 12px 13px;
+    background: #f8fafc;
+}
+
+.inventory-product-reference span,
+.inventory-product-reference strong {
+    display: block;
+}
+
+.inventory-product-reference span {
+    color: #94a3b8;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.inventory-product-reference strong {
+    margin-top: 6px;
+    color: #334155;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   INVENTORY PREVIEW
+   ========================================================= */
+
+.inventory-stock-preview {
+    position: sticky;
+    top: 80px;
+    padding: 19px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.inventory-preview-label {
+    display: block;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+}
+
+.inventory-preview-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 62px;
+    height: 62px;
+    margin: 15px 0 12px;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 800;
+    background: #2563eb;
+    border-radius: 18px;
+}
+
+.inventory-stock-preview h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 750;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.inventory-stock-preview > p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.inventory-stock-flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
+    margin-top: 18px;
+}
+
+.inventory-stock-flow > div {
+    min-width: 0;
+    padding: 10px 6px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+}
+
+.inventory-stock-flow > div.is-result {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.inventory-stock-flow span,
+.inventory-stock-flow strong {
+    display: block;
+}
+
+.inventory-stock-flow > div span {
+    color: #94a3b8;
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.inventory-stock-flow > div strong {
+    margin-top: 5px;
+    color: #334155;
+    font-size: 14px;
+}
+
+.inventory-stock-flow > div.is-result strong {
+    color: #166534;
+}
+
+.inventory-stock-arrow {
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.inventory-preview-summary {
+    display: grid;
+    gap: 1px;
+    margin-top: 16px;
+    overflow: hidden;
+    text-align: left;
+    background: #e2e8f0;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.inventory-preview-summary > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 11px;
+    background: #ffffff;
+}
+
+.inventory-preview-summary span {
+    color: #64748b;
+    font-size: 8px;
+}
+
+.inventory-preview-summary strong {
+    color: #0f172a;
+    font-size: 9px;
+    text-align: right;
+}
+
+.inventory-preview-note {
+    padding: 11px 12px;
+    margin-top: 15px;
+    color: #075985;
+    text-align: left;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 9px;
+}
+
+.inventory-preview-note strong {
+    display: block;
+    font-size: 9px;
+}
+
+.inventory-preview-note p {
+    margin: 4px 0 0;
+    font-size: 8px;
+    line-height: 1.55;
+}
+
+/* =========================================================
+   INVENTORY RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 991.98px) {
+    .inventory-stock-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-stock-preview {
+        position: static;
+        order: -1;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .inventory-product-reference {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-stock-flow {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-stock-arrow {
+        transform: rotate(90deg);
+    }
+}

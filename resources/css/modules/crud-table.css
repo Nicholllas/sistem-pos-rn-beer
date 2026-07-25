@@ -1,0 +1,188 @@
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.crud-table {
+    font-size: 11px;
+}
+
+.crud-table thead th {
+    padding: 11px 15px;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.45px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    background: #f8fafc;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.crud-table tbody td {
+    padding: 13px 15px;
+    color: #475569;
+    border-bottom-color: #f1f5f9;
+}
+
+.crud-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.crud-table tbody tr:hover {
+    background: #fafcff;
+}
+
+/* =========================================================
+   RECORD CELL
+   ========================================================= */
+
+.crud-record-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 185px;
+}
+
+.crud-record-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 800;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+}
+
+.crud-record-avatar.is-danger {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.crud-record-cell strong,
+.crud-record-cell small,
+.crud-audit-cell strong,
+.crud-audit-cell small {
+    display: block;
+}
+
+.crud-record-cell strong {
+    color: #0f172a;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.crud-record-cell small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+.crud-count-value {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.crud-count-value strong {
+    color: #0f172a;
+    font-size: 13px;
+}
+
+.crud-count-value span {
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+.crud-audit-cell {
+    min-width: 135px;
+}
+
+.crud-audit-cell strong {
+    color: #334155;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.crud-audit-cell small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+.crud-date-badge {
+    display: inline-flex;
+    padding: 5px 8px;
+    font-size: 9px;
+    font-weight: 600;
+    border: 1px solid;
+    border-radius: 7px;
+}
+
+.crud-date-badge.is-danger {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.crud-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.crud-actions form {
+    margin: 0;
+}
+
+.crud-actions .btn {
+    min-width: 62px;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.crud-locked-button {
+    color: #94a3b8;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+}
+
+.crud-lock-note {
+    display: block;
+    margin-top: 5px;
+    color: #94a3b8;
+    font-size: 8px;
+    text-align: right;
+}
+
+/* =========================================================
+   GENERIC TEXT WRAP
+   ========================================================= */
+
+.crud-text-wrap {
+    max-width: 260px;
+    color: #475569;
+    font-size: 10px;
+    line-height: 1.55;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 575.98px) {
+    .crud-text-wrap {
+        max-width: 220px;
+    }
+}

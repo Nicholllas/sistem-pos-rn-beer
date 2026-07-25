@@ -1,0 +1,70 @@
+/* =========================================================
+   CRUD PAGE
+   ========================================================= */
+
+.crud-page {
+    padding-bottom: 24px;
+}
+
+.crud-panel,
+.crud-form-panel {
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+/* =========================================================
+   PANEL HEADER
+   ========================================================= */
+
+.crud-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-height: 70px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.crud-panel-header h2,
+.crud-form-header h2 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.crud-panel-header p,
+.crud-form-header p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.crud-count-badge {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    color: #1d4ed8;
+    font-size: 10px;
+    font-weight: 700;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+}
+
+.crud-count-badge.is-danger {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+@media (max-width: 767.98px) {
+    .crud-panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

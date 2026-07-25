@@ -1,0 +1,52 @@
+
+
+/* =========================================================
+   NOTICE
+   ========================================================= */
+
+.crud-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 13px 15px;
+    margin-bottom: 14px;
+    color: #854d0e;
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    border-radius: 11px;
+}
+
+.crud-notice-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    background: #d97706;
+    border-radius: 8px;
+}
+
+.crud-notice strong {
+    display: block;
+    font-size: 11px;
+}
+
+.crud-notice p {
+    margin: 3px 0 0;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.crud-notice-info {
+    color: #075985;
+    background: #f0f9ff;
+    border-color: #bae6fd;
+}
+
+.crud-notice-info .crud-notice-avatar {
+    background: #0284c7;
+}

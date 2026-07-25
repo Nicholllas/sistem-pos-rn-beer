@@ -1,0 +1,45 @@
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.crud-empty-state {
+    padding: 42px 20px;
+    text-align: center;
+}
+
+.crud-empty-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 12px;
+    color: #1d4ed8;
+    font-size: 15px;
+    font-weight: 800;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 13px;
+}
+
+.crud-empty-avatar.is-success {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.crud-empty-state strong {
+    display: block;
+    color: #334155;
+    font-size: 13px;
+}
+
+.crud-empty-state p {
+    max-width: 360px;
+    margin: 5px auto 14px;
+    color: #64748b;
+    font-size: 10px;
+    line-height: 1.55;
+}

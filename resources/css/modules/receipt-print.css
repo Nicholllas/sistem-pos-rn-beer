@@ -1,0 +1,190 @@
+.thermal-receipt {
+    width: 54mm;
+    max-width: 54mm;
+    background: #fff;
+    color: #000;
+    padding: 2mm;
+    box-sizing: border-box;
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+    line-height: 1.25;
+    overflow: hidden;
+}
+
+.thermal-receipt * {
+    box-sizing: border-box;
+}
+
+.receipt-header {
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.receipt-header h4 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.receipt-header p {
+    margin: 2px 0 0;
+    font-size: 10px;
+}
+
+.receipt-info div,
+.receipt-summary div,
+.item-detail {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.receipt-info span:first-child,
+.receipt-summary span:first-child {
+    flex-shrink: 0;
+}
+
+.receipt-info span:last-child,
+.receipt-summary span:last-child,
+.receipt-summary strong {
+    text-align: right;
+    word-break: break-word;
+}
+
+.receipt-line {
+    border-top: 1px dashed #000;
+    margin: 6px 0;
+}
+
+.receipt-item {
+    margin-bottom: 5px;
+}
+
+.item-name {
+    font-weight: bold;
+    word-break: break-word;
+}
+
+.item-detail {
+    margin-top: 2px;
+}
+
+.receipt-footer {
+    text-align: center;
+    margin-top: 6px;
+}
+
+.receipt-footer p {
+    margin: 2px 0;
+}
+
+@media print {
+    @page {
+        size: 58mm 210mm;
+        margin: 0;
+    }
+
+    html,
+    body {
+        width: 58mm !important;
+        min-width: 58mm !important;
+        max-width: 58mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        overflow: visible !important;
+    }
+
+    body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    body * {
+        visibility: hidden !important;
+    }
+
+    #receiptArea,
+    #receiptArea * {
+        visibility: visible !important;
+    }
+
+    .app-wrapper,
+    .app-main,
+    .content-wrapper,
+    .content,
+    .container-fluid,
+    .row,
+    .col-md-8,
+    .col-md-4,
+    .d-flex {
+        display: block !important;
+        width: 58mm !important;
+        max-width: 58mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: static !important;
+        transform: none !important;
+    }
+
+    #receiptArea {
+        position: absolute !important;
+        left: 50% !important;
+        top: 0 !important;
+        transform: translateX(-50%) !important;
+        width: 54mm !important;
+        max-width: 54mm !important;
+        min-height: 0 !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 2mm !important;
+        box-sizing: border-box !important;
+        background: #fff !important;
+        color: #000 !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+        page-break-before: avoid !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+        break-before: avoid !important;
+        break-after: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .thermal-receipt {
+        width: 54mm !important;
+        max-width: 54mm !important;
+        min-height: 0 !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 2mm !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
+    .receipt-item,
+    .receipt-summary,
+    .receipt-footer {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .no-print,
+    .main-sidebar,
+    .app-sidebar,
+    .app-header,
+    .content-header,
+    .navbar,
+    .sidebar,
+    footer {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}

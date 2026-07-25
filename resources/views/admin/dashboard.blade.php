@@ -4,10 +4,6 @@
 @section('page-title', 'Dashboard Penjualan')
 @section('page-subtitle', 'Pantau penjualan, pembayaran, persediaan, dan aktivitas toko hari ini.')
 
-@push('styles')
-    @vite('resources/css/dashboard.css')
-@endpush
-
 @section('content')
     @php
         $authUser = auth()->user();

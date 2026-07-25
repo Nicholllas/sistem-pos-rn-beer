@@ -1,0 +1,58 @@
+
+
+/* =========================================================
+   STOCK CARD
+   ========================================================= */
+
+.product-stock-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 16px;
+    margin-bottom: 22px;
+    color: #075985;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 11px;
+}
+
+.product-stock-card span,
+.product-stock-card strong,
+.product-stock-card small {
+    display: block;
+}
+
+.product-stock-card span {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.product-stock-card strong {
+    margin-top: 4px;
+    font-size: 20px;
+}
+
+.product-stock-card small {
+    margin-top: 3px;
+    font-size: 9px;
+}
+
+.product-stock-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+@media (max-width: 575.98px) {
+    .product-stock-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .product-stock-actions .btn {
+        flex: 1;
+    }
+}

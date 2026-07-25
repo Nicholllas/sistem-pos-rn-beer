@@ -1,0 +1,137 @@
+/* =========================================================
+   PURCHASE MODULE
+   Loaded after crud-core.css by admin-crud.css.
+   ========================================================= */
+
+/* =========================================================
+   PURCHASE HISTORY
+   ========================================================= */
+
+.purchase-history-page {
+    display: grid;
+    gap: 16px;
+}
+
+.purchase-history-panel {
+    min-width: 0;
+    margin: 0;
+}
+
+.purchase-history-table {
+    min-width: 1040px;
+}
+
+.purchase-history-table tbody tr.is-void {
+    background: #fffafa;
+}
+
+.purchase-history-table tbody tr.is-void:hover {
+    background: #fef2f2;
+}
+
+.purchase-number-cell,
+.purchase-supplier-info,
+.purchase-total-cell,
+.purchase-account-cell {
+    min-width: 0;
+}
+
+.purchase-number-cell {
+    min-width: 175px;
+}
+
+.purchase-number-cell a,
+.purchase-number-cell span,
+.purchase-number-cell small,
+.purchase-supplier-info strong,
+.purchase-supplier-info small,
+.purchase-total-cell strong,
+.purchase-total-cell small,
+.purchase-account-cell strong,
+.purchase-account-cell span,
+.purchase-account-cell small {
+    display: block;
+}
+
+.purchase-number-cell a {
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.purchase-number-cell a:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.purchase-number-cell span {
+    margin-top: 4px;
+    color: #475569;
+    font-size: 9px;
+}
+
+.purchase-number-cell small,
+.purchase-supplier-info small,
+.purchase-total-cell small,
+.purchase-account-cell small {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+.purchase-supplier-info {
+    min-width: 170px;
+}
+
+.purchase-supplier-info strong {
+    max-width: 220px;
+    overflow: hidden;
+    color: #334155;
+    font-size: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.purchase-total-cell {
+    min-width: 125px;
+}
+
+.purchase-total-cell strong {
+    color: #0f172a;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.purchase-history-table .is-void .purchase-total-cell strong {
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+
+.purchase-history-table .is-void .purchase-total-cell small {
+    color: #b91c1c;
+}
+
+.purchase-account-cell {
+    min-width: 165px;
+}
+
+.purchase-account-cell strong {
+    color: #1d4ed8;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.purchase-account-cell strong.is-muted {
+    color: #64748b;
+}
+
+.purchase-account-cell span {
+    max-width: 190px;
+    margin-top: 3px;
+    overflow: hidden;
+    color: #334155;
+    font-size: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
