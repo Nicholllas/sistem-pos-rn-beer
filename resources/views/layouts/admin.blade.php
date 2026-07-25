@@ -60,6 +60,12 @@
 
         $isBatchActive = request()->routeIs('admin.inventory.batches');
 
+        $isFinanceAccountActive = request()->routeIs('admin.finance.accounts.*');
+
+        $isFinanceCategoryActive = request()->routeIs('admin.finance.categories.*');
+
+        $isFinanceTransactionActive = request()->routeIs('admin.finance.transactions.*');
+
         $isSalesReportActive = request()->routeIs('admin.reports.sales');
 
         $isInventoryReportActive = request()->routeIs('admin.reports.inventory');
@@ -269,7 +275,7 @@
                                     class="nav-link {{ $isPurchaseHistoryActive ? 'active' : '' }}"
                                     @if ($isPurchaseHistoryActive) aria-current="page" @endif>
                                     <span class="nav-link-marker"></span>
-                                    <p>Riwayat Pembelian</p>
+                                    <p>Riwayat Pembelian Stok</p>
                                 </a>
                             </li>
 
@@ -323,6 +329,40 @@
                             </li>
 
                             <li class="nav-header">
+                                FINANCE
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.finance.transactions.index') }}"
+                                    class="nav-link {{ $isFinanceTransactionActive ? 'active' : '' }}"
+                                    @if ($isFinanceTransactionActive) aria-current="page" @endif>
+                                    <span class="nav-link-marker"></span>
+
+                                    <p>Cash Ledger</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.finance.accounts.index') }}"
+                                    class="nav-link {{ $isFinanceAccountActive ? 'active' : '' }}"
+                                    @if ($isFinanceAccountActive) aria-current="page" @endif>
+                                    <span class="nav-link-marker"></span>
+
+                                    <p>Akun Kas & Bank</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.finance.categories.index') }}"
+                                    class="nav-link {{ $isFinanceCategoryActive ? 'active' : '' }}"
+                                    @if ($isFinanceCategoryActive) aria-current="page" @endif>
+                                    <span class="nav-link-marker"></span>
+
+                                    <p>Kategori Finance</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-header">
                                 LAPORAN
                             </li>
 
@@ -349,7 +389,7 @@
                                     class="nav-link {{ $isPurchaseReportActive ? 'active' : '' }}"
                                     @if ($isPurchaseReportActive) aria-current="page" @endif>
                                     <span class="nav-link-marker"></span>
-                                    <p>Laporan Pembelian</p>
+                                    <p>Laporan Pembelian Stok</p>
                                 </a>
                             </li>
                         @endif
@@ -457,3 +497,4 @@
 </body>
 
 </html>
+
