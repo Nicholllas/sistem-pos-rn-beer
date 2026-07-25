@@ -1,29 +1,12 @@
-@if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-
 @if (session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ session('error') }}
+    <div class="alert app-alert app-alert-danger alert-dismissible fade show" role="alert">
+        <div class="app-alert-indicator"></div>
 
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-
-@if ($errors->any())
-    <div class="alert alert-danger" role="alert">
-        <div class="fw-semibold mb-2">
-            Terdapat data yang belum sesuai:
+        <div class="app-alert-content">
+            <strong>Tindakan tidak dapat diproses</strong>
+            <span>{{ session('error') }}</span>
         </div>
 
-        <ul class="mb-0 ps-3">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
     </div>
 @endif

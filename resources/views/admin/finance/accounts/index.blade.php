@@ -1,128 +1,201 @@
 @extends('layouts.admin')
 
-@section('title', 'Akun Finance')
-@section('page-title', 'Akun Finance')
+@section('title', 'Akun Kas & Bank')
+@section('page-title', 'Akun Kas & Bank')
+@section('page-subtitle', 'Kelola akun kas, bank, QRIS, dan dompet digital yang digunakan pada transaksi.')
+
+@section('page-actions')
+    <a href="{{ route('admin.finance.accounts.create') }}" class="btn btn-primary">
+        Tambah Akun
+    </a>
+@endsection
 
 @section('content')
-
     @include('admin.finance.partials.alerts')
 
-    <div class="card mb-3">
-        <div class="card-header">
-            <h3 class="card-title mb-0">Filter Akun</h3>
-        </div>
+    @php
+        $filterKeys = ['search', 'type', 'status'];
+        $activeFilterCount = collect($filterKeys)->filter(fn($key) => request()->filled($key))->count();
+        $hasActiveFilters = $activeFilterCount > 0;
 
-        <div class="card-body">
+        $accountTypeLabels = [
+            'cash' => 'Kas Tunai',
+            'bank' => 'Rekening Bank',
+            'qris' => 'Saldo QRIS',
+            'ewallet' => 'E-Wallet',
+            'other' => 'Lainnya',
+        ];
+
+        $accountStatusLabels = [
+            'active' => 'Aktif',
+            'inactive' => 'Nonaktif',
+        ];
+    @endphp
+
+    <div class="crud-page finance-page">
+        <section class="crud-panel finance-filter-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Filter Akun</h2>
+
+                    <p>
+                        Cari akun berdasarkan kode, nama, jenis, atau statusnya.
+                    </p>
+                </div>
+
+                @if ($hasActiveFilters)
+                    <span class="crud-count-badge">
+                        {{ $activeFilterCount }} filter aktif
+                    </span>
+                @endif
+            </div>
+
             <form action="{{ route('admin.finance.accounts.index') }}" method="GET">
-                <div class="row g-3">
-                    <div class="col-md-5">
-                        <label for="search" class="form-label">
-                            Pencarian
-                        </label>
+                <div class="finance-filter-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-lg-4">
+                            <label for="search" class="form-label">
+                                Pencarian
+                            </label>
 
-                        <input type="text" name="search" id="search" class="form-control"
-                            value="{{ request('search') }}" placeholder="Cari kode atau nama akun">
-                    </div>
+                            <input type="search" name="search" id="search" class="form-control crud-form-control"
+                                value="{{ request('search') }}" placeholder="Cari kode atau nama akun..."
+                                autocomplete="off">
+                        </div>
 
-                    <div class="col-md-3">
-                        <label for="type" class="form-label">
-                            Jenis Akun
-                        </label>
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <label for="type" class="form-label">
+                                Jenis Akun
+                            </label>
 
-                        <select name="type" id="type" class="form-select">
-                            <option value="">Semua jenis</option>
-                            <option value="cash" @selected(request('type') === 'cash')>
-                                Kas Tunai
-                            </option>
-                            <option value="bank" @selected(request('type') === 'bank')>
-                                Rekening Bank
-                            </option>
-                            <option value="qris" @selected(request('type') === 'qris')>
-                                Saldo QRIS
-                            </option>
-                            <option value="ewallet" @selected(request('type') === 'ewallet')>
-                                E-Wallet
-                            </option>
-                            <option value="other" @selected(request('type') === 'other')>
-                                Lainnya
-                            </option>
-                        </select>
-                    </div>
+                            <select name="type" id="type" class="form-select crud-form-control">
+                                <option value="">Semua jenis</option>
 
-                    <div class="col-md-2">
-                        <label for="status" class="form-label">
-                            Status
-                        </label>
+                                @foreach ($accountTypeLabels as $value => $label)
+                                    <option value="{{ $value }}" @selected(request('type') === $value)>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                        <select name="status" id="status" class="form-select">
-                            <option value="">Semua status</option>
-                            <option value="active" @selected(request('status') === 'active')>
-                                Aktif
-                            </option>
-                            <option value="inactive" @selected(request('status') === 'inactive')>
-                                Nonaktif
-                            </option>
-                        </select>
-                    </div>
+                        <div class="col-12 col-sm-6 col-lg-2">
+                            <label for="status" class="form-label">
+                                Status
+                            </label>
 
-                    <div class="col-md-2 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            Filter
-                        </button>
+                            <select name="status" id="status" class="form-select crud-form-control">
+                                <option value="">Semua status</option>
+                                <option value="active" @selected(request('status') === 'active')>Aktif</option>
+                                <option value="inactive" @selected(request('status') === 'inactive')>Nonaktif</option>
+                            </select>
+                        </div>
 
-                        <a href="{{ route('admin.finance.accounts.index') }}" class="btn btn-secondary">
-                            Reset
-                        </a>
+                        <div class="col-12 col-lg-3 finance-filter-actions">
+                            <button type="submit" class="btn btn-primary">
+                                Terapkan Filter
+                            </button>
+
+                            @if ($hasActiveFilters)
+                                <a href="{{ route('admin.finance.accounts.index') }}" class="btn btn-outline-secondary">
+                                    Hapus Filter
+                                </a>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
 
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0">
-                Daftar Akun Kas dan Bank
-            </h3>
+            @if ($hasActiveFilters)
+                <div class="finance-active-filters">
+                    <span class="finance-active-filter-label">
+                        Filter:
+                    </span>
 
-            <a href="{{ route('admin.finance.accounts.create') }}" class="btn btn-primary btn-sm">
-                Tambah Akun
-            </a>
-        </div>
+                    @if (request()->filled('search'))
+                        <span class="finance-filter-chip">
+                            Pencarian: {{ request('search') }}
+                        </span>
+                    @endif
 
-        <div class="card-body p-0">
+                    @if (request()->filled('type'))
+                        <span class="finance-filter-chip">
+                            Jenis: {{ $accountTypeLabels[request('type')] ?? request('type') }}
+                        </span>
+                    @endif
+
+                    @if (request()->filled('status'))
+                        <span class="finance-filter-chip">
+                            Status: {{ $accountStatusLabels[request('status')] ?? request('status') }}
+                        </span>
+                    @endif
+                </div>
+            @endif
+        </section>
+
+        <section class="crud-panel finance-result-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Daftar Akun Kas dan Bank</h2>
+
+                    <p>
+                        @if ($hasActiveFilters)
+                            Akun yang sesuai dengan filter yang diterapkan.
+                        @else
+                            Seluruh akun pembayaran dan penyimpanan dana.
+                        @endif
+                    </p>
+                </div>
+
+                <span class="crud-count-badge">
+                    {{ number_format($accounts->total(), 0, ',', '.') }}
+                    akun
+                </span>
+            </div>
+
+            <div class="finance-result-summary">
+                <span>
+                    Menampilkan
+                    <strong>{{ $accounts->firstItem() ?? 0 }}</strong>
+                    sampai
+                    <strong>{{ $accounts->lastItem() ?? 0 }}</strong>
+                    dari
+                    <strong>{{ $accounts->total() }}</strong>
+                    akun
+                </span>
+
+                @if ($accounts->hasPages())
+                    <span>
+                        Halaman {{ $accounts->currentPage() }}
+                        dari {{ $accounts->lastPage() }}
+                    </span>
+                @endif
+            </div>
+
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table crud-table finance-table align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>Kode</th>
-                            <th>Nama Akun</th>
+                            <th>Akun</th>
                             <th>Jenis</th>
-                            <th class="text-end">Saldo Awal</th>
-                            <th class="text-end">Saldo Saat Ini</th>
-                            <th class="text-center">Transaksi</th>
-                            <th class="text-center">Status</th>
-                            <th width="160">Aksi</th>
+                            <th>Saldo Awal</th>
+                            <th>Saldo Saat Ini</th>
+                            <th>Transaksi</th>
+                            <th>Status</th>
+                            <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         @forelse ($accounts as $account)
                             @php
-                                $typeLabel = match ($account->type) {
-                                    'cash' => 'Kas Tunai',
-                                    'bank' => 'Bank',
-                                    'qris' => 'QRIS',
-                                    'ewallet' => 'E-Wallet',
-                                    default => 'Lainnya',
-                                };
-
+                                $typeLabel = $accountTypeLabels[$account->type] ?? 'Lainnya';
                                 $typeClass = match ($account->type) {
-                                    'cash' => 'bg-success',
-                                    'bank' => 'bg-primary',
-                                    'qris' => 'bg-info text-dark',
-                                    'ewallet' => 'bg-warning text-dark',
-                                    default => 'bg-secondary',
+                                    'cash' => 'is-cash',
+                                    'bank' => 'is-bank',
+                                    'qris' => 'is-qris',
+                                    'ewallet' => 'is-ewallet',
+                                    default => 'is-other',
                                 };
 
                                 $transactionCount = $account->transactions_count + $account->incoming_transfers_count;
@@ -130,56 +203,71 @@
 
                             <tr>
                                 <td>
-                                    <span class="fw-semibold">
-                                        {{ $account->code }}
-                                    </span>
+                                    <div class="crud-record-cell">
+                                        <div>
+                                            <strong>{{ $account->name }}</strong>
+                                            <small class="finance-record-code">{{ $account->code }}</small>
+                                        </div>
+                                    </div>
                                 </td>
 
-                                <td>{{ $account->name }}</td>
-
                                 <td>
-                                    <span class="badge {{ $typeClass }}">
+                                    <span class="finance-type-badge {{ $typeClass }}">
                                         {{ $typeLabel }}
                                     </span>
                                 </td>
 
-                                <td class="text-end">
-                                    Rp{{ number_format($account->opening_balance, 0, ',', '.') }}
-                                </td>
-
-                                <td class="text-end fw-semibold">
-                                    Rp{{ number_format($account->current_balance, 0, ',', '.') }}
-                                </td>
-
-                                <td class="text-center">
-                                    {{ number_format($transactionCount) }}
-                                </td>
-
-                                <td class="text-center">
-                                    @if ($account->is_active)
-                                        <span class="badge bg-success">
-                                            Aktif
-                                        </span>
-                                    @else
-                                        <span class="badge bg-secondary">
-                                            Nonaktif
-                                        </span>
-                                    @endif
+                                <td>
+                                    <div class="finance-money-cell">
+                                        <strong>
+                                            Rp {{ number_format($account->opening_balance, 0, ',', '.') }}
+                                        </strong>
+                                        <small>saldo pembukaan</small>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    <div class="d-flex gap-2">
+                                    <div class="finance-money-cell">
+                                        <strong>
+                                            Rp {{ number_format($account->current_balance, 0, ',', '.') }}
+                                        </strong>
+                                        <small>saldo berjalan</small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="crud-count-value">
+                                        <strong>{{ number_format($transactionCount, 0, ',', '.') }}</strong>
+                                        <span>transaksi</span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span @class([
+                                        'crud-status',
+                                        'is-success' => $account->is_active,
+                                        'is-muted' => !$account->is_active,
+                                    ])>
+                                        {{ $account->is_active ? 'Aktif' : 'Nonaktif' }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="crud-actions">
                                         <a href="{{ route('admin.finance.accounts.edit', $account) }}"
-                                            class="btn btn-warning btn-sm">
+                                            class="btn btn-sm btn-outline-primary">
                                             Edit
                                         </a>
 
                                         <form action="{{ route('admin.finance.accounts.destroy', $account) }}"
-                                            method="POST" onsubmit="return confirm('Hapus akun finance ini?')">
+                                            method="POST" class="js-confirm-action" data-confirm-icon="warning"
+                                            data-confirm-title="Hapus akun?"
+                                            data-confirm-message="Akun {{ $account->name }} akan dihapus jika belum memiliki riwayat transaksi."
+                                            data-confirm-button="Ya, Hapus" data-confirm-class="btn btn-danger px-4">
                                             @csrf
                                             @method('DELETE')
 
-                                            <button type="submit" class="btn btn-danger btn-sm">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 Hapus
                                             </button>
                                         </form>
@@ -188,21 +276,50 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center py-4 text-muted">
-                                    Belum ada akun finance.
+                                <td colspan="7">
+                                    <div class="crud-empty-state">
+                                        @if ($hasActiveFilters)
+                                            <strong>Akun tidak ditemukan</strong>
+
+                                            <p>
+                                                Tidak ada akun yang sesuai dengan kombinasi filter tersebut.
+                                            </p>
+
+                                            <a href="{{ route('admin.finance.accounts.index') }}"
+                                                class="btn btn-outline-primary btn-sm">
+                                                Hapus Filter
+                                            </a>
+                                        @else
+                                            <strong>Belum ada akun finance</strong>
+
+                                            <p>
+                                                Tambahkan akun kas atau bank untuk mulai mencatat transaksi.
+                                            </p>
+
+                                            <a href="{{ route('admin.finance.accounts.create') }}"
+                                                class="btn btn-primary btn-sm">
+                                                Tambah Akun
+                                            </a>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        @if ($accounts->hasPages())
-            <div class="card-footer">
-                {{ $accounts->links() }}
-            </div>
-        @endif
+            @if ($accounts->hasPages())
+                <div class="crud-pagination">
+                    <span>
+                        Menampilkan {{ $accounts->firstItem() }}
+                        sampai {{ $accounts->lastItem() }}
+                        dari {{ $accounts->total() }} akun
+                    </span>
+
+                    {{ $accounts->links() }}
+                </div>
+            @endif
+        </section>
     </div>
-
 @endsection

@@ -2,328 +2,470 @@
 
 @section('title', 'Cash Ledger')
 @section('page-title', 'Cash Ledger')
+@section('page-subtitle', 'Pantau arus kas dan telusuri seluruh transaksi keuangan dari satu halaman.')
+
+@section('page-actions')
+    <a href="{{ route('admin.finance.transactions.create') }}" class="btn btn-primary">
+        Tambah Transaksi
+    </a>
+@endsection
 
 @section('content')
-
     @include('admin.finance.partials.alerts')
 
-    <div class="row g-3 mb-3">
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="text-muted mb-1">
-                        Total Pemasukan
-                    </div>
+    @php
+        $filterKeys = ['search', 'start_date', 'end_date', 'type', 'status', 'account_id', 'category_id'];
+        $activeFilterCount = collect($filterKeys)->filter(fn($key) => request()->filled($key))->count();
+        $hasActiveFilters = $activeFilterCount > 0;
+        $netCashFlow = (float) $summary['income'] - (float) $summary['expense'];
 
-                    <div class="fs-4 fw-bold text-success">
-                        Rp{{ number_format($summary['income'], 0, ',', '.') }}
-                    </div>
+        $selectedAccount = request()->filled('account_id')
+            ? $accounts->firstWhere('id', (int) request('account_id'))
+            : null;
+
+        $selectedCategory = request()->filled('category_id')
+            ? $categories->firstWhere('id', (int) request('category_id'))
+            : null;
+
+        $transactionTypeLabels = [
+            'income' => 'Pemasukan',
+            'expense' => 'Pengeluaran',
+            'transfer' => 'Transfer',
+        ];
+
+        $transactionStatusLabels = [
+            'posted' => 'Posted',
+            'void' => 'Void',
+        ];
+    @endphp
+
+    <div class="crud-page finance-page">
+        <div class="finance-summary-grid">
+            <article class="finance-summary-card is-income">
+                <span>Total Pemasukan</span>
+
+                <strong>
+                    Rp {{ number_format($summary['income'], 0, ',', '.') }}
+                </strong>
+
+                <small>
+                    Akumulasi transaksi posted sesuai filter.
+                </small>
+            </article>
+
+            <article class="finance-summary-card is-expense">
+                <span>Total Pengeluaran</span>
+
+                <strong>
+                    Rp {{ number_format($summary['expense'], 0, ',', '.') }}
+                </strong>
+
+                <small>
+                    Akumulasi transaksi posted sesuai filter.
+                </small>
+            </article>
+
+            <article class="finance-summary-card">
+                <span>Arus Kas Bersih</span>
+
+                <strong @class(['is-danger' => $netCashFlow < 0])>
+                    Rp {{ number_format($netCashFlow, 0, ',', '.') }}
+                </strong>
+
+                <small>
+                    Transfer antar akun tidak memengaruhi total kas keseluruhan.
+                </small>
+            </article>
+        </div>
+
+        <section class="crud-panel finance-filter-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Filter Transaksi</h2>
+
+                    <p>
+                        Gunakan satu atau beberapa filter untuk menelusuri arus kas.
+                    </p>
                 </div>
+
+                @if ($hasActiveFilters)
+                    <span class="crud-count-badge">
+                        {{ $activeFilterCount }} filter aktif
+                    </span>
+                @endif
             </div>
-        </div>
 
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="text-muted mb-1">
-                        Total Pengeluaran
-                    </div>
-
-                    <div class="fs-4 fw-bold text-danger">
-                        Rp{{ number_format($summary['expense'], 0, ',', '.') }}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="text-muted mb-1">
-                        Selisih Pemasukan dan Pengeluaran
-                    </div>
-
-                    @php
-                        $netCashFlow = (float) $summary['income'] - (float) $summary['expense'];
-                    @endphp
-
-                    <div class="fs-4 fw-bold {{ $netCashFlow >= 0 ? 'text-success' : 'text-danger' }}">
-                        Rp{{ number_format($netCashFlow, 0, ',', '.') }}
-                    </div>
-
-                    <div class="small text-muted mt-1">
-                        Transfer antar akun tidak memengaruhi total kas keseluruhan.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card mb-3">
-        <div class="card-header">
-            <h3 class="card-title mb-0">
-                Filter Transaksi
-            </h3>
-        </div>
-
-        <div class="card-body">
             <form action="{{ route('admin.finance.transactions.index') }}" method="GET">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label for="search" class="form-label">
-                            Pencarian
-                        </label>
+                <div class="finance-filter-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-lg-4">
+                            <label for="search" class="form-label">
+                                Pencarian
+                            </label>
 
-                        <input type="text" name="search" id="search" class="form-control"
-                            value="{{ request('search') }}" placeholder="Nomor transaksi, referensi, atau keterangan">
-                    </div>
+                            <input type="search" name="search" id="search" class="form-control crud-form-control"
+                                value="{{ request('search') }}" placeholder="Nomor transaksi, referensi, atau keterangan..."
+                                autocomplete="off">
+                        </div>
 
-                    <div class="col-md-2">
-                        <label for="start_date" class="form-label">
-                            Tanggal Awal
-                        </label>
+                        <div class="col-12 col-sm-6 col-lg-2">
+                            <label for="start_date" class="form-label">
+                                Tanggal Awal
+                            </label>
 
-                        <input type="date" name="start_date" id="start_date" class="form-control"
-                            value="{{ request('start_date') }}">
-                    </div>
+                            <input type="date" name="start_date" id="start_date" class="form-control crud-form-control"
+                                value="{{ request('start_date') }}">
+                        </div>
 
-                    <div class="col-md-2">
-                        <label for="end_date" class="form-label">
-                            Tanggal Akhir
-                        </label>
+                        <div class="col-12 col-sm-6 col-lg-2">
+                            <label for="end_date" class="form-label">
+                                Tanggal Akhir
+                            </label>
 
-                        <input type="date" name="end_date" id="end_date" class="form-control"
-                            value="{{ request('end_date') }}">
-                    </div>
+                            <input type="date" name="end_date" id="end_date" class="form-control crud-form-control"
+                                value="{{ request('end_date') }}">
+                        </div>
 
-                    <div class="col-md-2">
-                        <label for="type" class="form-label">
-                            Jenis
-                        </label>
+                        <div class="col-12 col-sm-6 col-lg-2">
+                            <label for="type" class="form-label">
+                                Jenis
+                            </label>
 
-                        <select name="type" id="type" class="form-select">
-                            <option value="">Semua jenis</option>
-                            <option value="income" @selected(request('type') === 'income')>
-                                Pemasukan
-                            </option>
-                            <option value="expense" @selected(request('type') === 'expense')>
-                                Pengeluaran
-                            </option>
-                            <option value="transfer" @selected(request('type') === 'transfer')>
-                                Transfer
-                            </option>
-                        </select>
-                    </div>
+                            <select name="type" id="type" class="form-select crud-form-control">
+                                <option value="">Semua jenis</option>
+                                <option value="income" @selected(request('type') === 'income')>Pemasukan</option>
+                                <option value="expense" @selected(request('type') === 'expense')>Pengeluaran</option>
+                                <option value="transfer" @selected(request('type') === 'transfer')>Transfer</option>
+                            </select>
+                        </div>
 
-                    <div class="col-md-2">
-                        <label for="status" class="form-label">
-                            Status
-                        </label>
+                        <div class="col-12 col-sm-6 col-lg-2">
+                            <label for="status" class="form-label">
+                                Status
+                            </label>
 
-                        <select name="status" id="status" class="form-select">
-                            <option value="">Semua status</option>
-                            <option value="posted" @selected(request('status') === 'posted')>
-                                Posted
-                            </option>
-                            <option value="void" @selected(request('status') === 'void')>
-                                Void
-                            </option>
-                        </select>
-                    </div>
+                            <select name="status" id="status" class="form-select crud-form-control">
+                                <option value="">Semua status</option>
+                                <option value="posted" @selected(request('status') === 'posted')>Posted</option>
+                                <option value="void" @selected(request('status') === 'void')>Void</option>
+                            </select>
+                        </div>
 
-                    <div class="col-md-4">
-                        <label for="account_id" class="form-label">
-                            Akun
-                        </label>
+                        <div class="col-12 col-lg-4">
+                            <label for="account_id" class="form-label">
+                                Akun
+                            </label>
 
-                        <select name="account_id" id="account_id" class="form-select">
-                            <option value="">Semua akun</option>
+                            <select name="account_id" id="account_id" class="form-select crud-form-control">
+                                <option value="">Semua akun</option>
 
-                            @foreach ($accounts as $account)
-                                <option value="{{ $account->id }}" @selected((string) request('account_id') === (string) $account->id)>
-                                    {{ $account->code }} - {{ $account->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                                @foreach ($accounts as $account)
+                                    <option value="{{ $account->id }}" @selected((string) request('account_id') === (string) $account->id)>
+                                        {{ $account->code }} - {{ $account->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    <div class="col-md-4">
-                        <label for="category_id" class="form-label">
-                            Kategori
-                        </label>
+                        <div class="col-12 col-lg-4">
+                            <label for="category_id" class="form-label">
+                                Kategori
+                            </label>
 
-                        <select name="category_id" id="category_id" class="form-select">
-                            <option value="">Semua kategori</option>
+                            <select name="category_id" id="category_id" class="form-select crud-form-control">
+                                <option value="">Semua kategori</option>
 
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}" @selected((string) request('category_id') === (string) $category->id)>
-                                    {{ $category->name }}
-                                    ({{ $category->type === 'income' ? 'Pemasukan' : 'Pengeluaran' }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}" @selected((string) request('category_id') === (string) $category->id)>
+                                        {{ $category->name }}
+                                        ({{ $category->type === 'income' ? 'Pemasukan' : 'Pengeluaran' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    <div class="col-md-4 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            Terapkan Filter
-                        </button>
+                        <div class="col-12 col-lg-4 finance-filter-actions">
+                            <button type="submit" class="btn btn-primary">
+                                Terapkan Filter
+                            </button>
 
-                        <a href="{{ route('admin.finance.transactions.index') }}" class="btn btn-secondary">
-                            Reset
-                        </a>
+                            @if ($hasActiveFilters)
+                                <a href="{{ route('admin.finance.transactions.index') }}"
+                                    class="btn btn-outline-secondary">
+                                    Hapus Filter
+                                </a>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
 
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0">
-                Riwayat Transaksi Finance
-            </h3>
+            @if ($hasActiveFilters)
+                <div class="finance-active-filters">
+                    <span class="finance-active-filter-label">
+                        Filter:
+                    </span>
 
-            <a href="{{ route('admin.finance.transactions.create') }}" class="btn btn-primary btn-sm">
-                Tambah Transaksi
-            </a>
-        </div>
+                    @if (request()->filled('search'))
+                        <span class="finance-filter-chip">
+                            Pencarian: {{ request('search') }}
+                        </span>
+                    @endif
 
-        <div class="card-body p-0">
+                    @if (request()->filled('start_date'))
+                        <span class="finance-filter-chip">
+                            Mulai: {{ request('start_date') }}
+                        </span>
+                    @endif
+
+                    @if (request()->filled('end_date'))
+                        <span class="finance-filter-chip">
+                            Sampai: {{ request('end_date') }}
+                        </span>
+                    @endif
+
+                    @if (request()->filled('type'))
+                        <span class="finance-filter-chip">
+                            Jenis: {{ $transactionTypeLabels[request('type')] ?? request('type') }}
+                        </span>
+                    @endif
+
+                    @if (request()->filled('status'))
+                        <span class="finance-filter-chip">
+                            Status: {{ $transactionStatusLabels[request('status')] ?? request('status') }}
+                        </span>
+                    @endif
+
+                    @if (request()->filled('account_id'))
+                        <span class="finance-filter-chip">
+                            Akun: {{ $selectedAccount?->name ?? request('account_id') }}
+                        </span>
+                    @endif
+
+                    @if (request()->filled('category_id'))
+                        <span class="finance-filter-chip">
+                            Kategori: {{ $selectedCategory?->name ?? request('category_id') }}
+                        </span>
+                    @endif
+                </div>
+            @endif
+        </section>
+
+        <section class="crud-panel finance-result-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Riwayat Transaksi Finance</h2>
+
+                    <p>
+                        @if ($hasActiveFilters)
+                            Transaksi yang sesuai dengan filter yang diterapkan.
+                        @else
+                            Seluruh transaksi Finance terbaru.
+                        @endif
+                    </p>
+                </div>
+
+                <span class="crud-count-badge">
+                    {{ number_format($transactions->total(), 0, ',', '.') }}
+                    transaksi
+                </span>
+            </div>
+
+            <div class="finance-result-summary">
+                <span>
+                    Menampilkan
+                    <strong>{{ $transactions->firstItem() ?? 0 }}</strong>
+                    sampai
+                    <strong>{{ $transactions->lastItem() ?? 0 }}</strong>
+                    dari
+                    <strong>{{ $transactions->total() }}</strong>
+                    transaksi
+                </span>
+
+                @if ($transactions->hasPages())
+                    <span>
+                        Halaman {{ $transactions->currentPage() }}
+                        dari {{ $transactions->lastPage() }}
+                    </span>
+                @endif
+            </div>
+
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table crud-table finance-table align-middle mb-0">
                     <thead>
                         <tr>
                             <th>Tanggal</th>
-                            <th>Nomor Transaksi</th>
+                            <th>Transaksi</th>
                             <th>Jenis</th>
                             <th>Akun</th>
                             <th>Kategori/Keterangan</th>
-                            <th class="text-end">Nominal</th>
-                            <th class="text-center">Status</th>
-                            <th width="90">Aksi</th>
+                            <th>Nominal</th>
+                            <th>Status</th>
+                            <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         @forelse ($transactions as $transaction)
-                            <tr class="{{ $transaction->status === 'void' ? 'table-light text-muted' : '' }}">
+                            <tr @class(['is-void' => $transaction->status === 'void'])>
                                 <td>
-                                    {{ $transaction->transaction_date->format('d/m/Y H:i') }}
-                                </td>
+                                    <div class="crud-audit-cell">
+                                        <strong>
+                                            {{ $transaction->transaction_date->format('d M Y') }}
+                                        </strong>
 
-                                <td>
-                                    <div class="fw-semibold">
-                                        {{ $transaction->transaction_number }}
+                                        <small>
+                                            {{ $transaction->transaction_date->format('H:i') }}
+                                        </small>
                                     </div>
-
-                                    @if ($transaction->reference_number)
-                                        <div class="small text-muted">
-                                            Ref: {{ $transaction->reference_number }}
-                                        </div>
-                                    @endif
                                 </td>
 
                                 <td>
-                                    @if ($transaction->type === 'income')
-                                        <span class="badge bg-success">
-                                            Pemasukan
-                                        </span>
-                                    @elseif ($transaction->type === 'expense')
-                                        <span class="badge bg-danger">
-                                            Pengeluaran
-                                        </span>
-                                    @else
-                                        <span class="badge bg-primary">
-                                            Transfer
-                                        </span>
-                                    @endif
+                                    <div class="finance-transaction-cell">
+                                        <strong>{{ $transaction->transaction_number }}</strong>
+
+                                        @if ($transaction->reference_number)
+                                            <span>Ref. {{ $transaction->reference_number }}</span>
+                                        @endif
+
+                                        <small>
+                                            {{ $transaction->creator?->name ?? 'User tidak ditemukan' }}
+                                        </small>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    @if ($transaction->type === 'transfer')
-                                        <div>
+                                    <span @class([
+                                        'finance-type-badge',
+                                        'is-income' => $transaction->type === 'income',
+                                        'is-expense' => $transaction->type === 'expense',
+                                        'is-transfer' => $transaction->type === 'transfer',
+                                    ])>
+                                        {{ $transactionTypeLabels[$transaction->type] ?? ucfirst($transaction->type) }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="finance-account-cell">
+                                        <strong>
                                             {{ $transaction->account?->name ?? '-' }}
-                                        </div>
+                                        </strong>
 
-                                        <div class="small text-muted">
-                                            Ke {{ $transaction->transferAccount?->name ?? '-' }}
-                                        </div>
-                                    @else
-                                        {{ $transaction->account?->name ?? '-' }}
-                                    @endif
+                                        <small>
+                                            @if ($transaction->type === 'transfer')
+                                                Ke {{ $transaction->transferAccount?->name ?? '-' }}
+                                            @else
+                                                {{ $transaction->account?->code ?? 'Akun tidak tersedia' }}
+                                            @endif
+                                        </small>
+                                    </div>
                                 </td>
 
                                 <td>
-                                    @if ($transaction->category)
-                                        <div>
-                                            {{ $transaction->category->name }}
-                                        </div>
-                                    @elseif ($transaction->type === 'transfer')
-                                        <div>Transfer Antar Akun</div>
-                                    @else
-                                        <div>-</div>
-                                    @endif
+                                    <div class="finance-description-cell">
+                                        <strong>
+                                            @if ($transaction->category)
+                                                {{ $transaction->category->name }}
+                                            @elseif ($transaction->type === 'transfer')
+                                                Transfer Antar Akun
+                                            @else
+                                                -
+                                            @endif
+                                        </strong>
 
-                                    @if ($transaction->description)
-                                        <div class="small text-muted">
-                                            {{ \Illuminate\Support\Str::limit($transaction->description, 60) }}
-                                        </div>
-                                    @endif
-                                </td>
-
-                                <td class="text-end fw-semibold">
-                                    @if ($transaction->type === 'income')
-                                        <span class="text-success">
-                                            + Rp{{ number_format($transaction->amount, 0, ',', '.') }}
-                                        </span>
-                                    @elseif ($transaction->type === 'expense')
-                                        <span class="text-danger">
-                                            - Rp{{ number_format($transaction->amount, 0, ',', '.') }}
-                                        </span>
-                                    @else
-                                        <span>
-                                            Rp{{ number_format($transaction->amount, 0, ',', '.') }}
-                                        </span>
-                                    @endif
-                                </td>
-
-                                <td class="text-center">
-                                    @if ($transaction->status === 'posted')
-                                        <span class="badge bg-success">
-                                            Posted
-                                        </span>
-                                    @else
-                                        <span class="badge bg-secondary">
-                                            Void
-                                        </span>
-                                    @endif
+                                        @if ($transaction->description)
+                                            <small>
+                                                {{ \Illuminate\Support\Str::limit($transaction->description, 60) }}
+                                            </small>
+                                        @endif
+                                    </div>
                                 </td>
 
                                 <td>
-                                    <a href="{{ route('admin.finance.transactions.show', $transaction) }}"
-                                        class="btn btn-info btn-sm">
-                                        Detail
-                                    </a>
+                                    <div class="finance-money-cell">
+                                        <strong @class([
+                                            'is-income' => $transaction->type === 'income',
+                                            'is-expense' => $transaction->type === 'expense',
+                                        ])>
+                                            @if ($transaction->type === 'income')
+                                                +
+                                            @elseif ($transaction->type === 'expense')
+                                                -
+                                            @endif
+                                            Rp {{ number_format($transaction->amount, 0, ',', '.') }}
+                                        </strong>
+
+                                        <small>
+                                            {{ $transaction->status === 'void' ? 'tidak memengaruhi saldo' : 'transaksi posted' }}
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span @class([
+                                        'crud-status',
+                                        'is-success' => $transaction->status === 'posted',
+                                        'is-danger' => $transaction->status === 'void',
+                                    ])>
+                                        {{ $transaction->status === 'posted' ? 'Posted' : 'Void' }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="crud-actions">
+                                        <a href="{{ route('admin.finance.transactions.show', $transaction) }}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            Detail
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center py-4 text-muted">
-                                    Belum ada transaksi finance.
+                                <td colspan="8">
+                                    <div class="crud-empty-state">
+                                        @if ($hasActiveFilters)
+                                            <strong>Transaksi tidak ditemukan</strong>
+
+                                            <p>
+                                                Tidak ada transaksi yang sesuai dengan kombinasi filter tersebut.
+                                            </p>
+
+                                            <a href="{{ route('admin.finance.transactions.index') }}"
+                                                class="btn btn-outline-primary btn-sm">
+                                                Hapus Filter
+                                            </a>
+                                        @else
+                                            <strong>Belum ada transaksi finance</strong>
+
+                                            <p>
+                                                Catat pemasukan, pengeluaran, atau transfer antar akun pertama.
+                                            </p>
+
+                                            <a href="{{ route('admin.finance.transactions.create') }}"
+                                                class="btn btn-primary btn-sm">
+                                                Tambah Transaksi
+                                            </a>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        @if ($transactions->hasPages())
-            <div class="card-footer">
-                {{ $transactions->links() }}
-            </div>
-        @endif
+            @if ($transactions->hasPages())
+                <div class="crud-pagination">
+                    <span>
+                        Menampilkan {{ $transactions->firstItem() }}
+                        sampai {{ $transactions->lastItem() }}
+                        dari {{ $transactions->total() }} transaksi
+                    </span>
+
+                    {{ $transactions->links() }}
+                </div>
+            @endif
+        </section>
     </div>
-
 @endsection
