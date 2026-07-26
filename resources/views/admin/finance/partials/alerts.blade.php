@@ -3,7 +3,7 @@
         <div class="app-alert-indicator"></div>
 
         <div class="app-alert-content">
-            <strong>Tindakan tidak dapat diproses</strong>
+            <strong>Proses gagal</strong>
             <span>{{ session('error') }}</span>
         </div>
 

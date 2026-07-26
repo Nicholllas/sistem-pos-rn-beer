@@ -15,22 +15,43 @@ class FinanceAccountController extends Controller
 {
     public function index(Request $request): View
     {
+        $filters = $request->validate([
+            'search' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+            'type' => [
+                'nullable',
+                Rule::in([
+                    'cash',
+                    'bank',
+                    'qris',
+                    'ewallet',
+                    'other',
+                ]),
+            ],
+            'status' => [
+                'nullable',
+                Rule::in([
+                    'active',
+                    'inactive',
+                ]),
+            ],
+        ]);
+
+        $search = TextNormalizer::singleLine(
+            $filters['search'] ?? null
+        );
+
         $accounts = FinanceAccount::query()
             ->withCount([
                 'transactions',
                 'incomingTransfers',
             ])
             ->when(
-                $request->filled('search'),
-                function ($query) use ($request) {
-                    $search = TextNormalizer::singleLine(
-                        $request->input('search')
-                    );
-
-                    if (! $search) {
-                        return;
-                    }
-
+                $search,
+                function ($query) use ($search) {
                     $query->where(function ($subQuery) use ($search) {
                         $subQuery
                             ->where('code', 'like', "%{$search}%")
@@ -39,19 +60,17 @@ class FinanceAccountController extends Controller
                 }
             )
             ->when(
-                $request->filled('type'),
-                fn ($query) => $query->where(
-                    'type',
-                    $request->input('type')
-                )
+                $filters['type'] ?? null,
+                fn ($query, $type) => $query->where('type', $type)
             )
             ->when(
-                $request->filled('status'),
-                fn ($query) => $query->where(
+                $filters['status'] ?? null,
+                fn ($query, $status) => $query->where(
                     'is_active',
-                    $request->input('status') === 'active'
+                    $status === 'active'
                 )
             )
+            ->orderByDesc('is_active')
             ->orderBy('name')
             ->paginate(15)
             ->withQueryString();
@@ -74,6 +93,11 @@ class FinanceAccountController extends Controller
         $validated = $request->validate(
             $this->validationRules(),
             $this->validationMessages()
+        );
+
+        $this->ensureActiveMappingIsValid(
+            $validated,
+            $request->boolean('is_active')
         );
 
         FinanceAccount::create([
@@ -114,6 +138,13 @@ class FinanceAccountController extends Controller
             $this->validationMessages()
         );
 
+        $isActive = $request->boolean('is_active');
+
+        $this->ensureActiveMappingIsValid(
+            $validated,
+            $isActive
+        );
+
         $hasTransactions =
             $account->transactions()
                 ->withTrashed()
@@ -123,12 +154,7 @@ class FinanceAccountController extends Controller
                 ->exists();
 
         if ($hasTransactions) {
-            $newCode = $validated['code'];
-
-            $newOpeningBalance = (float) $validated['opening_balance'];
-            $currentOpeningBalance = (float) $account->opening_balance;
-
-            if ($newCode !== $account->code) {
+            if ($validated['code'] !== $account->code) {
                 throw ValidationException::withMessages([
                     'code' => 'Kode akun tidak dapat diubah karena sudah memiliki transaksi.',
                 ]);
@@ -140,7 +166,10 @@ class FinanceAccountController extends Controller
                 ]);
             }
 
-            if ($newOpeningBalance !== $currentOpeningBalance) {
+            if ($this->amountsAreDifferent(
+                $validated['opening_balance'],
+                $account->opening_balance
+            )) {
                 throw ValidationException::withMessages([
                     'opening_balance' => 'Saldo awal tidak dapat diubah setelah akun memiliki transaksi. Gunakan transaksi koreksi.',
                 ]);
@@ -153,7 +182,7 @@ class FinanceAccountController extends Controller
             'type' => $validated['type'],
             'sales_payment_method' => $validated['sales_payment_method'] ?? null,
             'opening_balance' => $validated['opening_balance'],
-            'is_active' => $request->boolean('is_active'),
+            'is_active' => $isActive,
             'updated_by' => auth()->id(),
         ]);
 
@@ -168,6 +197,16 @@ class FinanceAccountController extends Controller
     public function destroy(
         FinanceAccount $account
     ): RedirectResponse {
+        if ($account->sales_payment_method !== null) {
+            return back()->with(
+                'error',
+                sprintf(
+                    'Akun tidak dapat dihapus karena masih menjadi mapping pembayaran %s.',
+                    strtoupper($account->sales_payment_method)
+                )
+            );
+        }
+
         $hasTransactions =
             $account->transactions()
                 ->withTrashed()
@@ -218,8 +257,14 @@ class FinanceAccountController extends Controller
             'code'
         );
 
+        $uniqueSalesPaymentMethodRule = Rule::unique(
+            'finance_accounts',
+            'sales_payment_method'
+        );
+
         if ($account) {
             $uniqueCodeRule->ignore($account->id);
+            $uniqueSalesPaymentMethodRule->ignore($account->id);
         }
 
         return [
@@ -256,10 +301,7 @@ class FinanceAccountController extends Controller
                     'qris',
                     'transfer',
                 ]),
-                Rule::unique(
-                    'finance_accounts',
-                    'sales_payment_method'
-                )->ignore($account?->id),
+                $uniqueSalesPaymentMethodRule,
             ],
 
             'opening_balance' => [
@@ -284,5 +326,36 @@ class FinanceAccountController extends Controller
             'sales_payment_method.unique' => 'Metode pembayaran tersebut sudah dipetakan ke akun Finance lain.',
             'sales_payment_method.in' => 'Mapping metode pembayaran tidak valid.',
         ];
+    }
+
+    private function ensureActiveMappingIsValid(
+        array $validated,
+        bool $isActive
+    ): void {
+        $salesPaymentMethod =
+            $validated['sales_payment_method'] ?? null;
+
+        if ($salesPaymentMethod !== null && ! $isActive) {
+            throw ValidationException::withMessages([
+                'is_active' => 'Akun yang menjadi mapping pembayaran penjualan harus tetap aktif.',
+            ]);
+        }
+    }
+
+    private function amountsAreDifferent(
+        mixed $firstAmount,
+        mixed $secondAmount
+    ): bool {
+        return number_format(
+            (float) $firstAmount,
+            2,
+            '.',
+            ''
+        ) !== number_format(
+            (float) $secondAmount,
+            2,
+            '.',
+            ''
+        );
     }
 }

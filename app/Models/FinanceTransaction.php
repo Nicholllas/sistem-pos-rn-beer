@@ -99,6 +99,32 @@ class FinanceTransaction extends Model
         return $this->status === 'void';
     }
 
+    public function isSystemGenerated(): bool
+    {
+        return $this->reference_type !== null
+            && $this->reference_id !== null;
+    }
+
+    public function isManual(): bool
+    {
+        return ! $this->isSystemGenerated();
+    }
+
+    public function sourceLabel(): string
+    {
+        if ($this->isManual()) {
+            return 'Manual';
+        }
+
+        return match (
+            strtolower(class_basename((string) $this->reference_type))
+        ) {
+            'sale' => 'Penjualan',
+            'purchase' => 'Pembelian',
+            default => 'Sistem',
+        };
+    }
+
     protected function referenceNumber(): Attribute
     {
         return Attribute::make(

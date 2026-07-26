@@ -15,19 +15,37 @@ class FinanceCategoryController extends Controller
 {
     public function index(Request $request): View
     {
+        $filters = $request->validate([
+            'search' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+            'type' => [
+                'nullable',
+                Rule::in([
+                    'income',
+                    'expense',
+                ]),
+            ],
+            'status' => [
+                'nullable',
+                Rule::in([
+                    'active',
+                    'inactive',
+                ]),
+            ],
+        ]);
+
+        $search = TextNormalizer::singleLine(
+            $filters['search'] ?? null
+        );
+
         $categories = FinanceCategory::query()
             ->withCount('transactions')
             ->when(
-                $request->filled('search'),
-                function ($query) use ($request) {
-                    $search = TextNormalizer::singleLine(
-                        $request->input('search')
-                    );
-
-                    if (! $search) {
-                        return;
-                    }
-
+                $search,
+                function ($query) use ($search) {
                     $query->where(function ($subQuery) use ($search) {
                         $subQuery
                             ->where('code', 'like', "%{$search}%")
@@ -36,19 +54,18 @@ class FinanceCategoryController extends Controller
                 }
             )
             ->when(
-                $request->filled('type'),
-                fn ($query) => $query->where(
-                    'type',
-                    $request->input('type')
-                )
+                $filters['type'] ?? null,
+                fn ($query, $type) => $query->where('type', $type)
             )
             ->when(
-                $request->filled('status'),
-                fn ($query) => $query->where(
+                $filters['status'] ?? null,
+                fn ($query, $status) => $query->where(
                     'is_active',
-                    $request->input('status') === 'active'
+                    $status === 'active'
                 )
             )
+            ->orderByDesc('is_system')
+            ->orderByDesc('is_active')
             ->orderBy('type')
             ->orderBy('name')
             ->paginate(15)
@@ -112,15 +129,26 @@ class FinanceCategoryController extends Controller
             $this->validationMessages()
         );
 
-        $newCode = $validated['code'];
+        $isActive = $request->boolean('is_active');
 
-        if (
-            $category->is_system
-            && $newCode !== $category->code
-        ) {
-            throw ValidationException::withMessages([
-                'code' => 'Kode kategori sistem tidak dapat diubah.',
-            ]);
+        if ($category->is_system) {
+            if ($validated['code'] !== $category->code) {
+                throw ValidationException::withMessages([
+                    'code' => 'Kode kategori sistem tidak dapat diubah.',
+                ]);
+            }
+
+            if ($validated['type'] !== $category->type) {
+                throw ValidationException::withMessages([
+                    'type' => 'Jenis kategori sistem tidak dapat diubah.',
+                ]);
+            }
+
+            if (! $isActive) {
+                throw ValidationException::withMessages([
+                    'is_active' => 'Kategori sistem tidak dapat dinonaktifkan.',
+                ]);
+            }
         }
 
         $hasTransactions = $category
@@ -141,7 +169,7 @@ class FinanceCategoryController extends Controller
             'code' => $validated['code'],
             'name' => $validated['name'],
             'type' => $validated['type'],
-            'is_active' => $request->boolean('is_active'),
+            'is_active' => $isActive,
             'updated_by' => auth()->id(),
         ]);
 

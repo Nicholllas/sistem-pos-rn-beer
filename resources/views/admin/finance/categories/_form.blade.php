@@ -1,7 +1,12 @@
 @php
     $isEdit = isset($category);
+    $isSystem = $isEdit && $category->is_system;
+
     $selectedType = old('type', $isEdit ? $category->type : 'expense');
+
     $isActive = old('is_active', $isEdit ? $category->is_active : true);
+
+    $codeValue = $isSystem ? $category->code : old('code', $isEdit ? $category->code : '');
 @endphp
 
 <section class="crud-form-section">
@@ -21,9 +26,9 @@
             </label>
 
             <input type="text" name="code" id="code"
-                class="form-control crud-form-control @error('code') is-invalid @enderror"
-                value="{{ old('code', $isEdit ? $category->code : '') }}" maxlength="50"
-                placeholder="Contoh: ELECTRICITY" autocomplete="off" required @readonly($isEdit && $category->is_system)>
+                class="form-control crud-form-control text-uppercase @error('code') is-invalid @enderror"
+                value="{{ $codeValue }}" maxlength="50" placeholder="Contoh: ELECTRICITY" autocomplete="off" required
+                @readonly($isSystem)>
 
             @error('code')
                 <div class="invalid-feedback">
@@ -33,12 +38,13 @@
 
             <div class="crud-field-help">
                 <span>
-                    @if ($isEdit && $category->is_system)
+                    @if ($isSystem)
                         Kode kategori sistem tidak dapat diubah.
                     @else
                         Gunakan huruf, angka, strip, atau underscore.
                     @endif
                 </span>
+
                 <span>Maks. 50 karakter</span>
             </div>
         </div>
@@ -50,7 +56,7 @@
             </label>
 
             <input type="text" name="name" id="name"
-                class="form-control crud-form-control @error('name') is-invalid @enderror"
+                class="form-control crud-form-control text-uppercase @error('name') is-invalid @enderror"
                 value="{{ old('name', $isEdit ? $category->name : '') }}" maxlength="150"
                 placeholder="Contoh: Biaya Listrik" autocomplete="off" required>
 
@@ -73,10 +79,20 @@
             </label>
 
             <select name="type" id="type"
-                class="form-select crud-form-control @error('type') is-invalid @enderror" required>
-                <option value="income" @selected($selectedType === 'income')>Pemasukan</option>
-                <option value="expense" @selected($selectedType === 'expense')>Pengeluaran</option>
+                class="form-select crud-form-control @error('type') is-invalid @enderror" required
+                @disabled($isSystem)>
+                <option value="income" @selected($selectedType === 'income')>
+                    Pemasukan
+                </option>
+
+                <option value="expense" @selected($selectedType === 'expense')>
+                    Pengeluaran
+                </option>
             </select>
+
+            @if ($isSystem)
+                <input type="hidden" name="type" value="{{ $category->type }}">
+            @endif
 
             @error('type')
                 <div class="invalid-feedback">
@@ -85,7 +101,13 @@
             @enderror
 
             <div class="crud-field-help">
-                <span>Jenis tidak dapat diubah setelah kategori digunakan dalam transaksi.</span>
+                <span>
+                    @if ($isSystem)
+                        Jenis kategori sistem dikunci oleh aplikasi.
+                    @else
+                        Jenis tidak dapat diubah setelah kategori digunakan dalam transaksi.
+                    @endif
+                </span>
             </div>
         </div>
 
@@ -95,30 +117,47 @@
                     <strong>Status Kategori</strong>
 
                     <small>
-                        Kategori aktif dapat dipilih saat mencatat transaksi Finance baru.
+                        @if ($isSystem)
+                            Kategori sistem harus selalu aktif untuk integrasi otomatis.
+                        @else
+                            Kategori aktif dapat dipilih saat mencatat transaksi Finance baru.
+                        @endif
                     </small>
                 </div>
 
                 <div class="form-check form-switch">
-                    <input type="hidden" name="is_active" value="0">
+                    @if ($isSystem)
+                        <input type="hidden" name="is_active" value="1">
 
-                    <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1"
-                        @checked((bool) $isActive)>
+                        <input class="form-check-input" type="checkbox" id="is_active" value="1" checked disabled>
+                    @else
+                        <input type="hidden" name="is_active" value="0">
+
+                        <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1"
+                            @checked((bool) $isActive)>
+                    @endif
 
                     <label class="form-check-label" for="is_active">
                         Aktif
                     </label>
                 </div>
             </div>
+
+            @error('is_active')
+                <div class="text-danger small mt-2">
+                    {{ $message }}
+                </div>
+            @enderror
         </div>
     </div>
 
-    @if ($isEdit && $category->is_system)
+    @if ($isSystem)
         <div class="crud-info-box">
             <strong>Kategori Sistem</strong>
 
             <p>
-                Kategori ini digunakan untuk integrasi transaksi otomatis dan tidak dapat dihapus.
+                Kategori ini digunakan untuk integrasi transaksi otomatis.
+                Kode, jenis, status aktif, dan penghapusannya dikunci oleh sistem.
             </p>
         </div>
     @endif

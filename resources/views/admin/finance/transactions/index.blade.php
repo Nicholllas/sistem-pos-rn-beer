@@ -17,7 +17,7 @@
         $filterKeys = ['search', 'start_date', 'end_date', 'type', 'status', 'account_id', 'category_id'];
         $activeFilterCount = collect($filterKeys)->filter(fn($key) => request()->filled($key))->count();
         $hasActiveFilters = $activeFilterCount > 0;
-        $netCashFlow = (float) $summary['income'] - (float) $summary['expense'];
+        $netCashFlow = (float) $summary['net_cash_flow'];
 
         $selectedAccount = request()->filled('account_id')
             ? $accounts->firstWhere('id', (int) request('account_id'))
@@ -66,14 +66,20 @@
             </article>
 
             <article class="finance-summary-card">
-                <span>Arus Kas Bersih</span>
+                <span>
+                    {{ $selectedAccount ? 'Arus Kas Bersih Akun' : 'Arus Kas Bersih' }}
+                </span>
 
                 <strong @class(['is-danger' => $netCashFlow < 0])>
                     Rp {{ number_format($netCashFlow, 0, ',', '.') }}
                 </strong>
 
                 <small>
-                    Transfer antar akun tidak memengaruhi total kas keseluruhan.
+                    @if ($selectedAccount)
+                        Pemasukan dan transfer masuk dikurangi pengeluaran serta transfer keluar akun.
+                    @else
+                        Transfer antar akun tidak memengaruhi total kas keseluruhan.
+                    @endif
                 </small>
             </article>
         </div>
@@ -162,6 +168,9 @@
                                 @foreach ($accounts as $account)
                                     <option value="{{ $account->id }}" @selected((string) request('account_id') === (string) $account->id)>
                                         {{ $account->code }} - {{ $account->name }}
+                                        @unless ($account->is_active)
+                                            (NONAKTIF)
+                                        @endunless
                                     </option>
                                 @endforeach
                             </select>
@@ -179,6 +188,9 @@
                                     <option value="{{ $category->id }}" @selected((string) request('category_id') === (string) $category->id)>
                                         {{ $category->name }}
                                         ({{ $category->type === 'income' ? 'Pemasukan' : 'Pengeluaran' }})
+                                        @unless ($category->is_active)
+                                            - NONAKTIF
+                                        @endunless
                                     </option>
                                 @endforeach
                             </select>
@@ -298,6 +310,7 @@
                             <th>Transaksi</th>
                             <th>Jenis</th>
                             <th>Akun</th>
+                            <th class="text-center">Sumber</th>
                             <th>Kategori/Keterangan</th>
                             <th>Nominal</th>
                             <th>Status</th>
@@ -361,6 +374,16 @@
                                     </div>
                                 </td>
 
+                                <td class="text-center">
+                                    <span @class([
+                                        'badge',
+                                        'bg-primary' => $transaction->isSystemGenerated(),
+                                        'bg-secondary' => $transaction->isManual(),
+                                    ])>
+                                        {{ $transaction->sourceLabel() }}
+                                    </span>
+                                </td>
+
                                 <td>
                                     <div class="finance-description-cell">
                                         <strong>
@@ -422,7 +445,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8">
+                                <td colspan="9">
                                     <div class="crud-empty-state">
                                         @if ($hasActiveFilters)
                                             <strong>Transaksi tidak ditemukan</strong>

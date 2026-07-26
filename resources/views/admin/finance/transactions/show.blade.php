@@ -9,7 +9,7 @@
         Kembali
     </a>
 
-    @if ($financeTransaction->status === 'posted')
+    @if ($financeTransaction->isPosted() && $financeTransaction->isManual())
         <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
             data-bs-target="#voidFinanceTransactionModal">
             Void Transaksi
@@ -21,7 +21,8 @@
     @include('admin.finance.partials.alerts')
 
     @php
-        $isVoid = $financeTransaction->status === 'void';
+        $isVoid = $financeTransaction->isVoid();
+        $isSystemGenerated = $financeTransaction->isSystemGenerated();
 
         $typeLabel = match ($financeTransaction->type) {
             'income' => 'Pemasukan',
@@ -154,16 +155,27 @@
                             <small>Referensi nota atau dokumen terkait</small>
                         </article>
 
-                        @if ($financeTransaction->reference)
+                        @if ($isSystemGenerated)
                             <article class="finance-detail-item is-wide">
                                 <span>Sumber Transaksi Sistem</span>
 
                                 <strong>
-                                    {{ class_basename($financeTransaction->reference_type) }}
+                                    {{ $financeTransaction->sourceLabel() }}
                                     #{{ $financeTransaction->reference_id }}
                                 </strong>
 
-                                <small>Data aplikasi yang menghasilkan transaksi otomatis</small>
+                                <small>
+                                    Transaksi otomatis yang terhubung ke
+                                    {{ $financeTransaction->reference_number ?: 'dokumen sumber' }}.
+                                </small>
+                            </article>
+                        @else
+                            <article class="finance-detail-item is-wide">
+                                <span>Sumber Transaksi</span>
+
+                                <strong>Manual</strong>
+
+                                <small>Dicatat langsung melalui Cash Ledger.</small>
                             </article>
                         @endif
                     </div>
@@ -267,7 +279,7 @@
                     </div>
                 </section>
 
-                @if ($financeTransaction->status === 'posted')
+                @if ($financeTransaction->isPosted() && $financeTransaction->isManual())
                     <section class="finance-danger-panel">
                         <strong>Sebelum melakukan void</strong>
 
@@ -280,12 +292,36 @@
                             Void Transaksi
                         </button>
                     </section>
+                @elseif ($financeTransaction->isPosted() && $isSystemGenerated)
+                    <section class="crud-panel">
+                        <div class="crud-panel-header">
+                            <div>
+                                <h2>Transaksi Otomatis</h2>
+
+                                <p>
+                                    Transaksi ini dibuat oleh modul sumber.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="crud-notice">
+                            <div>
+                                <strong>{{ $financeTransaction->sourceLabel() }}</strong>
+
+                                <p>
+                                    Void hanya dapat dilakukan melalui modul
+                                    {{ strtolower($financeTransaction->sourceLabel()) }}
+                                    terkait agar stok, sumber transaksi, dan saldo tetap konsisten.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
                 @endif
             </aside>
         </div>
     </div>
 
-    @if ($financeTransaction->status === 'posted')
+    @if ($financeTransaction->isPosted() && $financeTransaction->isManual())
         <div class="modal fade crud-modal" id="voidFinanceTransactionModal" tabindex="-1"
             aria-labelledby="voidFinanceTransactionModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -338,8 +374,8 @@
                             </label>
 
                             <textarea name="void_reason" id="void_reason" rows="4"
-                                class="form-control crud-form-control @error('void_reason') is-invalid @enderror" minlength="5" maxlength="1000"
-                                placeholder="Jelaskan alasan transaksi dibatalkan..." required>{{ old('void_reason') }}</textarea>
+                                class="form-control crud-form-control text-uppercase @error('void_reason') is-invalid @enderror" minlength="5"
+                                maxlength="1000" placeholder="Jelaskan alasan transaksi dibatalkan..." required>{{ old('void_reason') }}</textarea>
 
                             @error('void_reason')
                                 <div class="invalid-feedback">
@@ -369,3 +405,25 @@
         </div>
     @endif
 @endsection
+
+@if ($errors->has('void_reason') && $financeTransaction->isPosted() && $financeTransaction->isManual())
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const modalElement = document.getElementById(
+                    'voidFinanceTransactionModal'
+                );
+
+                if (
+                    modalElement &&
+                    window.bootstrap &&
+                    window.bootstrap.Modal
+                ) {
+                    window.bootstrap.Modal
+                        .getOrCreateInstance(modalElement)
+                        .show();
+                }
+            });
+        </script>
+    @endpush
+@endif

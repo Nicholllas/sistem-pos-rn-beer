@@ -9,6 +9,7 @@ use App\Models\FinanceTransaction;
 use App\Support\TextNormalizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -19,6 +20,58 @@ class FinanceTransactionController extends Controller
 {
     public function index(Request $request): View
     {
+        $filters = $request->validate([
+            'search' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+            'start_date' => [
+                'nullable',
+                'date',
+            ],
+            'end_date' => [
+                'nullable',
+                'date',
+                'after_or_equal:start_date',
+            ],
+            'type' => [
+                'nullable',
+                Rule::in([
+                    'income',
+                    'expense',
+                    'transfer',
+                ]),
+            ],
+            'status' => [
+                'nullable',
+                Rule::in([
+                    'posted',
+                    'void',
+                ]),
+            ],
+            'account_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('finance_accounts', 'id')
+                    ->whereNull('deleted_at'),
+            ],
+            'category_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('finance_categories', 'id')
+                    ->whereNull('deleted_at'),
+            ],
+        ]);
+
+        $search = TextNormalizer::singleLine(
+            $filters['search'] ?? null
+        );
+
+        $selectedAccountId = isset($filters['account_id'])
+            ? (int) $filters['account_id']
+            : null;
+
         $query = FinanceTransaction::query()
             ->with([
                 'account',
@@ -28,16 +81,8 @@ class FinanceTransactionController extends Controller
                 'voider',
             ])
             ->when(
-                $request->filled('search'),
-                function ($query) use ($request) {
-                    $search = TextNormalizer::singleLine(
-                        $request->input('search')
-                    );
-
-                    if (! $search) {
-                        return;
-                    }
-
+                $search,
+                function ($query) use ($search) {
                     $query->where(function ($subQuery) use ($search) {
                         $subQuery
                             ->where(
@@ -59,77 +104,99 @@ class FinanceTransactionController extends Controller
                 }
             )
             ->when(
-                $request->filled('start_date'),
-                fn ($query) => $query->whereDate(
+                $filters['start_date'] ?? null,
+                fn ($query, $startDate) => $query->whereDate(
                     'transaction_date',
                     '>=',
-                    $request->input('start_date')
+                    $startDate
                 )
             )
             ->when(
-                $request->filled('end_date'),
-                fn ($query) => $query->whereDate(
+                $filters['end_date'] ?? null,
+                fn ($query, $endDate) => $query->whereDate(
                     'transaction_date',
                     '<=',
-                    $request->input('end_date')
+                    $endDate
                 )
             )
             ->when(
-                $request->filled('type'),
-                fn ($query) => $query->where(
-                    'type',
-                    $request->input('type')
-                )
+                $filters['type'] ?? null,
+                fn ($query, $type) => $query->where('type', $type)
             )
             ->when(
-                $request->filled('status'),
-                fn ($query) => $query->where(
-                    'status',
-                    $request->input('status')
-                )
+                $filters['status'] ?? null,
+                fn ($query, $status) => $query->where('status', $status)
             )
             ->when(
-                $request->filled('account_id'),
-                function ($query) use ($request) {
-                    $accountId = $request->integer('account_id');
-
+                $selectedAccountId,
+                function ($query) use ($selectedAccountId) {
                     $query->where(
-                        function ($subQuery) use ($accountId) {
+                        function ($subQuery) use ($selectedAccountId) {
                             $subQuery
-                                ->where('account_id', $accountId)
+                                ->where(
+                                    'account_id',
+                                    $selectedAccountId
+                                )
                                 ->orWhere(
                                     'transfer_account_id',
-                                    $accountId
+                                    $selectedAccountId
                                 );
                         }
                     );
                 }
             )
             ->when(
-                $request->filled('category_id'),
-                fn ($query) => $query->where(
+                $filters['category_id'] ?? null,
+                fn ($query, $categoryId) => $query->where(
                     'category_id',
-                    $request->integer('category_id')
+                    $categoryId
                 )
             );
 
         $summaryQuery = clone $query;
 
-        $summary = [
-            'income' => (clone $summaryQuery)
-                ->where('status', 'posted')
-                ->where('type', 'income')
-                ->sum('amount'),
+        $income = (clone $summaryQuery)
+            ->where('status', 'posted')
+            ->where('type', 'income')
+            ->sum('amount');
 
-            'expense' => (clone $summaryQuery)
-                ->where('status', 'posted')
-                ->where('type', 'expense')
-                ->sum('amount'),
+        $expense = (clone $summaryQuery)
+            ->where('status', 'posted')
+            ->where('type', 'expense')
+            ->sum('amount');
 
-            'transfer' => (clone $summaryQuery)
+        $transfer = (clone $summaryQuery)
+            ->where('status', 'posted')
+            ->where('type', 'transfer')
+            ->sum('amount');
+
+        $incomingTransfer = 0;
+        $outgoingTransfer = 0;
+
+        if ($selectedAccountId !== null) {
+            $incomingTransfer = (clone $summaryQuery)
                 ->where('status', 'posted')
                 ->where('type', 'transfer')
-                ->sum('amount'),
+                ->where('transfer_account_id', $selectedAccountId)
+                ->sum('amount');
+
+            $outgoingTransfer = (clone $summaryQuery)
+                ->where('status', 'posted')
+                ->where('type', 'transfer')
+                ->where('account_id', $selectedAccountId)
+                ->sum('amount');
+        }
+
+        $summary = [
+            'income' => $income,
+            'expense' => $expense,
+            'transfer' => $transfer,
+            'incoming_transfer' => $incomingTransfer,
+            'outgoing_transfer' => $outgoingTransfer,
+            'net_cash_flow' => (float) $income
+                + (float) $incomingTransfer
+                - (float) $expense
+                - (float) $outgoingTransfer,
         ];
 
         $transactions = $query
@@ -138,13 +205,17 @@ class FinanceTransactionController extends Controller
             ->paginate(20)
             ->withQueryString();
 
+        /*
+         * Akun dan kategori nonaktif tetap ditampilkan pada filter
+         * agar histori lama masih dapat ditelusuri.
+         */
         $accounts = FinanceAccount::query()
-            ->where('is_active', true)
+            ->orderByDesc('is_active')
             ->orderBy('name')
             ->get();
 
         $categories = FinanceCategory::query()
-            ->where('is_active', true)
+            ->orderByDesc('is_active')
             ->orderBy('type')
             ->orderBy('name')
             ->get();
@@ -170,12 +241,14 @@ class FinanceTransactionController extends Controller
         $incomeCategories = FinanceCategory::query()
             ->where('type', 'income')
             ->where('is_active', true)
+            ->where('is_system', false)
             ->orderBy('name')
             ->get();
 
         $expenseCategories = FinanceCategory::query()
             ->where('type', 'expense')
             ->where('is_active', true)
+            ->where('is_system', false)
             ->orderBy('name')
             ->get();
 
@@ -197,6 +270,7 @@ class FinanceTransactionController extends Controller
             'transaction_date' => [
                 'required',
                 'date',
+                'before_or_equal:now',
             ],
 
             'type' => [
@@ -220,13 +294,10 @@ class FinanceTransactionController extends Controller
 
             'transfer_account_id' => [
                 'nullable',
-
                 Rule::requiredIf(
                     fn () => $request->input('type') === 'transfer'
                 ),
-
                 'different:account_id',
-
                 Rule::exists('finance_accounts', 'id')
                     ->where(
                         fn ($query) => $query
@@ -237,7 +308,6 @@ class FinanceTransactionController extends Controller
 
             'category_id' => [
                 'nullable',
-
                 Rule::requiredIf(
                     fn () => in_array(
                         $request->input('type'),
@@ -245,12 +315,12 @@ class FinanceTransactionController extends Controller
                         true
                     )
                 ),
-
                 Rule::exists('finance_categories', 'id')
                     ->where(
                         fn ($query) => $query
                             ->whereNull('deleted_at')
                             ->where('is_active', true)
+                            ->where('is_system', false)
                     ),
             ],
 
@@ -274,59 +344,79 @@ class FinanceTransactionController extends Controller
                 "regex:/^[\pL\pN\s.,:;!?()'\"#%&_\/+\-=]+$/u",
             ],
         ], [
+            'transaction_date.before_or_equal' => 'Tanggal transaksi tidak boleh melebihi waktu saat ini.',
             'transfer_account_id.required' => 'Akun tujuan wajib dipilih untuk transaksi transfer.',
-
             'transfer_account_id.different' => 'Akun sumber dan akun tujuan tidak boleh sama.',
-
             'category_id.required' => 'Kategori transaksi wajib dipilih.',
-
+            'category_id.exists' => 'Kategori tidak valid, tidak aktif, atau merupakan kategori sistem.',
             'reference_number.regex' => 'Nomor referensi mengandung karakter yang tidak diizinkan.',
-
             'description.regex' => 'Keterangan mengandung karakter yang tidak diizinkan.',
         ]);
 
-        $category = null;
-
-        if ($validated['type'] !== 'transfer') {
-            $category = FinanceCategory::query()
-                ->whereKey($validated['category_id'])
-                ->where('is_active', true)
-                ->firstOrFail();
-
-            if ($category->type !== $validated['type']) {
-                throw ValidationException::withMessages([
-                    'category_id' => 'Jenis kategori tidak sesuai dengan jenis transaksi.',
-                ]);
-            }
-        }
-
         $transaction = DB::transaction(
-            function () use ($validated, $category) {
+            function () use ($validated) {
+                $lockedAccounts = $this->lockTransactionAccounts(
+                    $validated
+                );
+
+                $sourceAccount = $lockedAccounts->get(
+                    (int) $validated['account_id']
+                );
+
+                if (! $sourceAccount) {
+                    throw ValidationException::withMessages([
+                        'account_id' => 'Akun sumber tidak ditemukan atau sudah tidak aktif.',
+                    ]);
+                }
+
+                $category = null;
+
+                if ($validated['type'] !== 'transfer') {
+                    $category = FinanceCategory::query()
+                        ->whereKey($validated['category_id'])
+                        ->where('is_active', true)
+                        ->where('is_system', false)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (! $category) {
+                        throw ValidationException::withMessages([
+                            'category_id' => 'Kategori tidak valid, tidak aktif, atau merupakan kategori sistem.',
+                        ]);
+                    }
+
+                    if ($category->type !== $validated['type']) {
+                        throw ValidationException::withMessages([
+                            'category_id' => 'Jenis kategori tidak sesuai dengan jenis transaksi.',
+                        ]);
+                    }
+                }
+
+                if (in_array(
+                    $validated['type'],
+                    ['expense', 'transfer'],
+                    true
+                )) {
+                    $this->ensureSufficientBalance(
+                        $sourceAccount,
+                        (float) $validated['amount']
+                    );
+                }
+
                 return FinanceTransaction::create([
                     'transaction_number' => $this->generateTransactionNumber(),
-
                     'transaction_date' => $validated['transaction_date'],
-
                     'type' => $validated['type'],
-
-                    'account_id' => $validated['account_id'],
-
+                    'account_id' => $sourceAccount->id,
                     'transfer_account_id' => $validated['type'] === 'transfer'
-                            ? $validated['transfer_account_id']
+                            ? (int) $validated['transfer_account_id']
                             : null,
-
                     'category_id' => $category?->id,
-
                     'amount' => $validated['amount'],
-
                     'reference_number' => $validated['reference_number'] ?? null,
-
                     'description' => $validated['description'] ?? null,
-
                     'status' => 'posted',
-
                     'created_by' => auth()->id(),
-
                     'updated_by' => auth()->id(),
                 ]);
             }
@@ -366,6 +456,20 @@ class FinanceTransactionController extends Controller
         Request $request,
         FinanceTransaction $financeTransaction
     ): RedirectResponse {
+        if ($financeTransaction->isSystemGenerated()) {
+            return back()->with(
+                'error',
+                'Transaksi otomatis tidak dapat dibatalkan dari Cash Ledger. Batalkan melalui modul penjualan atau pembelian terkait.'
+            );
+        }
+
+        if ($financeTransaction->isVoid()) {
+            return back()->with(
+                'error',
+                'Transaksi tersebut sudah dibatalkan sebelumnya.'
+            );
+        }
+
         $request->merge([
             'void_reason' => TextNormalizer::multiline(
                 $request->input('void_reason')
@@ -381,30 +485,49 @@ class FinanceTransactionController extends Controller
                 "regex:/^[\pL\pN\s.,:;!?()'\"#%&_\/+\-=]+$/u",
             ],
         ], [
+            'void_reason.required' => 'Alasan pembatalan wajib diisi.',
+            'void_reason.min' => 'Alasan pembatalan minimal 5 karakter.',
             'void_reason.regex' => 'Alasan pembatalan mengandung karakter yang tidak diizinkan.',
         ]);
 
-        if ($financeTransaction->status === 'void') {
-            return back()->with(
-                'error',
-                'Transaksi tersebut sudah dibatalkan sebelumnya.'
-            );
-        }
+        DB::transaction(function () use (
+            $financeTransaction,
+            $validated
+        ) {
+            $financeTransaction = FinanceTransaction::query()
+                ->whereKey($financeTransaction->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        DB::transaction(
-            function () use (
-                $financeTransaction,
-                $validated
-            ) {
-                $financeTransaction->update([
-                    'status' => 'void',
-                    'void_reason' => $validated['void_reason'],
-                    'voided_at' => now(),
-                    'voided_by' => auth()->id(),
-                    'updated_by' => auth()->id(),
+            if ($financeTransaction->isSystemGenerated()) {
+                throw ValidationException::withMessages([
+                    'void_reason' => 'Transaksi otomatis hanya dapat dibatalkan melalui modul sumbernya.',
                 ]);
             }
-        );
+
+            if ($financeTransaction->isVoid()) {
+                throw ValidationException::withMessages([
+                    'void_reason' => 'Transaksi tersebut sudah dibatalkan sebelumnya.',
+                ]);
+            }
+
+            $lockedAccounts = $this->lockAffectedAccounts(
+                $financeTransaction
+            );
+
+            $this->ensureVoidKeepsBalancesValid(
+                $financeTransaction,
+                $lockedAccounts
+            );
+
+            $financeTransaction->update([
+                'status' => 'void',
+                'void_reason' => $validated['void_reason'],
+                'voided_at' => now(),
+                'voided_by' => auth()->id(),
+                'updated_by' => auth()->id(),
+            ]);
+        });
 
         return redirect()
             ->route(
@@ -424,11 +547,132 @@ class FinanceTransactionController extends Controller
             'reference_number' => TextNormalizer::singleLine(
                 $request->input('reference_number')
             ),
-
             'description' => TextNormalizer::multiline(
                 $request->input('description')
             ),
         ]);
+    }
+
+    private function lockTransactionAccounts(
+        array $validated
+    ): Collection {
+        $accountIds = collect([
+            (int) $validated['account_id'],
+            $validated['type'] === 'transfer'
+                ? (int) $validated['transfer_account_id']
+                : null,
+        ])
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
+        $accounts = FinanceAccount::query()
+            ->whereIn('id', $accountIds)
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->lockForUpdate()
+            ->get()
+            ->keyBy('id');
+
+        if ($accounts->count() !== $accountIds->count()) {
+            throw ValidationException::withMessages([
+                'account_id' => 'Salah satu akun Finance tidak ditemukan atau sudah tidak aktif.',
+            ]);
+        }
+
+        return $accounts;
+    }
+
+    private function lockAffectedAccounts(
+        FinanceTransaction $transaction
+    ): Collection {
+        $accountIds = collect([
+            $transaction->account_id,
+            $transaction->transfer_account_id,
+        ])
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
+        return FinanceAccount::query()
+            ->whereIn('id', $accountIds)
+            ->orderBy('id')
+            ->lockForUpdate()
+            ->get()
+            ->keyBy('id');
+    }
+
+    private function ensureSufficientBalance(
+        FinanceAccount $account,
+        float $amount
+    ): void {
+        $currentBalance = (float) $account->current_balance;
+
+        if ($currentBalance < $amount) {
+            throw ValidationException::withMessages([
+                'amount' => sprintf(
+                    'Saldo akun %s tidak cukup. Saldo tersedia Rp%s, sedangkan nominal transaksi Rp%s.',
+                    $account->name,
+                    number_format($currentBalance, 0, ',', '.'),
+                    number_format($amount, 0, ',', '.')
+                ),
+            ]);
+        }
+    }
+
+    private function ensureVoidKeepsBalancesValid(
+        FinanceTransaction $transaction,
+        Collection $accounts
+    ): void {
+        if ($transaction->type === 'income') {
+            $account = $accounts->get($transaction->account_id);
+
+            if (! $account) {
+                throw ValidationException::withMessages([
+                    'void_reason' => 'Akun transaksi tidak ditemukan.',
+                ]);
+            }
+
+            $balanceAfterVoid =
+                (float) $account->current_balance
+                - (float) $transaction->amount;
+
+            if ($balanceAfterVoid < 0) {
+                throw ValidationException::withMessages([
+                    'void_reason' => sprintf(
+                        'Transaksi tidak dapat di-void karena saldo akun %s akan menjadi negatif.',
+                        $account->name
+                    ),
+                ]);
+            }
+        }
+
+        if ($transaction->type === 'transfer') {
+            $targetAccount = $accounts->get(
+                $transaction->transfer_account_id
+            );
+
+            if (! $targetAccount) {
+                throw ValidationException::withMessages([
+                    'void_reason' => 'Akun tujuan transfer tidak ditemukan.',
+                ]);
+            }
+
+            $balanceAfterVoid =
+                (float) $targetAccount->current_balance
+                - (float) $transaction->amount;
+
+            if ($balanceAfterVoid < 0) {
+                throw ValidationException::withMessages([
+                    'void_reason' => sprintf(
+                        'Transfer tidak dapat di-void karena saldo akun tujuan %s akan menjadi negatif.',
+                        $targetAccount->name
+                    ),
+                ]);
+            }
+        }
     }
 
     private function generateTransactionNumber(): string
