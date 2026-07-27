@@ -302,8 +302,8 @@
                 @endif
             </div>
 
-            <div class="table-responsive">
-                <table class="table crud-table finance-table align-middle mb-0">
+            <div class="finance-transaction-table-wrap">
+                <table class="table crud-table finance-table finance-transaction-table align-middle mb-0">
                     <thead>
                         <tr>
                             <th>Tanggal</th>
@@ -321,7 +321,7 @@
                     <tbody>
                         @forelse ($transactions as $transaction)
                             <tr @class(['is-void' => $transaction->status === 'void'])>
-                                <td>
+                                <td data-label="Tanggal">
                                     <div class="crud-audit-cell">
                                         <strong>
                                             {{ $transaction->transaction_date->format('d M Y') }}
@@ -333,7 +333,7 @@
                                     </div>
                                 </td>
 
-                                <td>
+                                <td data-label="Transaksi">
                                     <div class="finance-transaction-cell">
                                         <strong>{{ $transaction->transaction_number }}</strong>
 
@@ -347,7 +347,7 @@
                                     </div>
                                 </td>
 
-                                <td>
+                                <td data-label="Jenis">
                                     <span @class([
                                         'finance-type-badge',
                                         'is-income' => $transaction->type === 'income',
@@ -358,7 +358,7 @@
                                     </span>
                                 </td>
 
-                                <td>
+                                <td data-label="Akun">
                                     <div class="finance-account-cell">
                                         <strong>
                                             {{ $transaction->account?->name ?? '-' }}
@@ -374,7 +374,7 @@
                                     </div>
                                 </td>
 
-                                <td class="text-center">
+                                <td data-label="Sumber" class="text-center">
                                     <span @class([
                                         'badge',
                                         'bg-primary' => $transaction->isSystemGenerated(),
@@ -384,7 +384,7 @@
                                     </span>
                                 </td>
 
-                                <td>
+                                <td data-label="Kategori/Keterangan">
                                     <div class="finance-description-cell">
                                         <strong>
                                             @if ($transaction->category)
@@ -404,7 +404,7 @@
                                     </div>
                                 </td>
 
-                                <td>
+                                <td data-label="Nominal">
                                     <div class="finance-money-cell">
                                         <strong @class([
                                             'is-income' => $transaction->type === 'income',
@@ -424,7 +424,7 @@
                                     </div>
                                 </td>
 
-                                <td>
+                                <td data-label="Status">
                                     <span @class([
                                         'crud-status',
                                         'is-success' => $transaction->status === 'posted',
@@ -434,7 +434,7 @@
                                     </span>
                                 </td>
 
-                                <td>
+                                <td data-label="Aksi">
                                     <div class="crud-actions">
                                         <a href="{{ route('admin.finance.transactions.show', $transaction) }}"
                                             class="btn btn-sm btn-outline-primary">
@@ -444,7 +444,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr>
+                            <tr class="finance-transaction-empty-row">
                                 <td colspan="9">
                                     <div class="crud-empty-state">
                                         @if ($hasActiveFilters)

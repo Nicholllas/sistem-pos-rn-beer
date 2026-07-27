@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Finance\FinanceAccountController;
 use App\Http\Controllers\Admin\Finance\FinanceCategoryController;
+use App\Http\Controllers\Admin\Finance\FinanceDashboardController;
+use App\Http\Controllers\Admin\Finance\FinanceReconciliationController;
 use App\Http\Controllers\Admin\Finance\FinanceTransactionController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\ProductController;
@@ -170,6 +172,10 @@ Route::middleware('auth')
             Route::prefix('finance')
                 ->name('finance.')
                 ->group(function () {
+
+                    Route::get('/dashboard', [FinanceDashboardController::class, 'index'])
+                        ->name('dashboard');
+
                     Route::resource('accounts', FinanceAccountController::class)
                         ->except(['show']);
 
@@ -190,6 +196,19 @@ Route::middleware('auth')
 
                     Route::put('/transactions/{financeTransaction}/void', [FinanceTransactionController::class, 'void'])
                         ->name('transactions.void');
+
+                    Route::get('/reconciliation', [FinanceReconciliationController::class, 'index'])
+                        ->name('reconciliation.index');
+
+                    Route::post('/reconciliation/{sourceType}/{sourceId}/repost', [FinanceReconciliationController::class, 'repost'])
+                        ->where('sourceType', 'sale|purchase')
+                        ->whereNumber('sourceId')
+                        ->name('reconciliation.repost');
+
+                    Route::put('/reconciliation/{sourceType}/{sourceId}/sync-void', [FinanceReconciliationController::class, 'syncVoid'])
+                        ->where('sourceType', 'sale|purchase')
+                        ->whereNumber('sourceId')
+                        ->name('reconciliation.sync-void');
                 });
         });
     });

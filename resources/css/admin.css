@@ -41,6 +41,7 @@
 @import "./modules/purchase-form.css";
 @import "./modules/purchase-detail.css";
 @import "./modules/finance.css";
+@import "./modules/finance-dashboard.css";
 @import "./modules/inventory-stock-in.css";
 @import "./modules/inventory-adjustment.css";
 @import "./modules/low-stock.css";

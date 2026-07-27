@@ -60,6 +60,10 @@
 
         $isBatchActive = request()->routeIs('admin.inventory.batches');
 
+        $isFinanceDashboardActive = request()->routeIs('admin.finance.dashboard');
+
+        $isFinanceReconciliationActive = request()->routeIs('admin.finance.reconciliation.*');
+
         $isFinanceAccountActive = request()->routeIs('admin.finance.accounts.*');
 
         $isFinanceCategoryActive = request()->routeIs('admin.finance.categories.*');
@@ -333,12 +337,30 @@
                             </li>
 
                             <li class="nav-item">
+                                <a href="{{ route('admin.finance.dashboard') }}"
+                                    class="nav-link {{ $isFinanceDashboardActive ? 'active' : '' }}"
+                                    @if ($isFinanceDashboardActive) aria-current="page" @endif>
+                                    <span class="nav-link-marker"></span>
+                                    <p>Dashboard Finance</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
                                 <a href="{{ route('admin.finance.transactions.index') }}"
                                     class="nav-link {{ $isFinanceTransactionActive ? 'active' : '' }}"
                                     @if ($isFinanceTransactionActive) aria-current="page" @endif>
                                     <span class="nav-link-marker"></span>
 
                                     <p>Cash Ledger</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.finance.reconciliation.index') }}"
+                                    class="nav-link {{ $isFinanceReconciliationActive ? 'active' : '' }}"
+                                    @if ($isFinanceReconciliationActive) aria-current="page" @endif>
+                                    <span class="nav-link-marker"></span>
+                                    <p>Rekonsiliasi Finance</p>
                                 </a>
                             </li>
 
@@ -497,3 +519,4 @@
 </body>
 
 </html>
+
