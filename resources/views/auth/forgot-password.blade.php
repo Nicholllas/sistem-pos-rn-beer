@@ -1,89 +1,98 @@
 <x-guest-layout>
-    <div class="rn-login-page">
-        {{-- Left: Forgot Password Form --}}
-        <div class="panel-left">
-            <div class="brand">
-                <div class="brand-icon">🍺</div>
-                <div class="brand-name">RN <span>Beer</span></div>
-                <div class="brand-sub">Point of Sale System</div>
-            </div>
-
-            <div class="form-wrap">
-                <div class="form-heading">Reset password</div>
-
-                <div class="form-sub">
-                    Enter your email address and we will send you a password reset link.
+    <div class="auth-page">
+        <div class="auth-container">
+            <!-- Left Panel - Forgot Password Form -->
+            <div class="auth-panel auth-panel-left">
+                <div class="auth-header">
+                    <div class="auth-brand">
+                        <span class="auth-brand-icon">🍺</span>
+                        <div>
+                            <h1 class="auth-brand-name">RN <span>Beer</span></h1>
+                            <p class="auth-brand-sub">Point of Sale System</p>
+                        </div>
+                    </div>
                 </div>
 
-                {{-- Session Status --}}
-                <x-auth-session-status class="mb-4" :status="session('status')" />
-
-                <form method="POST" action="{{ route('password.email') }}">
-                    @csrf
-
-                    {{-- Email --}}
-                    <div class="field">
-                        <label for="email">Email</label>
-
-                        <input
-                            id="email"
-                            type="email"
-                            name="email"
-                            value="{{ old('email') }}"
-                            placeholder="you@rnbeer.com"
-                            required
-                            autofocus
-                        >
-
-                        <x-input-error :messages="$errors->get('email')" class="input-error" />
+                <div class="auth-form-wrap">
+                    <div class="auth-form-header">
+                        <h2>Reset Password</h2>
+                        <p>Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk mereset password.</p>
                     </div>
 
-                    <button type="submit" class="btn-signin">
-                        Send Reset Link
-                    </button>
+                    {{-- Session Status --}}
+                    <x-auth-session-status class="mb-4" :status="session('status')" />
 
-                    <div class="auth-back-link">
-                        <a href="{{ route('login') }}">
-                            Back to login
-                        </a>
-                    </div>
-                </form>
+                    <form method="POST" action="{{ route('password.email') }}" class="auth-form">
+                        @csrf
+
+                        <!-- Email Field -->
+                        <div class="auth-field">
+                            <label class="auth-label" for="email">Email</label>
+                            <input id="email" type="email" name="email" value="{{ old('email') }}"
+                                placeholder="you@rnbeer.com" required autofocus
+                                class="auth-input @error('email') is-invalid @enderror">
+                            <x-input-error :messages="$errors->get('email')" class="auth-error" />
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="auth-submit">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="margin-right: 8px;">
+                                <rect x="2" y="4" width="20" height="16" rx="2" />
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                            </svg>
+                            Kirim Tautan Reset
+                        </button>
+
+                        <!-- Back to Login -->
+                        <div class="auth-back-link">
+                            <a href="{{ route('login') }}" class="auth-back-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="m15 18-6-6 6-6" />
+                                </svg>
+                                Kembali ke halaman login
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="auth-footer">
+                    <p>© 2026 RN Beer · Seluruh hak cipta dilindungi</p>
+                </div>
             </div>
 
-            <div class="footer-note">© 2026 RN Beer · All rights reserved</div>
-        </div>
+            <!-- Right Panel - Account Recovery Hero -->
+            <div class="auth-panel auth-panel-right">
+                <div class="auth-hero">
+                    <span class="auth-hero-badge">Pemulihan Akun</span>
 
-        {{-- Decorative divider --}}
-        <div class="panel-divider"></div>
+                    <h2 class="auth-hero-title">
+                        Kembali ke<br>
+                        <em>dashboard Anda.</em>
+                    </h2>
 
-        {{-- Right: Brand Panel --}}
-        <div class="panel-right">
-            <div class="tagline-eyebrow">Account Recovery</div>
+                    <p class="auth-hero-desc">
+                        Pulihkan akun RN Beer POS Anda dengan aman dan lanjutkan mengelola
+                        penjualan, stok, dan operasional toko tanpa kehilangan akses.
+                    </p>
 
-            <h1 class="tagline">
-                Get back<br>
-                to your <em>dashboard.</em>
-            </h1>
-
-            <p class="tagline-body">
-                Securely recover your RN Beer POS account and continue managing sales,
-                stock, and store operations without losing access.
-            </p>
-
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-number">Safe</div>
-                    <div class="stat-label">Reset flow</div>
-                </div>
-
-                <div class="stat-item">
-                    <div class="stat-number">&lt; <span>1m</span></div>
-                    <div class="stat-label">Email delivery</div>
-                </div>
-
-                <div class="stat-item">
-                    <div class="stat-number">24<span>/7</span></div>
-                    <div class="stat-label">Access</div>
+                    <div class="auth-stats">
+                        <div class="auth-stat-item">
+                            <span class="auth-stat-value auth-stat-value-text">Aman</span>
+                            <span class="auth-stat-label">Proses reset</span>
+                        </div>
+                        <div class="auth-stat-item">
+                            <span class="auth-stat-value">&lt; <span>1mnt</span></span>
+                            <span class="auth-stat-label">Pengiriman email</span>
+                        </div>
+                        <div class="auth-stat-item">
+                            <span class="auth-stat-value">24<span>/7</span></span>
+                            <span class="auth-stat-label">Akses</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
