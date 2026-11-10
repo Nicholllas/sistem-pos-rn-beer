@@ -13,6 +13,7 @@ class Product extends Model
         'category_id',
         'brand',
         'variant',
+        'packaging_type',
         'size',
         'unit',
         'name',

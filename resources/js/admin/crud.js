@@ -156,6 +156,7 @@ document.querySelectorAll("[data-image-preview-target]").forEach((input) => {
 
 const productBrandInput = document.getElementById("brand");
 const productVariantInput = document.getElementById("variant");
+const productPackagingTypeInput = document.getElementById("packaging_type");
 const productSizeInput = document.getElementById("size");
 const productUnitInput = document.getElementById("unit");
 
@@ -163,6 +164,7 @@ const productCostInput = document.getElementById("cost_price");
 const productSellingInput = document.getElementById("price");
 
 const productNamePreview = document.getElementById("productNamePreview");
+const productSkuPreview = document.getElementById("productSkuPreview");
 
 const productPreviewAvatar = document.getElementById("productPreviewAvatar");
 
@@ -189,6 +191,84 @@ function normalizeProductText(value) {
         .toUpperCase();
 }
 
+function getBrandCode(brand) {
+    const clean = brand.replace(/[^A-Z0-9]/g, "");
+    return clean.slice(0, 3);
+}
+
+function getPackagingCode(packagingType) {
+    switch (packagingType) {
+        case "BOTOL BESAR":
+            return "BB";
+        case "BOTOL KECIL":
+            return "BK";
+        case "KALENG BESAR":
+            return "KB";
+        case "KALENG KECIL":
+            return "KK";
+        default:
+            return null;
+    }
+}
+
+function getVariantCode(variant) {
+    const words = variant
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    if (words.length === 0) {
+        return "VAR";
+    }
+
+    if (words.length === 1) {
+        return words[0].replace(/[^A-Z0-9]/g, "").slice(0, 3);
+    }
+
+    const w1 = words[0].replace(/[^A-Z0-9]/g, "");
+    const w2 = words[1].replace(/[^A-Z0-9]/g, "");
+
+    if (w1.startsWith("ANG")) {
+        const w2Char = w2.slice(0, 1);
+        return "AG" + w2Char;
+    }
+
+    if (w1 === "BIR") {
+        if (w2.startsWith("HIT")) {
+            return "BHT";
+        }
+        if (w2.startsWith("PUT")) {
+            return "BPT";
+        }
+        return "B" + w2.slice(0, 2);
+    }
+
+    if (words.length >= 3) {
+        const w3 = words[2].replace(/[^A-Z0-9]/g, "");
+        return w1.slice(0, 1) + w2.slice(0, 1) + w3.slice(0, 1);
+    }
+
+    return w1.slice(0, 2) + w2.slice(0, 1);
+}
+
+function generateSkuPreview(brand, variant, packagingType, size, unit) {
+    if (!brand || !variant || !size || !unit) {
+        return null;
+    }
+
+    const brandCode = getBrandCode(brand);
+    const variantCode = getVariantCode(variant);
+    const pkgCode = getPackagingCode(packagingType);
+
+    const segments = [brandCode, variantCode];
+    if (pkgCode) {
+        segments.push(pkgCode);
+    }
+    segments.push(`${size}${unit}`);
+
+    return segments.join("-");
+}
+
 function updateProductPreview() {
     if (!productNamePreview) {
         return;
@@ -196,18 +276,29 @@ function updateProductPreview() {
 
     const brand = normalizeProductText(productBrandInput?.value);
     const variant = normalizeProductText(productVariantInput?.value);
+    const packagingType = normalizeProductText(productPackagingTypeInput?.value);
     const size = String(productSizeInput?.value ?? "").trim();
     const unit = normalizeProductText(productUnitInput?.value);
 
     const productName = [
         brand,
         variant,
+        packagingType,
         size && unit ? `${size} ${unit}` : size || unit,
     ]
         .filter(Boolean)
         .join(" ");
 
     productNamePreview.textContent = productName || "NAMA PRODUK";
+
+    if (productSkuPreview) {
+        const liveSku = generateSkuPreview(brand, variant, packagingType, size, unit);
+        if (liveSku) {
+            productSkuPreview.textContent = `SKU ${liveSku}`;
+        } else if (!productSkuPreview.dataset.initialSku) {
+            productSkuPreview.textContent = "SKU dibuat otomatis saat disimpan";
+        }
+    }
 
     if (productPreviewAvatar) {
         productPreviewAvatar.textContent = productName.charAt(0) || "P";
@@ -248,6 +339,7 @@ function updateProductPreview() {
 [
     productBrandInput,
     productVariantInput,
+    productPackagingTypeInput,
     productSizeInput,
     productUnitInput,
     productCostInput,

@@ -123,7 +123,7 @@
                                         <input type="text" name="variant" id="variant"
                                             class="form-control crud-form-control
                                                 @error('variant') is-invalid @enderror"
-                                            value="{{ old('variant') }}" placeholder="Contoh: BOTOL" required
+                                            value="{{ old('variant') }}" placeholder="Contoh: ANGGUR MERAH" required
                                             maxlength="150" autocomplete="off" data-character-counter="variantCounter">
 
                                         @error('variant')
@@ -133,8 +133,34 @@
                                         @enderror
 
                                         <div class="crud-field-help">
-                                            <span>Contoh: ORIGINAL, BOTOL, BLACK TEA.</span>
+                                            <span>Contoh: ANGGUR MERAH, INTISARI, PILSENER, MILD.</span>
                                             <span id="variantCounter">0/150</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="packaging_type" class="form-label">
+                                            Jenis Kemasan
+                                        </label>
+
+                                        <select name="packaging_type" id="packaging_type"
+                                            class="form-select crud-form-control
+                                                @error('packaging_type') is-invalid @enderror">
+                                            <option value="">-- Tanpa Kemasan / Opsional --</option>
+                                            <option value="BOTOL BESAR" @selected(old('packaging_type') === 'BOTOL BESAR')>Botol Besar</option>
+                                            <option value="BOTOL KECIL" @selected(old('packaging_type') === 'BOTOL KECIL')>Botol Kecil</option>
+                                            <option value="KALENG BESAR" @selected(old('packaging_type') === 'KALENG BESAR')>Kaleng Besar</option>
+                                            <option value="KALENG KECIL" @selected(old('packaging_type') === 'KALENG KECIL')>Kaleng Kecil</option>
+                                        </select>
+
+                                        @error('packaging_type')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+
+                                        <div class="crud-field-help">
+                                            <span>Opsional. Kosongkan jika bukan produk kemasan minuman.</span>
                                         </div>
                                     </div>
 
@@ -182,7 +208,7 @@
                                         @enderror
                                     </div>
 
-                                    <div class="col-12">
+                                    <div class="col-md-6">
                                         <label for="barcode" class="form-label">
                                             Barcode
                                         </label>
