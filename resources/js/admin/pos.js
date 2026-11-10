@@ -792,7 +792,7 @@ checkoutForm?.addEventListener("submit", async function (event) {
                 payment.payment_method;
 
             return `
-                <div class="pos-confirmation-row">
+                <div class="pos-confirmation-row pos-confirmation-method">
                     <span>${escapeHtml(label)}</span>
 
                     <strong>
@@ -810,8 +810,8 @@ checkoutForm?.addEventListener("submit", async function (event) {
         title: "Konfirmasi Checkout",
         html: `
             <div class="pos-confirmation">
-                <div class="pos-confirmation-row">
-                    <span>Total transaksi</span>
+                <div class="pos-confirmation-row pos-confirmation-total">
+                    <span>Total Belanja</span>
 
                     <strong>
                         ${rupiah(total)}
@@ -821,22 +821,22 @@ checkoutForm?.addEventListener("submit", async function (event) {
                 <div class="pos-confirmation-divider"></div>
 
                 <div class="pos-confirmation-label">
-                    Rincian pembayaran
+                    Rincian Pembayaran
                 </div>
 
                 ${paymentDetailsHtml}
 
                 <div class="pos-confirmation-divider"></div>
 
-                <div class="pos-confirmation-row">
-                    <span>Total pembayaran</span>
+                <div class="pos-confirmation-row pos-confirmation-paid">
+                    <span>Total Pembayaran</span>
 
                     <strong>
                         ${rupiah(totalPaid)}
                     </strong>
                 </div>
 
-                <div class="pos-confirmation-row pos-confirmation-change">
+                <div class="pos-confirmation-row pos-confirmation-change ${change === 0 ? "is-zero" : ""}">
                     <span>Kembalian</span>
 
                     <strong>
@@ -853,8 +853,8 @@ checkoutForm?.addEventListener("submit", async function (event) {
         allowOutsideClick: false,
         customClass: {
             popup: "pos-alert-popup",
-            confirmButton: "btn btn-success px-4",
-            cancelButton: "btn btn-outline-secondary px-4",
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-outline-secondary",
         },
         buttonsStyling: false,
     });

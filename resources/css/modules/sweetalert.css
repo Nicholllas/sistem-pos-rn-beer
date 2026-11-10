@@ -26,10 +26,16 @@
     line-height: 1.5;
 }
 
+/* Global SweetAlert2 actions spacing */
+.swal2-actions {
+    display: flex !important;
+    gap: 12px !important;
+}
+
 .crud-alert-popup .swal2-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
+    gap: 10px;
     margin-top: 20px;
     padding: 0;
     width: 100%;
