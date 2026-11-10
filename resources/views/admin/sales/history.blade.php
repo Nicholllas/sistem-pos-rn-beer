@@ -339,10 +339,6 @@
 
                                 <td>
                                     <div class="sales-cashier-cell">
-                                        <span class="sales-cashier-avatar">
-                                            {{ strtoupper(mb_substr($sale->soldBy?->name ?? 'U', 0, 1)) }}
-                                        </span>
-
                                         <div>
                                             <strong>
                                                 {{ $sale->soldBy?->name ?? 'User tidak ditemukan' }}

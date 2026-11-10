@@ -14,10 +14,6 @@
     <div class="crud-page">
         <section class="crud-form-panel">
             <div class="crud-form-header">
-                <span class="crud-form-avatar">
-                    {{ strtoupper(substr($product->name, 0, 1)) }}
-                </span>
-
                 <div>
                     <h2>{{ $product->name }}</h2>
 

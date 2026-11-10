@@ -18,10 +18,6 @@
             <div class="inventory-stock-layout">
                 <section class="crud-form-panel">
                     <div class="crud-form-header">
-                        <span class="crud-form-avatar">
-                            S
-                        </span>
-
                         <div>
                             <h2>Informasi Stok Masuk</h2>
 

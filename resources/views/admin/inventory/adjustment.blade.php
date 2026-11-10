@@ -18,10 +18,6 @@
             <div class="inventory-adjustment-layout">
                 <section class="crud-form-panel">
                     <div class="crud-form-header">
-                        <span class="crud-form-avatar">
-                            A
-                        </span>
-
                         <div>
                             <h2>Informasi Penyesuaian</h2>
 

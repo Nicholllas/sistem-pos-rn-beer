@@ -16,10 +16,6 @@
             <div class="col-xl-8 col-lg-9">
                 <section class="crud-form-panel">
                     <div class="crud-form-header">
-                        <span class="crud-form-avatar">
-                            S
-                        </span>
-
                         <div>
                             <h2>Informasi Supplier Baru</h2>
 

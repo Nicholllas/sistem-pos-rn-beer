@@ -16,10 +16,6 @@
             <div class="col-xl-7 col-lg-8">
                 <section class="crud-form-panel">
                     <div class="crud-form-header">
-                        <span class="crud-form-avatar">
-                            K
-                        </span>
-
                         <div>
                             <h2>Informasi Kategori</h2>
 

@@ -60,10 +60,6 @@
                             <tr>
                                 <td>
                                     <div class="user-record-cell">
-                                        <span class="user-record-avatar">
-                                            {{ $initials ?: 'U' }}
-                                        </span>
-
                                         <div class="user-record-info">
                                             <div class="user-record-name">
                                                 <strong>{{ $user->name }}</strong>
@@ -224,10 +220,6 @@
 
                 <div class="modal-body">
                     <div class="user-reset-target">
-                        <span class="user-record-avatar" id="resetUserAvatar">
-                            U
-                        </span>
-
                         <div>
                             <strong id="resetUserName">
                                 User

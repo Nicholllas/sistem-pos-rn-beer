@@ -60,10 +60,6 @@
                             <tr>
                                 <td>
                                     <div class="crud-record-cell">
-                                        <span class="crud-record-avatar is-danger">
-                                            {{ strtoupper(mb_substr($supplier->name, 0, 1)) }}
-                                        </span>
-
                                         <div>
                                             <strong>{{ $supplier->name }}</strong>
 

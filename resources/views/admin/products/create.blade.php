@@ -14,10 +14,6 @@
     <div class="crud-page">
         <section class="crud-form-panel">
             <div class="crud-form-header">
-                <span class="crud-form-avatar">
-                    P
-                </span>
-
                 <div>
                     <h2>Informasi Produk Baru</h2>
 

@@ -410,10 +410,6 @@
 
                                 <td>
                                     <div class="stock-log-user">
-                                        <span class="stock-log-user-avatar">
-                                            {{ strtoupper(mb_substr($movement->createdBy?->name ?? 'U', 0, 1)) }}
-                                        </span>
-
                                         <div>
                                             <strong>
                                                 {{ $movement->createdBy?->name ?? '-' }}
