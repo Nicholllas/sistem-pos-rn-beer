@@ -15,7 +15,159 @@
 @endsection
 
 @section('content')
+    @php
+        $filterKeys = ['search', 'category_id', 'packaging_type', 'stock_status', 'is_active'];
+        $activeFilterCount = collect($filterKeys)->filter(fn($key) => request()->filled($key))->count();
+        $hasActiveFilters = $activeFilterCount > 0;
+
+        $selectedCategory = request()->filled('category_id') ? $categories->firstWhere('id', (int) request('category_id')) : null;
+
+        $stockStatusLabels = [
+            'in_stock' => 'Stok Aman',
+            'low_stock' => 'Stok Menipis',
+            'out_of_stock' => 'Stok Habis (0)',
+        ];
+    @endphp
+
     <div class="crud-page">
+        {{-- Filter Panel --}}
+        <section class="crud-panel product-filter-panel">
+            <div class="crud-panel-header">
+                <div>
+                    <h2>Filter & Pencarian Produk</h2>
+                    <p>
+                        Saring produk berdasarkan kata kunci, kategori, jenis kemasan, atau status stok.
+                    </p>
+                </div>
+
+                @if ($hasActiveFilters)
+                    <span class="crud-count-badge">
+                        {{ $activeFilterCount }} filter aktif
+                    </span>
+                @endif
+            </div>
+
+            <form method="GET" action="{{ route('admin.products.index') }}" class="product-filter-form">
+                <div class="product-filter-body">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-12 col-md-4 col-lg-3">
+                            <label for="search" class="form-label">
+                                Kata Kunci
+                            </label>
+                            <input type="search" name="search" id="search"
+                                class="form-control crud-form-control"
+                                value="{{ request('search') }}"
+                                placeholder="Nama, brand, SKU, barcode..."
+                                autocomplete="off">
+                        </div>
+
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <label for="category_id" class="form-label">
+                                Kategori
+                            </label>
+                            <select name="category_id" id="category_id" class="form-select crud-form-control">
+                                <option value="">Semua kategori</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}" @selected((string) request('category_id') === (string) $category->id)>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <label for="packaging_type" class="form-label">
+                                Jenis Kemasan
+                            </label>
+                            <select name="packaging_type" id="packaging_type" class="form-select crud-form-control">
+                                <option value="">Semua kemasan</option>
+                                <option value="BOTOL BESAR" @selected(request('packaging_type') === 'BOTOL BESAR')>Botol Besar</option>
+                                <option value="BOTOL KECIL" @selected(request('packaging_type') === 'BOTOL KECIL')>Botol Kecil</option>
+                                <option value="KALENG BESAR" @selected(request('packaging_type') === 'KALENG BESAR')>Kaleng Besar</option>
+                                <option value="KALENG KECIL" @selected(request('packaging_type') === 'KALENG KECIL')>Kaleng Kecil</option>
+                                <option value="none" @selected(request('packaging_type') === 'none')>Tanpa Kemasan</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <label for="stock_status" class="form-label">
+                                Status Stok
+                            </label>
+                            <select name="stock_status" id="stock_status" class="form-select crud-form-control">
+                                <option value="">Semua stok</option>
+                                <option value="in_stock" @selected(request('stock_status') === 'in_stock')>Stok Aman</option>
+                                <option value="low_stock" @selected(request('stock_status') === 'low_stock')>Stok Menipis</option>
+                                <option value="out_of_stock" @selected(request('stock_status') === 'out_of_stock')>Stok Habis (0)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6 col-md-3 col-lg-1">
+                            <label for="is_active" class="form-label">
+                                Status
+                            </label>
+                            <select name="is_active" id="is_active" class="form-select crud-form-control">
+                                <option value="">Semua</option>
+                                <option value="1" @selected(request('is_active') === '1')>Aktif</option>
+                                <option value="0" @selected(request('is_active') === '0')>Nonaktif</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-2 product-filter-actions">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Cari
+                            </button>
+
+                            @if ($hasActiveFilters)
+                                <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary" title="Reset filter pencarian">
+                                    Reset
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                @if ($hasActiveFilters)
+                    <div class="product-active-filters">
+                        <span class="product-active-filter-label">Filter Aktif:</span>
+
+                        @if (request()->filled('search'))
+                            <span class="product-filter-chip">
+                                Kata kunci: "{{ request('search') }}"
+                            </span>
+                        @endif
+
+                        @if ($selectedCategory)
+                            <span class="product-filter-chip">
+                                Kategori: {{ $selectedCategory->name }}
+                            </span>
+                        @endif
+
+                        @if (request()->filled('packaging_type'))
+                            <span class="product-filter-chip">
+                                Kemasan: {{ request('packaging_type') === 'none' ? 'Tanpa Kemasan' : request('packaging_type') }}
+                            </span>
+                        @endif
+
+                        @if (request()->filled('stock_status'))
+                            <span class="product-filter-chip">
+                                {{ $stockStatusLabels[request('stock_status')] ?? request('stock_status') }}
+                            </span>
+                        @endif
+
+                        @if (request()->filled('is_active'))
+                            <span class="product-filter-chip">
+                                Status: {{ request('is_active') === '1' ? 'Aktif' : 'Nonaktif' }}
+                            </span>
+                        @endif
+
+                        <a href="{{ route('admin.products.index') }}" class="product-filter-chip-clear">
+                            Hapus Semua
+                        </a>
+                    </div>
+                @endif
+            </form>
+        </section>
+
         <section class="crud-panel">
             <div class="crud-panel-header">
                 <div>
@@ -191,16 +343,28 @@
                                             P
                                         </span>
 
-                                        <strong>Belum ada produk</strong>
+                                        @if ($hasActiveFilters)
+                                            <strong>Produk tidak ditemukan</strong>
 
-                                        <p>
-                                            Tambahkan produk pertama agar dapat digunakan
-                                            pada transaksi penjualan.
-                                        </p>
+                                            <p>
+                                                Tidak ada produk yang cocok dengan kata kunci atau kriteria filter yang Anda terapkan.
+                                            </p>
 
-                                        <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm">
-                                            Tambah Produk
-                                        </a>
+                                            <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-sm">
+                                                Reset Filter
+                                            </a>
+                                        @else
+                                            <strong>Belum ada produk</strong>
+
+                                            <p>
+                                                Tambahkan produk pertama agar dapat digunakan
+                                                pada transaksi penjualan.
+                                            </p>
+
+                                            <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm">
+                                                Tambah Produk
+                                            </a>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

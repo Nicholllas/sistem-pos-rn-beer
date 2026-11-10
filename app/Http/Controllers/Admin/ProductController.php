@@ -13,14 +13,53 @@ use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['category', 'createdBy', 'updatedBy'])
-            ->withCount(['saleItems', 'purchaseItems', 'stockMovements', 'stockBatches'])
-            ->latest()
-            ->paginate(10);
+        $query = Product::query()
+            ->with(['category', 'createdBy', 'updatedBy'])
+            ->withCount(['saleItems', 'purchaseItems', 'stockMovements', 'stockBatches']);
 
-        return view('admin.products.index', compact('products'));
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('brand', 'like', "%{$search}%")
+                    ->orWhere('variant', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('barcode', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('packaging_type')) {
+            if ($request->packaging_type === 'none') {
+                $query->whereNull('packaging_type');
+            } else {
+                $query->where('packaging_type', $request->packaging_type);
+            }
+        }
+
+        if ($request->filled('stock_status')) {
+            match ($request->stock_status) {
+                'out_of_stock' => $query->where('stock', '<=', 0),
+                'low_stock' => $query->where('stock', '>', 0)->whereColumn('stock', '<=', 'minimum_stock'),
+                'in_stock' => $query->whereColumn('stock', '>', 'minimum_stock'),
+                default => null,
+            };
+        }
+
+        if ($request->filled('is_active')) {
+            $query->where('is_active', $request->boolean('is_active'));
+        }
+
+        $products = $query->latest()->paginate(10)->withQueryString();
+
+        $categories = Category::orderBy('name')->get();
+
+        return view('admin.products.index', compact('products', 'categories'));
     }
 
     public function create()
