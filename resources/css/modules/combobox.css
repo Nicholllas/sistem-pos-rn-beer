@@ -1,0 +1,294 @@
+/* =========================================================
+   MATERIAL UI (MUI) COMBOBOX / AUTOCOMPLETE COMPONENT
+   Searchable dropdown with instant filter & keyboard navigation
+   ========================================================= */
+
+.mui-combobox {
+    position: relative;
+    width: 100%;
+    display: block;
+}
+
+/* Visually hide native select while keeping it in DOM for forms & events */
+.mui-combobox-native-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Combobox visible input */
+.mui-combobox-input {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 36px 8px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    border-radius: var(--mui-radius-sm, 4px);
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--mui-text-primary, rgba(0, 0, 0, 0.87));
+    background-color: #ffffff;
+    cursor: text;
+    transition: border-color 200ms cubic-bezier(0, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.mui-combobox-input::placeholder {
+    color: var(--mui-text-secondary, rgba(0, 0, 0, 0.54));
+    opacity: 0.8;
+}
+
+.mui-combobox-input:hover {
+    border-color: rgba(0, 0, 0, 0.87);
+}
+
+.mui-combobox-input:focus,
+.mui-combobox.is-open .mui-combobox-input {
+    border: 2px solid var(--mui-primary, #1976d2) !important;
+    padding: 7px 35px 7px 11px;
+    box-shadow: none;
+    outline: none;
+}
+
+/* Validation error state */
+.mui-combobox.is-invalid .mui-combobox-input,
+.mui-combobox-input.is-invalid {
+    border-color: var(--mui-error, #d32f2f) !important;
+}
+
+.mui-combobox.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+.mui-combobox.is-invalid .mui-combobox-input:focus,
+.mui-combobox.is-open.is-invalid .mui-combobox-input {
+    border: 2px solid var(--mui-error, #d32f2f) !important;
+    padding: 7px 35px 7px 11px;
+}
+
+/* Disabled state */
+.mui-combobox-input:disabled {
+    background-color: #f5f5f5;
+    color: var(--mui-text-disabled, rgba(0, 0, 0, 0.38));
+    cursor: not-allowed;
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Adornment action buttons wrapper */
+.mui-combobox-actions {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    z-index: 2;
+}
+
+/* Clear button */
+.mui-combobox-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    color: var(--mui-text-secondary, rgba(0, 0, 0, 0.54));
+    cursor: pointer;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 150ms ease, background-color 150ms ease, color 150ms ease;
+}
+
+.mui-combobox:hover .mui-combobox-clear,
+.mui-combobox.is-open .mui-combobox-clear {
+    opacity: 0.7;
+}
+
+.mui-combobox-clear:hover {
+    opacity: 1 !important;
+    color: var(--mui-text-primary, rgba(0, 0, 0, 0.87));
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.mui-combobox-clear svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    pointer-events: none;
+}
+
+/* Toggle arrow button */
+.mui-combobox-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    color: var(--mui-text-secondary, rgba(0, 0, 0, 0.54));
+    cursor: pointer;
+    border-radius: 50%;
+    transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), background-color 150ms ease, color 150ms ease;
+}
+
+.mui-combobox-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    color: var(--mui-text-primary, rgba(0, 0, 0, 0.87));
+}
+
+.mui-combobox.is-open .mui-combobox-toggle {
+    transform: rotate(180deg);
+    color: var(--mui-primary, #1976d2);
+}
+
+.mui-combobox-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    pointer-events: none;
+}
+
+/* Dropdown Menu (MUI Elevation Paper) */
+.mui-combobox-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 1060;
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 6px 0;
+    margin: 0;
+    list-style: none;
+    background-color: #ffffff;
+    border-radius: var(--mui-radius-sm, 4px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.12),
+                0px 8px 10px 1px rgba(0,0,0,0.08),
+                0px 3px 14px 2px rgba(0,0,0,0.06);
+    display: none;
+}
+
+.mui-combobox.is-open .mui-combobox-dropdown {
+    display: block;
+    animation: muiComboboxFade 140ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Dropup orientation when near screen bottom */
+.mui-combobox.is-dropup .mui-combobox-dropdown {
+    top: auto;
+    bottom: calc(100% + 4px);
+}
+
+@keyframes muiComboboxFade {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dropdown items */
+.mui-combobox-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--mui-text-primary, rgba(0, 0, 0, 0.87));
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 100ms ease;
+}
+
+.mui-combobox-item:hover,
+.mui-combobox-item.is-focused {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.mui-combobox-item.is-selected {
+    background-color: rgba(25, 118, 210, 0.08);
+    color: var(--mui-primary, #1976d2);
+    font-weight: 500;
+}
+
+.mui-combobox-item.is-selected.is-focused {
+    background-color: rgba(25, 118, 210, 0.14);
+}
+
+.mui-combobox-item.is-placeholder {
+    color: var(--mui-text-secondary, rgba(0, 0, 0, 0.54));
+    font-style: italic;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+    margin-bottom: 4px;
+    padding-bottom: 8px;
+}
+
+/* Highlighted match substring */
+.mui-combobox-highlight {
+    background-color: rgba(25, 118, 210, 0.16);
+    color: var(--mui-primary, #1976d2);
+    font-weight: 700;
+    padding: 0 1px;
+    border-radius: 2px;
+}
+
+/* Checkmark indicator for selected item */
+.mui-combobox-check {
+    width: 18px;
+    height: 18px;
+    fill: var(--mui-primary, #1976d2);
+    margin-left: 8px;
+    flex-shrink: 0;
+    opacity: 0;
+}
+
+.mui-combobox-item.is-selected .mui-combobox-check {
+    opacity: 1;
+}
+
+/* Empty feedback when user query has zero matches */
+.mui-combobox-empty {
+    padding: 12px 14px;
+    font-size: 0.8125rem;
+    color: var(--mui-text-secondary, rgba(0, 0, 0, 0.54));
+    text-align: center;
+    font-style: italic;
+}
+
+/* Custom scrollbar */
+.mui-combobox-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mui-combobox-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mui-combobox-dropdown::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.mui-combobox-dropdown::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.35);
+}

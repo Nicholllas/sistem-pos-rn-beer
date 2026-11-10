@@ -21,6 +21,7 @@
 @import "./modules/crud-pagination.css";
 @import "./modules/empty-state.css";
 @import "./modules/crud-form.css";
+@import "./modules/combobox.css";
 @import "./modules/audit-panel.css";
 @import "./modules/notice.css";
 @import "./modules/status.css";
