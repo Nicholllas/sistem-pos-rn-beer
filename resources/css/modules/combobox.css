@@ -9,6 +9,11 @@
     display: block;
 }
 
+.mui-combobox.is-open {
+    position: relative;
+    z-index: 1060 !important;
+}
+
 /* Visually hide native select while keeping it in DOM for forms & events */
 .mui-combobox-native-hidden {
     position: absolute !important;
@@ -168,7 +173,7 @@
     top: calc(100% + 4px);
     left: 0;
     right: 0;
-    z-index: 1060;
+    z-index: 1070 !important;
     max-height: 250px;
     overflow-y: auto;
     overflow-x: hidden;

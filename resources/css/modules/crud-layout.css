@@ -16,6 +16,29 @@
     margin-bottom: 20px;
 }
 
+/* Panels with filters, forms, or searchable comboboxes must allow dropdowns to overflow */
+.crud-panel.product-filter-panel,
+.crud-panel[class*="filter-panel"],
+.crud-panel[class*="-filter"],
+.crud-panel:has(.mui-combobox),
+.crud-form-panel,
+.crud-panel.has-combobox-open {
+    overflow: visible !important;
+}
+
+.crud-panel.product-filter-panel,
+.crud-panel[class*="filter-panel"],
+.crud-panel[class*="-filter"] {
+    position: relative;
+    z-index: 25;
+}
+
+.crud-panel.has-combobox-open,
+.product-filter-panel.has-combobox-open {
+    position: relative !important;
+    z-index: 1050 !important;
+}
+
 /* Panel Header */
 .crud-panel-header {
     display: flex;

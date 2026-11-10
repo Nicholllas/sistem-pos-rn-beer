@@ -313,11 +313,16 @@ export function initMuiCombobox(selectElement) {
         wrapper.classList.add("is-open");
         input.setAttribute("aria-expanded", "true");
 
+        // Elevate parent panel so dropdown floats over subsequent siblings (e.g. results tables)
+        const parentPanel = wrapper.closest(".crud-panel, .crud-form-panel");
+        if (parentPanel) {
+            parentPanel.classList.add("has-combobox-open");
+        }
+
         // If forceShowAll or input value matches current selection, show all options
         const selectedOption = selectElement.selectedOptions[0];
         const isCurrentSelection =
             selectedOption &&
-            selectedOption.value !== "" &&
             input.value.trim().toLowerCase() === selectedOption.text.trim().toLowerCase();
 
         if (forceShowAll || isCurrentSelection || !input.value.trim()) {
@@ -344,6 +349,12 @@ export function initMuiCombobox(selectElement) {
         input.setAttribute("aria-expanded", "false");
         focusedIndex = -1;
         updateFocusedItem();
+
+        // Restore parent panel elevation
+        const parentPanel = wrapper.closest(".crud-panel, .crud-form-panel");
+        if (parentPanel && !parentPanel.querySelector(".mui-combobox.is-open")) {
+            parentPanel.classList.remove("has-combobox-open");
+        }
     }
 
     // Input Events
