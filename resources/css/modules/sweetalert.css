@@ -1,38 +1,45 @@
-
-
 /* =========================================================
-   SWEETALERT
+   MUI SWEETALERT2 INTEGRATION
    ========================================================= */
 
-.crud-alert-popup {
-    width: min(420px, calc(100% - 28px));
-    padding: 22px;
-    border-radius: 15px;
+.crud-alert-popup.swal2-popup {
+    width: min(400px, calc(100% - 32px));
+    padding: 24px;
+    background-color: #ffffff;
+    border-radius: var(--mui-radius-lg);
+    box-shadow: var(--mui-shadow-24);
+    font-family: "Roboto", sans-serif;
 }
 
 .crud-alert-popup .swal2-title {
     padding: 0;
-    color: #0f172a;
-    font-size: 19px;
-    font-weight: 700;
+    color: var(--mui-text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
 .crud-alert-popup .swal2-html-container {
-    margin: 12px 0 0;
-    color: #64748b;
-    font-size: 12px;
-    line-height: 1.6;
+    margin: 10px 0 0;
+    color: var(--mui-text-secondary);
+    font-size: 0.8125rem;
+    line-height: 1.5;
 }
 
 .crud-alert-popup .swal2-actions {
+    display: flex;
+    justify-content: flex-end;
     gap: 8px;
     margin-top: 20px;
+    padding: 0;
+    width: 100%;
 }
 
 .crud-alert-popup .swal2-actions .btn {
-    min-height: 39px;
+    min-height: 32px;
     margin: 0;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: var(--mui-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
 }

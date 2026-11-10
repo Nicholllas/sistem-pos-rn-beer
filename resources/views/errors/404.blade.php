@@ -19,9 +19,15 @@
 
                 <div class="error-actions">
                     @auth
-                        <a href="{{ route('dashboard') }}" class="btn-signin error-btn">
-                            Back to Dashboard
-                        </a>
+                        @if (auth()->user()->role === 'cashier')
+                            <a href="{{ route('admin.sales.pos') }}" class="btn-signin error-btn">
+                                Back to POS
+                            </a>
+                        @else
+                            <a href="{{ route('admin.dashboard') }}" class="btn-signin error-btn">
+                                Back to Dashboard
+                            </a>
+                        @endif
                     @else
                         <a href="{{ route('login') }}" class="btn-signin error-btn">
                             Back to Login

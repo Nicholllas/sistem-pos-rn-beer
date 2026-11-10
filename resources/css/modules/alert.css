@@ -1,7 +1,5 @@
-
-
 /* =========================================================
-   FLASH ALERT
+   MUI ALERT COMPONENT
    ========================================================= */
 
 .app-alert {
@@ -9,57 +7,99 @@
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    padding: 13px 42px 13px 15px;
-    overflow: hidden;
-    border-radius: 11px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    border-radius: var(--mui-radius-sm);
+    font-size: 0.8125rem;
+    line-height: 1.43;
+    letter-spacing: 0.01071em;
+    border: 1px solid transparent;
 }
 
-.app-alert-indicator {
+.app-alert-icon {
+    font-size: 22px !important;
+    line-height: 1;
+    margin-top: 1px;
     flex-shrink: 0;
-    width: 8px;
-    height: 8px;
-    margin-top: 6px;
-    border-radius: 999px;
 }
 
 .app-alert-content {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    flex: 1;
 }
 
 .app-alert-content strong {
-    font-size: 13px;
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
 .app-alert-content span {
     margin-top: 2px;
-    font-size: 12px;
-    line-height: 1.5;
+    font-size: 0.8125rem;
 }
 
 .app-alert-content ul {
     padding-left: 18px;
-    margin: 7px 0 0;
-    font-size: 11px;
+    margin: 6px 0 0;
+    font-size: 0.8125rem;
 }
 
+/* Success Alert */
 .app-alert-success {
-    color: #166534;
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
+    color: var(--mui-success-text);
+    background-color: var(--mui-success-bg);
+    border-color: var(--mui-success-border);
 }
 
-.app-alert-success .app-alert-indicator {
-    background: #22c55e;
+.app-alert-success .app-alert-icon {
+    color: var(--mui-success);
 }
 
+/* Danger / Error Alert */
 .app-alert-danger {
-    color: #991b1b;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
+    color: var(--mui-error-text);
+    background-color: var(--mui-error-bg);
+    border-color: var(--mui-error-border);
 }
 
-.app-alert-danger .app-alert-indicator {
-    background: #ef4444;
+.app-alert-danger .app-alert-icon {
+    color: var(--mui-error);
+}
+
+/* Warning Alert */
+.app-alert-warning {
+    color: var(--mui-warning-text);
+    background-color: var(--mui-warning-bg);
+    border-color: var(--mui-warning-border);
+}
+
+.app-alert-warning .app-alert-icon {
+    color: var(--mui-warning);
+}
+
+/* Info Alert */
+.app-alert-info {
+    color: var(--mui-info-text);
+    background-color: var(--mui-info-bg);
+    border-color: var(--mui-info-border);
+}
+
+.app-alert-info .app-alert-icon {
+    color: var(--mui-info);
+}
+
+.app-alert .btn-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 6px;
+    background-size: 10px;
+    opacity: 0.6;
+    transition: opacity 150ms;
+}
+
+.app-alert .btn-close:hover {
+    opacity: 1;
 }

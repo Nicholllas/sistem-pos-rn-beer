@@ -1,18 +1,17 @@
-
-
 /* =========================================================
-   PAGINATION
+   MUI TABLE PAGINATION TOOLBAR
    ========================================================= */
 
 .crud-pagination {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
-    padding: 14px 18px;
-    color: #64748b;
-    font-size: 10px;
-    border-top: 1px solid #e5e7eb;
+    gap: 16px;
+    padding: 8px 16px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
+    border-top: 1px solid var(--mui-divider);
+    background-color: #ffffff;
 }
 
 .crud-pagination nav {
@@ -20,17 +19,56 @@
 }
 
 .crud-pagination .pagination {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     margin: 0;
+    list-style: none;
+    padding-left: 0;
+}
+
+.crud-pagination .page-item .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 6px;
+    color: var(--mui-text-primary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--mui-radius-sm);
+    transition: background-color 150ms;
+}
+
+.crud-pagination .page-item .page-link:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.crud-pagination .page-item.active .page-link {
+    background-color: var(--mui-primary);
+    color: #ffffff;
+    border-color: var(--mui-primary);
+    box-shadow: var(--mui-shadow-1);
+}
+
+.crud-pagination .page-item.disabled .page-link {
+    color: var(--mui-text-disabled);
+    pointer-events: none;
 }
 
 @media (max-width: 767.98px) {
-
     .crud-pagination {
         align-items: flex-start;
         flex-direction: column;
+        gap: 10px;
     }
 
     .crud-pagination nav {
         margin-left: 0;
+        width: 100%;
     }
 }

@@ -1,5 +1,5 @@
 /* =========================================================
-   INVENTORY STOCK IN
+   MATERIAL UI - INVENTORY STOCK IN (CLEAN, COMPACT, DENSE)
    ========================================================= */
 
 .inventory-stock-layout {
@@ -9,20 +9,21 @@
     align-items: start;
 }
 
+/* Product reference strip */
 .inventory-product-reference {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1px;
     margin-top: 14px;
     overflow: hidden;
-    background: #e5e7eb;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
+    background: var(--mui-divider);
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-md);
 }
 
 .inventory-product-reference > div {
-    min-height: 72px;
-    padding: 12px 13px;
+    min-height: 64px;
+    padding: 10px 14px;
     background: #f8fafc;
 }
 
@@ -32,41 +33,42 @@
 }
 
 .inventory-product-reference span {
-    color: #94a3b8;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
 .inventory-product-reference strong {
-    margin-top: 6px;
-    color: #334155;
-    font-size: 11px;
+    margin-top: 4px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     overflow-wrap: anywhere;
 }
 
 /* =========================================================
-   INVENTORY PREVIEW
+   INVENTORY STOCK PREVIEW
    ========================================================= */
 
 .inventory-stock-preview {
     position: sticky;
     top: 80px;
-    padding: 19px;
+    padding: 18px 20px;
     text-align: center;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-md);
+    box-shadow: var(--mui-shadow-1);
 }
 
 .inventory-preview-label {
     display: block;
-    color: #64748b;
-    font-size: 9px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.7px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
@@ -74,30 +76,31 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 62px;
-    height: 62px;
-    margin: 15px 0 12px;
+    width: 56px;
+    height: 56px;
+    margin: 12px 0 10px;
     color: #ffffff;
-    font-size: 20px;
-    font-weight: 800;
-    background: #2563eb;
-    border-radius: 18px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: var(--mui-primary);
+    border-radius: var(--mui-radius-pill);
+    box-shadow: var(--mui-elevation-2);
 }
 
 .inventory-stock-preview h3 {
     margin: 0;
-    color: #0f172a;
-    font-size: 14px;
-    font-weight: 750;
-    line-height: 1.45;
+    color: var(--mui-text-primary);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.4;
     overflow-wrap: anywhere;
 }
 
 .inventory-stock-preview > p {
-    margin: 5px 0 0;
-    color: #64748b;
-    font-size: 9px;
-    line-height: 1.5;
+    margin: 4px 0 0;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
+    line-height: 1.4;
 }
 
 .inventory-stock-flow {
@@ -105,20 +108,20 @@
     grid-template-columns: 1fr auto 1fr auto 1fr;
     align-items: center;
     gap: 6px;
-    margin-top: 18px;
+    margin-top: 16px;
 }
 
 .inventory-stock-flow > div {
     min-width: 0;
-    padding: 10px 6px;
+    padding: 8px 6px;
     background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-radius: 9px;
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-sm);
 }
 
 .inventory-stock-flow > div.is-result {
-    background: #f0fdf4;
-    border-color: #bbf7d0;
+    background: var(--mui-success-bg);
+    border-color: var(--mui-success-border);
 }
 
 .inventory-stock-flow span,
@@ -127,37 +130,39 @@
 }
 
 .inventory-stock-flow > div span {
-    color: #94a3b8;
-    font-size: 7px;
+    color: var(--mui-text-secondary);
+    font-size: 0.625rem;
     font-weight: 700;
     text-transform: uppercase;
 }
 
 .inventory-stock-flow > div strong {
-    margin-top: 5px;
-    color: #334155;
-    font-size: 14px;
-}
-
-.inventory-stock-flow > div.is-result strong {
-    color: #166534;
-}
-
-.inventory-stock-arrow {
-    color: #94a3b8;
-    font-size: 13px;
+    margin-top: 3px;
+    color: var(--mui-text-primary);
+    font-size: 0.9375rem;
     font-weight: 700;
 }
 
+.inventory-stock-flow > div.is-result strong {
+    color: var(--mui-success);
+}
+
+.inventory-stock-arrow {
+    color: var(--mui-text-secondary);
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+/* Preview summary list (FIX FOR MEPET BOX) */
 .inventory-preview-summary {
     display: grid;
     gap: 1px;
-    margin-top: 16px;
+    margin-top: 14px;
     overflow: hidden;
     text-align: left;
-    background: #e2e8f0;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
+    background: var(--mui-divider);
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-md);
 }
 
 .inventory-preview-summary > div {
@@ -165,44 +170,46 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 10px 11px;
+    padding: 10px 14px;
     background: #ffffff;
 }
 
 .inventory-preview-summary span {
-    color: #64748b;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
 }
 
 .inventory-preview-summary strong {
-    color: #0f172a;
-    font-size: 9px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     text-align: right;
 }
 
 .inventory-preview-note {
-    padding: 11px 12px;
-    margin-top: 15px;
-    color: #075985;
+    padding: 10px 14px;
+    margin-top: 14px;
+    color: #014361;
     text-align: left;
-    background: #f0f9ff;
-    border: 1px solid #bae6fd;
-    border-radius: 9px;
+    background: #e5f6fd;
+    border: 1px solid #b3e5fc;
+    border-radius: var(--mui-radius-md);
 }
 
 .inventory-preview-note strong {
     display: block;
-    font-size: 9px;
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
 .inventory-preview-note p {
-    margin: 4px 0 0;
-    font-size: 8px;
-    line-height: 1.55;
+    margin: 3px 0 0;
+    font-size: 0.6875rem;
+    line-height: 1.5;
 }
 
 /* =========================================================
-   INVENTORY RESPONSIVE
+   RESPONSIVE DESIGN
    ========================================================= */
 
 @media (max-width: 991.98px) {

@@ -1,5 +1,5 @@
 /* =========================================================
-   FIFO BATCH PAGE
+   MATERIAL UI - FIFO BATCH PAGE (CLEAN, COMPACT, DENSE)
    ========================================================= */
 
 .fifo-batch-page {
@@ -8,7 +8,7 @@
 }
 
 /* =========================================================
-   FIFO SUMMARY
+   FIFO SUMMARY CARDS
    ========================================================= */
 
 .fifo-summary-grid {
@@ -19,11 +19,16 @@
 
 .fifo-summary-card {
     min-width: 0;
-    padding: 16px;
+    padding: 14px 18px;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 13px;
-    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.035);
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-md);
+    box-shadow: var(--mui-shadow-1);
+    transition: box-shadow 150ms ease;
+}
+
+.fifo-summary-card:hover {
+    box-shadow: var(--mui-shadow-2);
 }
 
 .fifo-summary-card > span,
@@ -33,45 +38,44 @@
 }
 
 .fifo-summary-card > span {
-    color: #64748b;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.45px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
 .fifo-summary-card > strong {
-    margin-top: 6px;
+    margin-top: 5px;
     overflow: hidden;
-    color: #0f172a;
-    font-size: 18px;
-    font-weight: 750;
+    color: var(--mui-text-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 .fifo-summary-card > strong.is-success {
-    color: #15803d;
+    color: var(--mui-success);
 }
 
 .fifo-summary-card > strong.is-muted {
-    color: #64748b;
+    color: var(--mui-text-secondary);
 }
 
 .fifo-summary-card > strong.is-warning {
-    color: #b45309;
-    font-size: 14px;
+    color: var(--mui-warning);
 }
 
 .fifo-summary-card > small {
-    margin-top: 4px;
-    color: #94a3b8;
-    font-size: 8px;
+    margin-top: 3px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
     line-height: 1.4;
 }
 
 /* =========================================================
-   FIFO FILTER
+   FIFO FILTER PANEL
    ========================================================= */
 
 .fifo-filter-panel,
@@ -80,108 +84,106 @@
 }
 
 .fifo-filter-body {
-    padding: 18px;
+    padding: 18px 20px;
 }
 
 .fifo-filter-body .form-label {
-    margin-bottom: 7px;
-    color: #334155;
-    font-size: 10px;
-    font-weight: 650;
+    margin-bottom: 6px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
 .fifo-filter-actions {
     display: flex;
     align-items: flex-end;
-    gap: 7px;
+    gap: 8px;
 }
 
 .fifo-filter-actions .btn {
     min-width: 0;
-    min-height: 41px;
+    min-height: 38px;
     flex: 1;
-    border-radius: 8px;
-    font-size: 10px;
-    font-weight: 650;
 }
 
 .fifo-active-filters {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 7px;
-    padding: 11px 18px;
+    gap: 8px;
+    padding: 10px 20px;
     background: #f8fafc;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--mui-divider);
 }
 
 .fifo-active-filter-label {
-    color: #64748b;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
 .fifo-filter-chip {
     display: inline-flex;
-    padding: 5px 8px;
-    color: #1e40af;
-    font-size: 8px;
-    font-weight: 650;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 999px;
+    align-items: center;
+    padding: 3px 10px;
+    color: var(--mui-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(25, 118, 210, 0.08);
+    border: 1px solid rgba(25, 118, 210, 0.2);
+    border-radius: var(--mui-radius-pill);
 }
 
 /* =========================================================
-   FIFO INFORMATION
+   FIFO INFORMATION BANNER
    ========================================================= */
 
 .fifo-information-banner {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    padding: 11px 17px;
-    color: #5b21b6;
-    background: #faf5ff;
-    border-bottom: 1px solid #e9d5ff;
+    gap: 12px;
+    padding: 12px 20px;
+    color: #4a148c;
+    background: #f3e5f5;
+    border-bottom: 1px solid #e1bee7;
 }
 
 .fifo-information-banner > span {
     display: inline-flex;
     flex-shrink: 0;
-    padding: 4px 7px;
-    font-size: 8px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    background: #f5f3ff;
-    border: 1px solid #ddd6fe;
-    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    background: #ffffff;
+    border: 1px solid #ce93d8;
+    border-radius: var(--mui-radius-pill);
 }
 
 .fifo-information-banner p {
     margin: 2px 0 0;
-    font-size: 9px;
-    line-height: 1.55;
+    font-size: 0.75rem;
+    line-height: 1.5;
 }
 
 /* =========================================================
-   FIFO PAGE SUMMARY
+   FIFO PAGE SUMMARY (FIX FOR MEPET BOX)
    ========================================================= */
 
 .fifo-page-summary {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 1px;
-    background: #e5e7eb;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--mui-divider);
+    border-bottom: 1px solid var(--mui-divider);
 }
 
 .fifo-page-summary > div {
     min-width: 0;
-    padding: 11px 14px;
-    background: #fafcff;
+    padding: 12px 20px;
+    background: #ffffff;
 }
 
 .fifo-page-summary span,
@@ -190,32 +192,33 @@
 }
 
 .fifo-page-summary span {
-    color: #94a3b8;
-    font-size: 7px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.35px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
 .fifo-page-summary strong {
-    margin-top: 5px;
+    margin-top: 3px;
     overflow: hidden;
-    color: #0f172a;
-    font-size: 11px;
+    color: var(--mui-text-primary);
+    font-size: 0.9375rem;
+    font-weight: 700;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 .fifo-page-summary strong.is-warning {
-    color: #d97706;
+    color: var(--mui-warning);
 }
 
 .fifo-page-summary strong.is-success {
-    color: #15803d;
+    color: var(--mui-success);
 }
 
 /* =========================================================
-   FIFO TABLE
+   FIFO TABLE & CELLS
    ========================================================= */
 
 .fifo-batch-table {
@@ -227,10 +230,8 @@
 }
 
 .fifo-batch-table tbody tr.is-empty:hover {
-    background: #f8fafc;
+    background: #f1f5f9;
 }
-
-/* Product */
 
 .fifo-product-cell {
     min-width: 225px;
@@ -245,25 +246,25 @@
 .fifo-product-cell strong {
     max-width: 260px;
     overflow: hidden;
-    color: #0f172a;
-    font-size: 10px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 .fifo-product-cell span {
-    margin-top: 4px;
-    color: #64748b;
-    font-size: 9px;
+    margin-top: 2px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
 }
 
 .fifo-product-cell small {
-    margin-top: 2px;
-    color: #94a3b8;
-    font-size: 8px;
+    margin-top: 1px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
+    opacity: 0.85;
 }
-
-/* Batch identity */
 
 .fifo-batch-identity {
     min-width: 100px;
@@ -275,74 +276,74 @@
 }
 
 .fifo-batch-identity strong {
-    color: #334155;
-    font-size: 10px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
 }
 
 .fifo-batch-identity span {
-    margin-top: 4px;
-    color: #64748b;
-    font-size: 8px;
+    margin-top: 2px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
     white-space: nowrap;
 }
 
-/* Sources */
-
+/* Source Badges */
 .fifo-source-badge {
     display: inline-flex;
-    padding: 5px 8px;
-    font-size: 8px;
-    font-weight: 700;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 0.6875rem;
+    font-weight: 600;
     white-space: nowrap;
     border: 1px solid;
-    border-radius: 999px;
+    border-radius: var(--mui-radius-pill);
 }
 
 .fifo-source-badge.is-initial {
-    color: #475569;
-    background: #f8fafc;
-    border-color: #e2e8f0;
+    color: var(--mui-text-secondary);
+    background: #f1f5f9;
+    border-color: var(--mui-divider);
 }
 
 .fifo-source-badge.is-stock-in {
-    color: #166534;
-    background: #f0fdf4;
-    border-color: #bbf7d0;
+    color: var(--mui-success);
+    background: var(--mui-success-bg);
+    border-color: var(--mui-success-border);
 }
 
 .fifo-source-badge.is-purchase {
-    color: #1d4ed8;
-    background: #eff6ff;
-    border-color: #bfdbfe;
+    color: var(--mui-primary);
+    background: var(--mui-info-bg);
+    border-color: rgba(25, 118, 210, 0.2);
 }
 
 .fifo-source-badge.is-adjustment {
-    color: #92400e;
-    background: #fffbeb;
-    border-color: #fde68a;
+    color: var(--mui-warning);
+    background: var(--mui-warning-bg);
+    border-color: var(--mui-warning-border);
 }
 
 .fifo-source-badge.is-sale-void {
-    color: #5b21b6;
-    background: #f5f3ff;
-    border-color: #ddd6fe;
+    color: var(--mui-secondary);
+    background: #f3e5f5;
+    border-color: #e1bee7;
 }
 
 .fifo-source-badge.is-default {
-    color: #475569;
+    color: var(--mui-text-secondary);
     background: #f8fafc;
-    border-color: #e2e8f0;
+    border-color: var(--mui-divider);
 }
 
 .fifo-source-reference {
     display: block;
-    margin-top: 5px;
-    color: #94a3b8;
-    font-size: 8px;
+    margin-top: 4px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
 }
 
-/* Usage */
-
+/* Usage Column */
 .fifo-usage-cell {
     min-width: 240px;
 }
@@ -350,15 +351,15 @@
 .fifo-usage-values {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 5px;
+    gap: 6px;
 }
 
 .fifo-usage-values > div {
-    padding: 6px 7px;
+    padding: 6px 8px;
     text-align: center;
     background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-radius: 7px;
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-sm);
 }
 
 .fifo-usage-values span,
@@ -367,47 +368,47 @@
 }
 
 .fifo-usage-values span {
-    color: #94a3b8;
-    font-size: 7px;
+    color: var(--mui-text-secondary);
+    font-size: 0.625rem;
     font-weight: 700;
     text-transform: uppercase;
 }
 
 .fifo-usage-values strong {
-    margin-top: 3px;
-    color: #334155;
-    font-size: 9px;
+    margin-top: 2px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
 }
 
 .fifo-usage-values strong.is-remaining {
-    color: #15803d;
+    color: var(--mui-success);
 }
 
 .fifo-usage-progress {
     width: 100%;
-    height: 5px;
-    margin-top: 7px;
+    height: 6px;
+    margin-top: 6px;
     overflow: hidden;
-    background: #e5e7eb;
+    background: var(--mui-divider);
     border-radius: 999px;
 }
 
 .fifo-usage-progress > span {
     display: block;
     height: 100%;
-    background: #f59e0b;
+    background: var(--mui-warning);
     border-radius: inherit;
 }
 
 .fifo-usage-cell > small {
     display: block;
-    margin-top: 4px;
-    color: #94a3b8;
-    font-size: 7px;
+    margin-top: 3px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
 }
 
-/* Money */
-
+/* Money Column */
 .fifo-money-cell {
     min-width: 125px;
 }
@@ -418,55 +419,56 @@
 }
 
 .fifo-money-cell strong {
-    color: #0f172a;
-    font-size: 10px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     white-space: nowrap;
 }
 
 .fifo-money-cell small {
-    margin-top: 3px;
-    color: #94a3b8;
-    font-size: 8px;
+    margin-top: 2px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
 }
 
-/* Status */
-
+/* Status Badge */
 .fifo-status-badge {
     display: inline-flex;
-    padding: 5px 8px;
-    font-size: 8px;
-    font-weight: 700;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 0.6875rem;
+    font-weight: 600;
     white-space: nowrap;
     border: 1px solid;
-    border-radius: 999px;
+    border-radius: var(--mui-radius-pill);
 }
 
 .fifo-status-badge.is-active {
-    color: #166534;
-    background: #f0fdf4;
-    border-color: #bbf7d0;
+    color: var(--mui-success);
+    background: var(--mui-success-bg);
+    border-color: var(--mui-success-border);
 }
 
 .fifo-status-badge.is-partial {
-    color: #92400e;
-    background: #fffbeb;
-    border-color: #fde68a;
+    color: var(--mui-warning);
+    background: var(--mui-warning-bg);
+    border-color: var(--mui-warning-border);
 }
 
 .fifo-status-badge.is-empty {
-    color: #64748b;
-    background: #f8fafc;
-    border-color: #e2e8f0;
+    color: var(--mui-text-secondary);
+    background: #f1f5f9;
+    border-color: var(--mui-divider);
 }
 
-/* Footer */
-
+/* Table Footer */
 .fifo-batch-table tfoot th {
-    padding: 12px 14px;
-    color: #334155;
-    font-size: 9px;
+    padding: 12px 18px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     background: #f8fafc;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--mui-divider);
 }
 
 .fifo-footer-quantity {
@@ -476,16 +478,16 @@
 }
 
 .fifo-footer-quantity span {
-    color: #64748b;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
 }
 
 .fifo-footer-quantity strong {
-    color: #0f172a;
+    color: var(--mui-text-primary);
 }
 
 /* =========================================================
-   FIFO RESPONSIVE
+   RESPONSIVE DESIGN
    ========================================================= */
 
 @media (max-width: 1199.98px) {
@@ -511,7 +513,7 @@
     }
 
     .fifo-filter-body {
-        padding: 15px;
+        padding: 14px 16px;
     }
 
     .fifo-filter-actions {
@@ -524,8 +526,8 @@
     }
 
     .fifo-active-filters {
-        padding-right: 15px;
-        padding-left: 15px;
+        padding-right: 16px;
+        padding-left: 16px;
     }
 
     .fifo-information-banner {

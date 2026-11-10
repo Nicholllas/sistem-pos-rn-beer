@@ -1,25 +1,26 @@
 /* =========================================================
-   LOW STOCK PAGE
+   MATERIAL UI - LOW STOCK PAGE (CLEAN, COMPACT, DENSE)
    ========================================================= */
 
 .low-stock-page {
     display: grid;
-    gap: 15px;
+    gap: 16px;
 }
 
 /* =========================================================
-   WARNING NOTICE
+   WARNING NOTICE BANNER
    ========================================================= */
 
 .low-stock-notice {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    padding: 14px 16px;
-    color: #854d0e;
-    background: #fefce8;
-    border: 1px solid #fde68a;
-    border-radius: 12px;
+    gap: 14px;
+    padding: 14px 20px;
+    color: #663c00;
+    background: #fff4e5;
+    border: 1px solid #ffe2b6;
+    border-radius: var(--mui-radius-md);
+    box-shadow: var(--mui-shadow-1);
 }
 
 .low-stock-notice-icon {
@@ -30,10 +31,10 @@
     width: 28px;
     height: 28px;
     color: #ffffff;
-    font-size: 12px;
-    font-weight: 800;
-    background: #d97706;
-    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    background: var(--mui-warning);
+    border-radius: var(--mui-radius-sm);
 }
 
 .low-stock-notice > div {
@@ -43,42 +44,43 @@
 
 .low-stock-notice strong {
     display: block;
-    font-size: 11px;
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
 .low-stock-notice p {
-    margin: 4px 0 0;
-    font-size: 9px;
-    line-height: 1.55;
+    margin: 3px 0 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
 }
 
 .low-stock-notice-count {
     display: inline-flex;
     flex-shrink: 0;
-    padding: 5px 9px;
-    color: #92400e;
-    font-size: 9px;
-    font-weight: 700;
-    background: rgba(255, 255, 255, 0.65);
+    padding: 3px 10px;
+    color: #663c00;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.85);
     border: 1px solid #fcd34d;
-    border-radius: 999px;
+    border-radius: var(--mui-radius-pill);
 }
 
 /* =========================================================
-   LOW STOCK SUMMARY
+   LOW STOCK SUMMARY STRIP (FIX FOR MEPET BOX)
    ========================================================= */
 
 .low-stock-summary {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1px;
-    background: #e5e7eb;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--mui-divider);
+    border-bottom: 1px solid var(--mui-divider);
 }
 
 .low-stock-summary > div {
-    padding: 12px 16px;
-    background: #fafcff;
+    padding: 12px 20px;
+    background: #ffffff;
 }
 
 .low-stock-summary span,
@@ -87,17 +89,18 @@
 }
 
 .low-stock-summary span {
-    color: #94a3b8;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.35px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
 .low-stock-summary strong {
-    margin-top: 5px;
-    color: #0f172a;
-    font-size: 13px;
+    margin-top: 3px;
+    color: var(--mui-text-primary);
+    font-size: 1rem;
+    font-weight: 700;
 }
 
 /* =========================================================
@@ -109,17 +112,14 @@
 }
 
 .low-stock-table tbody tr.is-out-of-stock {
-    background: #fffafa;
+    background: #fff8f8;
 }
 
 .low-stock-table tbody tr.is-out-of-stock:hover {
-    background: #fef2f2;
+    background: #fee;
 }
 
-/* =========================================================
-   CURRENT STOCK
-   ========================================================= */
-
+/* Current Stock & Minimum */
 .low-stock-current,
 .low-stock-minimum {
     min-width: 100px;
@@ -134,55 +134,52 @@
 
 .low-stock-current strong,
 .low-stock-minimum strong {
-    font-size: 14px;
-    font-weight: 750;
+    font-size: 0.9375rem;
+    font-weight: 700;
 }
 
 .low-stock-current strong.is-danger {
-    color: #dc2626;
+    color: var(--mui-error);
 }
 
 .low-stock-current strong.is-warning {
-    color: #d97706;
+    color: var(--mui-warning);
 }
 
 .low-stock-minimum strong {
-    color: #334155;
+    color: var(--mui-text-primary);
 }
 
 .low-stock-current span,
 .low-stock-minimum span {
-    margin-top: 3px;
-    color: #94a3b8;
-    font-size: 8px;
+    margin-top: 2px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
 }
 
-/* =========================================================
-   STOCK CONDITION
-   ========================================================= */
-
+/* Stock Condition Column */
 .low-stock-condition {
     min-width: 170px;
 }
 
 .low-stock-gap {
-    margin-top: 6px;
-    color: #64748b;
-    font-size: 8px;
+    margin-top: 4px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
     line-height: 1.4;
 }
 
 .low-stock-gap strong {
-    color: #334155;
+    color: var(--mui-text-primary);
 }
 
 .low-stock-progress {
     position: relative;
     width: 145px;
-    height: 5px;
-    margin-top: 7px;
+    height: 6px;
+    margin-top: 6px;
     overflow: hidden;
-    background: #e5e7eb;
+    background: var(--mui-divider);
     border-radius: 999px;
 }
 
@@ -194,15 +191,15 @@
 }
 
 .low-stock-progress > span.is-warning {
-    background: #f59e0b;
+    background: var(--mui-warning);
 }
 
 .low-stock-progress > span.is-danger {
-    background: #dc2626;
+    background: var(--mui-error);
 }
 
 /* =========================================================
-   LOW STOCK RESPONSIVE
+   RESPONSIVE DESIGN
    ========================================================= */
 
 @media (max-width: 767.98px) {
@@ -211,7 +208,7 @@
     }
 
     .low-stock-notice-count {
-        margin-left: 40px;
+        margin-left: 42px;
     }
 }
 

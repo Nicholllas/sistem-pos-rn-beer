@@ -1,11 +1,9 @@
-
-
 /* =========================================================
-   EMPTY STATE
+   MATERIAL UI - EMPTY STATE
    ========================================================= */
 
 .crud-empty-state {
-    padding: 42px 20px;
+    padding: 40px 20px;
     text-align: center;
 }
 
@@ -13,33 +11,38 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
-    margin-bottom: 12px;
-    color: #1d4ed8;
-    font-size: 15px;
-    font-weight: 800;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 13px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 14px;
+    color: var(--mui-primary);
+    font-size: 16px;
+    font-weight: 700;
+    background: rgba(25, 118, 210, 0.08);
+    border: 1px solid rgba(25, 118, 210, 0.2);
+    border-radius: 50%;
 }
 
 .crud-empty-avatar.is-success {
-    color: #166534;
-    background: #f0fdf4;
-    border-color: #bbf7d0;
+    color: var(--mui-success);
+    background: var(--mui-success-bg);
+    border-color: var(--mui-success-border);
 }
 
 .crud-empty-state strong {
     display: block;
-    color: #334155;
-    font-size: 13px;
+    color: var(--mui-text-primary);
+    font-size: 0.9375rem;
+    font-weight: 600;
 }
 
 .crud-empty-state p {
-    max-width: 360px;
-    margin: 5px auto 14px;
-    color: #64748b;
-    font-size: 10px;
-    line-height: 1.55;
+    max-width: 420px;
+    margin: 6px auto 16px;
+    color: var(--mui-text-secondary);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+}
+
+.crud-empty-state .btn {
+    min-width: 120px;
 }

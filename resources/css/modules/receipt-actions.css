@@ -28,19 +28,25 @@
 
 .receipt-action-heading {
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
 }
 
 .receipt-action-heading .card-title {
-    display: block;
-    float: none;
-    margin: 0 0 3px;
+    display: block !important;
+    float: none !important;
+    margin: 0 !important;
     line-height: 1.25;
 }
 
 .receipt-action-heading small {
-    display: block;
-    color: #64748b;
-    font-size: 12px;
+    display: block !important;
+    float: none !important;
+    clear: both !important;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
     line-height: 1.4;
     overflow-wrap: anywhere;
 }

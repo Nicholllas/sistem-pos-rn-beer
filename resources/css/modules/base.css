@@ -1,3 +1,8 @@
+/* =========================================================
+   MATERIAL UI (MUI) DESIGN SYSTEM CORE & TOKENS
+   Reference: https://mui.com/material-ui/
+   ========================================================= */
+
 *,
 *::before,
 *::after {
@@ -5,36 +10,500 @@
 }
 
 :root {
-    --amber: #e8a020;
-    --amber-dk: #c4841a;
-    --night: #0f0d0a;
-    --ink: #1c1a16;
-    --mist: #2b2720;
-    --foam: #f5f0e8;
-    --ghost: #8a7f70;
-    --error: #d94f3d;
+    /* MUI Primary Palette (Indigo/Blue #1976d2) */
+    --mui-primary: #1976d2;
+    --mui-primary-light: #42a5f5;
+    --mui-primary-dark: #1565c0;
+    --mui-primary-contrast: #ffffff;
+    --mui-primary-rgb: 25, 118, 210;
+
+    /* MUI Secondary Palette */
+    --mui-secondary: #9c27b0;
+    --mui-secondary-light: #ba68c8;
+    --mui-secondary-dark: #7b1fa2;
+    --mui-secondary-contrast: #ffffff;
+
+    /* MUI Error Palette */
+    --mui-error: #d32f2f;
+    --mui-error-light: #ef5350;
+    --mui-error-dark: #c62828;
+    --mui-error-contrast: #ffffff;
+    --mui-error-bg: #fdeded;
+    --mui-error-text: #5f2120;
+    --mui-error-border: #ef9a9a;
+
+    /* MUI Warning Palette */
+    --mui-warning: #ed6c02;
+    --mui-warning-light: #ff9800;
+    --mui-warning-dark: #e65100;
+    --mui-warning-contrast: #ffffff;
+    --mui-warning-bg: #fff4e5;
+    --mui-warning-text: #663c00;
+    --mui-warning-border: #ffcc80;
+
+    /* MUI Info Palette */
+    --mui-info: #0288d1;
+    --mui-info-light: #03a9f4;
+    --mui-info-dark: #01579b;
+    --mui-info-contrast: #ffffff;
+    --mui-info-bg: #e5f6fd;
+    --mui-info-text: #014361;
+    --mui-info-border: #81d4fa;
+
+    /* MUI Success Palette */
+    --mui-success: #2e7d32;
+    --mui-success-light: #4caf50;
+    --mui-success-dark: #1b5e20;
+    --mui-success-contrast: #ffffff;
+    --mui-success-bg: #edf7ed;
+    --mui-success-text: #1e4620;
+    --mui-success-border: #a5d6a7;
+
+    /* MUI Neutral & Text Tokens */
+    --mui-text-primary: rgba(0, 0, 0, 0.87);
+    --mui-text-secondary: rgba(0, 0, 0, 0.6);
+    --mui-text-disabled: rgba(0, 0, 0, 0.38);
+    --mui-divider: rgba(0, 0, 0, 0.12);
+
+    /* Surfaces & Backgrounds */
+    --mui-bg-default: #f4f6f8;
+    --mui-bg-paper: #ffffff;
+    --mui-bg-subtle: #f8fafc;
+    --mui-bg-hover: rgba(0, 0, 0, 0.04);
+    --mui-bg-selected: rgba(25, 118, 210, 0.08);
+
+    /* MUI Elevation Shadows (Material Elevation Scale) */
+    --mui-shadow-0: none;
+    --mui-shadow-1: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
+    --mui-shadow-2: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+    --mui-shadow-3: 0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12);
+    --mui-shadow-4: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
+    --mui-shadow-6: 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
+    --mui-shadow-8: 0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
+    --mui-shadow-16: 0px 8px 10px -5px rgba(0,0,0,0.2), 0px 16px 24px 2px rgba(0,0,0,0.14), 0px 6px 30px 5px rgba(0,0,0,0.12);
+    --mui-shadow-24: 0px 11px 15px -7px rgba(0,0,0,0.2), 0px 24px 38px 3px rgba(0,0,0,0.14), 0px 9px 46px 8px rgba(0,0,0,0.12);
+
+    /* Shape Radii */
+    --mui-radius-sm: 4px;
+    --mui-radius-md: 8px;
+    --mui-radius-lg: 12px;
+    --mui-radius-pill: 9999px;
+
+    /* Legacy CSS Variable Compatibility */
+    --rn-primary: var(--mui-primary);
+    --rn-primary-dark: var(--mui-primary-dark);
+    --rn-border: var(--mui-divider);
+    --rn-text: var(--mui-text-primary);
+    --rn-text-muted: var(--mui-text-secondary);
+    --rn-content-bg: var(--mui-bg-default);
+    --rn-sidebar-bg: #111827;
+    --rn-sidebar-muted: #9ca3af;
 }
 
 body {
     margin: 0;
     min-height: 100vh;
-    font-family: "Inter", sans-serif;
-    background: var(--night);
-    color: var(--foam);
+    font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.43;
+    letter-spacing: 0.01071em;
+    color: var(--mui-text-primary);
+    background-color: var(--mui-bg-default);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-:root {
-    --rn-primary: #2563eb;
-    --rn-primary-dark: #1d4ed8;
-    --rn-sidebar-bg: #0f172a;
-    --rn-sidebar-muted: #94a3b8;
-    --rn-border: #e5e7eb;
-    --rn-text: #0f172a;
-    --rn-text-muted: #64748b;
-    --rn-content-bg: #f8fafc;
+/* Material Symbols Icon Sizing & Baseline */
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    line-height: 1;
+    display: inline-block;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    vertical-align: middle;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
 }
 
-body {
-    color: var(--rn-text);
-    background: var(--rn-content-bg);
+/* =========================================================
+   CARD & TITLE RESET (Neutralizes legacy float: left)
+   ========================================================= */
+.card-title,
+.card-header .card-title,
+.card-header h1,
+.card-header h2,
+.card-header h3,
+.card-header h4,
+.card-header h5,
+.card-header h6 {
+    float: none !important;
+    display: block !important;
+    margin: 0 !important;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* =========================================================
+   MUI BUTTONS (Contained, Outlined, Text, Dense)
+   ========================================================= */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    box-sizing: border-box;
+    outline: 0;
+    border: 0;
+    margin: 0;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    text-decoration: none;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-size: 0.8125rem;
+    line-height: 1.75;
+    letter-spacing: 0.02857em;
+    text-transform: uppercase;
+    min-height: 34px;
+    padding: 4px 14px;
+    border-radius: var(--mui-radius-sm);
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+/* Contained Primary */
+.btn-primary {
+    color: var(--mui-primary-contrast);
+    background-color: var(--mui-primary);
+    box-shadow: var(--mui-shadow-1);
+    border: 1px solid transparent;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    color: var(--mui-primary-contrast);
+    background-color: var(--mui-primary-dark);
+    box-shadow: var(--mui-shadow-2);
+}
+
+/* Contained Secondary */
+.btn-secondary {
+    color: var(--mui-text-primary);
+    background-color: #ffffff;
+    border: 1px solid var(--mui-divider);
+    box-shadow: var(--mui-shadow-1);
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    color: var(--mui-text-primary);
+    background-color: var(--mui-bg-hover);
+    box-shadow: var(--mui-shadow-2);
+}
+
+/* Contained Danger / Error */
+.btn-danger {
+    color: var(--mui-error-contrast);
+    background-color: var(--mui-error);
+    box-shadow: var(--mui-shadow-1);
+    border: 1px solid transparent;
+}
+
+.btn-danger:hover,
+.btn-danger:focus {
+    color: var(--mui-error-contrast);
+    background-color: var(--mui-error-dark);
+    box-shadow: var(--mui-shadow-2);
+}
+
+/* Contained Success */
+.btn-success {
+    color: var(--mui-success-contrast);
+    background-color: var(--mui-success);
+    box-shadow: var(--mui-shadow-1);
+    border: 1px solid transparent;
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    color: var(--mui-success-contrast);
+    background-color: var(--mui-success-dark);
+    box-shadow: var(--mui-shadow-2);
+}
+
+/* Outlined Buttons */
+.btn-outline-primary {
+    color: var(--mui-primary);
+    background-color: transparent;
+    border: 1px solid rgba(25, 118, 210, 0.5);
+    box-shadow: none;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    color: var(--mui-primary-dark);
+    background-color: rgba(25, 118, 210, 0.04);
+    border-color: var(--mui-primary);
+    box-shadow: none;
+}
+
+.btn-outline-secondary {
+    color: var(--mui-text-secondary);
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    box-shadow: none;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+    color: var(--mui-text-primary);
+    background-color: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.87);
+    box-shadow: none;
+}
+
+.btn-outline-danger {
+    color: var(--mui-error);
+    background-color: transparent;
+    border: 1px solid rgba(211, 47, 47, 0.5);
+    box-shadow: none;
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:focus {
+    color: var(--mui-error-dark);
+    background-color: rgba(211, 47, 47, 0.04);
+    border-color: var(--mui-error);
+    box-shadow: none;
+}
+
+/* Compact / Dense Sizing (MUI size="small") */
+.btn-sm {
+    min-height: 28px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+/* Large Sizing */
+.btn-lg {
+    min-height: 42px;
+    padding: 8px 22px;
+    font-size: 0.9375rem;
+}
+
+/* =========================================================
+   MUI TEXT FIELDS & FORM CONTROLS (Outlined & Dense)
+   ========================================================= */
+
+.form-control,
+.form-select {
+    display: block;
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 12px;
+    font-family: "Roboto", sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.43;
+    color: var(--mui-text-primary);
+    background-color: #ffffff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    border-radius: var(--mui-radius-sm);
+    transition: border-color 200ms cubic-bezier(0, 0, 0.2, 1) 0ms,
+                box-shadow 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+}
+
+.form-control:hover,
+.form-select:hover {
+    border-color: rgba(0, 0, 0, 0.87);
+}
+
+.form-control:focus,
+.form-select:focus {
+    color: var(--mui-text-primary);
+    background-color: #ffffff;
+    border: 2px solid var(--mui-primary) !important;
+    padding: 7px 11px; /* compensate for 2px border */
+    outline: 0;
+    box-shadow: none;
+}
+
+.form-control::placeholder {
+    color: var(--mui-text-disabled);
+    opacity: 1;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: var(--mui-error) !important;
+}
+
+.form-label {
+    display: inline-block;
+    margin-bottom: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--mui-text-secondary);
+    letter-spacing: 0.02em;
+}
+
+/* Input group */
+.input-group {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+}
+
+.input-group-text {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.43;
+    color: var(--mui-text-secondary);
+    text-align: center;
+    white-space: nowrap;
+    background-color: #f5f5f5;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    border-radius: var(--mui-radius-sm);
+}
+
+/* =========================================================
+   MUI CARDS & SURFACES (Paper)
+   ========================================================= */
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: var(--mui-bg-paper);
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: var(--mui-radius-md);
+    box-shadow: var(--mui-shadow-1);
+    transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.card-header {
+    padding: 12px 18px;
+    margin-bottom: 0;
+    background-color: transparent;
+    border-bottom: 1px solid var(--mui-divider);
+    font-weight: 500;
+}
+
+.card-body {
+    flex: 1 1 auto;
+    padding: 16px 18px;
+}
+
+.card-footer {
+    padding: 12px 18px;
+    background-color: transparent;
+    border-top: 1px solid var(--mui-divider);
+}
+
+/* =========================================================
+   MUI CHIPS & BADGES
+   ========================================================= */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 24px;
+    padding: 0 8px;
+    font-family: "Roboto", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    border-radius: var(--mui-radius-pill);
+    white-space: nowrap;
+    box-sizing: border-box;
+    user-select: none;
+    border: 1px solid transparent;
+}
+
+.badge.bg-primary {
+    background-color: var(--mui-primary) !important;
+    color: #ffffff;
+}
+
+.badge.bg-secondary {
+    background-color: #e0e0e0 !important;
+    color: var(--mui-text-primary);
+}
+
+.badge.bg-success {
+    background-color: var(--mui-success-bg) !important;
+    color: var(--mui-success-text) !important;
+    border-color: var(--mui-success-border);
+}
+
+.badge.bg-danger {
+    background-color: var(--mui-error-bg) !important;
+    color: var(--mui-error-text) !important;
+    border-color: var(--mui-error-border);
+}
+
+.badge.bg-warning {
+    background-color: var(--mui-warning-bg) !important;
+    color: var(--mui-warning-text) !important;
+    border-color: var(--mui-warning-border);
+}
+
+.badge.bg-info {
+    background-color: var(--mui-info-bg) !important;
+    color: var(--mui-info-text) !important;
+    border-color: var(--mui-info-border);
+}
+
+/* =========================================================
+   MINIMALIST MATERIAL SCROLLBARS
+   ========================================================= */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
 }

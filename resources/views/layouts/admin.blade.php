@@ -12,6 +12,12 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 
+    <!-- Google Fonts: Roboto & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')
@@ -87,17 +93,15 @@
                 <div class="d-flex align-items-center gap-2">
                     <button type="button" class="btn app-sidebar-toggle" data-lte-toggle="sidebar"
                         aria-label="Buka atau tutup sidebar">
-                        <span></span>
-                        <span></span>
-                        <span></span>
+                        <span class="material-symbols-outlined">menu</span>
                     </button>
 
-                    <a href="{{ $homeRoute }}" class="app-header-brand d-none d-sm-flex">
+                    <a href="{{ $homeRoute }}" class="app-header-brand d-flex align-items-center">
                         <span class="app-header-brand-name">
                             RNBeer
                         </span>
 
-                        <span class="app-header-brand-module">
+                        <span class="app-header-brand-module d-none d-sm-inline">
                             {{ $authUser->role === 'cashier' ? 'Kasir POS' : 'Admin Panel' }}
                         </span>
                     </a>
@@ -116,8 +120,8 @@
                                 <small>{{ $userRole }}</small>
                             </span>
 
-                            <span class="app-user-chevron">
-                                ▾
+                            <span class="material-symbols-outlined app-user-chevron">
+                                expand_more
                             </span>
                         </button>
 
@@ -135,12 +139,14 @@
 
                             <div class="dropdown-divider"></div>
 
-                            <a href="{{ $homeRoute }}" class="dropdown-item">
+                            <a href="{{ $homeRoute }}" class="dropdown-item d-flex align-items-center gap-2">
+                                <span class="material-symbols-outlined" style="font-size: 18px;">home</span>
                                 Halaman Utama
                             </a>
 
                             @if ($authUser->role === 'cashier')
-                                <a href="{{ route('admin.sales.history') }}" class="dropdown-item">
+                                <a href="{{ route('admin.sales.history') }}" class="dropdown-item d-flex align-items-center gap-2">
+                                    <span class="material-symbols-outlined" style="font-size: 18px;">receipt_long</span>
                                     Riwayat Penjualan
                                 </a>
                             @endif
@@ -150,7 +156,8 @@
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
 
-                                <button type="submit" class="dropdown-item app-logout-button">
+                                <button type="submit" class="dropdown-item app-logout-button d-flex align-items-center gap-2">
+                                    <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
                                     Keluar dari Sistem
                                 </button>
                             </form>
@@ -188,7 +195,7 @@
                             <a href="{{ route('admin.dashboard') }}"
                                 class="nav-link {{ $isDashboardActive ? 'active' : '' }}"
                                 @if ($isDashboardActive) aria-current="page" @endif>
-                                <span class="nav-link-marker"></span>
+                                <span class="material-symbols-outlined nav-icon">dashboard</span>
                                 <p>Dashboard Penjualan</p>
                             </a>
                         </li>
@@ -202,7 +209,7 @@
                                 <a href="{{ route('admin.categories.index') }}"
                                     class="nav-link {{ $isCategoryActive ? 'active' : '' }}"
                                     @if ($isCategoryActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">category</span>
                                     <p>Kategori</p>
                                 </a>
                             </li>
@@ -211,7 +218,7 @@
                                 <a href="{{ route('admin.products.index') }}"
                                     class="nav-link {{ $isProductActive ? 'active' : '' }}"
                                     @if ($isProductActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">inventory_2</span>
                                     <p>Produk</p>
                                 </a>
                             </li>
@@ -220,7 +227,7 @@
                                 <a href="{{ route('admin.suppliers.index') }}"
                                     class="nav-link {{ $isSupplierActive ? 'active' : '' }}"
                                     @if ($isSupplierActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">local_shipping</span>
                                     <p>Supplier</p>
                                 </a>
                             </li>
@@ -229,7 +236,7 @@
                                 <a href="{{ route('admin.users.index') }}"
                                     class="nav-link {{ $isUserActive ? 'active' : '' }}"
                                     @if ($isUserActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">group</span>
                                     <p>Manajemen User</p>
                                 </a>
                             </li>
@@ -243,7 +250,7 @@
                             <a href="{{ route('admin.sales.pos') }}"
                                 class="nav-link nav-link-primary {{ $isPosActive ? 'active' : '' }}"
                                 @if ($isPosActive) aria-current="page" @endif>
-                                <span class="nav-link-marker"></span>
+                                <span class="material-symbols-outlined nav-icon">point_of_sale</span>
 
                                 <p>
                                     Penjualan / Kasir
@@ -259,7 +266,7 @@
                             <a href="{{ route('admin.sales.history') }}"
                                 class="nav-link {{ $isSalesHistoryActive ? 'active' : '' }}"
                                 @if ($isSalesHistoryActive) aria-current="page" @endif>
-                                <span class="nav-link-marker"></span>
+                                <span class="material-symbols-outlined nav-icon">receipt_long</span>
                                 <p>Riwayat Penjualan</p>
                             </a>
                         </li>
@@ -269,7 +276,7 @@
                                 <a href="{{ route('admin.purchases.create') }}"
                                     class="nav-link {{ $isPurchaseCreateActive ? 'active' : '' }}"
                                     @if ($isPurchaseCreateActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">shopping_bag</span>
                                     <p>Pembelian Stok</p>
                                 </a>
                             </li>
@@ -278,7 +285,7 @@
                                 <a href="{{ route('admin.purchases.index') }}"
                                     class="nav-link {{ $isPurchaseHistoryActive ? 'active' : '' }}"
                                     @if ($isPurchaseHistoryActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">history</span>
                                     <p>Riwayat Pembelian Stok</p>
                                 </a>
                             </li>
@@ -291,7 +298,7 @@
                                 <a href="{{ route('admin.inventory.stock-in') }}"
                                     class="nav-link {{ $isStockInActive ? 'active' : '' }}"
                                     @if ($isStockInActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">add_box</span>
                                     <p>Stok Masuk Manual</p>
                                 </a>
                             </li>
@@ -300,7 +307,7 @@
                                 <a href="{{ route('admin.inventory.adjustment') }}"
                                     class="nav-link {{ $isAdjustmentActive ? 'active' : '' }}"
                                     @if ($isAdjustmentActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">tune</span>
                                     <p>Penyesuaian Stok</p>
                                 </a>
                             </li>
@@ -309,7 +316,7 @@
                                 <a href="{{ route('admin.inventory.low-stock') }}"
                                     class="nav-link {{ $isLowStockActive ? 'active' : '' }}"
                                     @if ($isLowStockActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">warning</span>
                                     <p>Stok Menipis</p>
                                 </a>
                             </li>
@@ -318,7 +325,7 @@
                                 <a href="{{ route('admin.inventory.logs') }}"
                                     class="nav-link {{ $isStockLogActive ? 'active' : '' }}"
                                     @if ($isStockLogActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">swap_vert</span>
                                     <p>Log Stok</p>
                                 </a>
                             </li>
@@ -327,7 +334,7 @@
                                 <a href="{{ route('admin.inventory.batches') }}"
                                     class="nav-link {{ $isBatchActive ? 'active' : '' }}"
                                     @if ($isBatchActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">layers</span>
                                     <p>Batch FIFO</p>
                                 </a>
                             </li>
@@ -340,7 +347,7 @@
                                 <a href="{{ route('admin.finance.dashboard') }}"
                                     class="nav-link {{ $isFinanceDashboardActive ? 'active' : '' }}"
                                     @if ($isFinanceDashboardActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">account_balance</span>
                                     <p>Dashboard Finance</p>
                                 </a>
                             </li>
@@ -349,7 +356,7 @@
                                 <a href="{{ route('admin.finance.transactions.index') }}"
                                     class="nav-link {{ $isFinanceTransactionActive ? 'active' : '' }}"
                                     @if ($isFinanceTransactionActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">receipt</span>
 
                                     <p>Cash Ledger</p>
                                 </a>
@@ -359,7 +366,7 @@
                                 <a href="{{ route('admin.finance.reconciliation.index') }}"
                                     class="nav-link {{ $isFinanceReconciliationActive ? 'active' : '' }}"
                                     @if ($isFinanceReconciliationActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">account_balance_wallet</span>
                                     <p>Rekonsiliasi Finance</p>
                                 </a>
                             </li>
@@ -368,7 +375,7 @@
                                 <a href="{{ route('admin.finance.accounts.index') }}"
                                     class="nav-link {{ $isFinanceAccountActive ? 'active' : '' }}"
                                     @if ($isFinanceAccountActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">payments</span>
 
                                     <p>Akun Kas & Bank</p>
                                 </a>
@@ -378,7 +385,7 @@
                                 <a href="{{ route('admin.finance.categories.index') }}"
                                     class="nav-link {{ $isFinanceCategoryActive ? 'active' : '' }}"
                                     @if ($isFinanceCategoryActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">label</span>
 
                                     <p>Kategori Finance</p>
                                 </a>
@@ -392,7 +399,7 @@
                                 <a href="{{ route('admin.reports.sales') }}"
                                     class="nav-link {{ $isSalesReportActive ? 'active' : '' }}"
                                     @if ($isSalesReportActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">bar_chart</span>
                                     <p>Laporan Penjualan</p>
                                 </a>
                             </li>
@@ -401,7 +408,7 @@
                                 <a href="{{ route('admin.reports.inventory') }}"
                                     class="nav-link {{ $isInventoryReportActive ? 'active' : '' }}"
                                     @if ($isInventoryReportActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">inventory</span>
                                     <p>Laporan Stok</p>
                                 </a>
                             </li>
@@ -410,7 +417,7 @@
                                 <a href="{{ route('admin.reports.purchases') }}"
                                     class="nav-link {{ $isPurchaseReportActive ? 'active' : '' }}"
                                     @if ($isPurchaseReportActive) aria-current="page" @endif>
-                                    <span class="nav-link-marker"></span>
+                                    <span class="material-symbols-outlined nav-icon">shopping_cart</span>
                                     <p>Laporan Pembelian Stok</p>
                                 </a>
                             </li>
@@ -461,7 +468,7 @@
                 <div class="container-fluid">
                     @if (session('success'))
                         <div class="alert app-alert app-alert-success alert-dismissible fade show" role="alert">
-                            <div class="app-alert-indicator"></div>
+                            <span class="material-symbols-outlined app-alert-icon">check_circle</span>
 
                             <div class="app-alert-content">
                                 <strong>Berhasil</strong>
@@ -475,7 +482,7 @@
 
                     @if ($errors->any())
                         <div class="alert app-alert app-alert-danger alert-dismissible fade show" role="alert">
-                            <div class="app-alert-indicator"></div>
+                            <span class="material-symbols-outlined app-alert-icon">error</span>
 
                             <div class="app-alert-content">
                                 <strong>Periksa kembali input</strong>

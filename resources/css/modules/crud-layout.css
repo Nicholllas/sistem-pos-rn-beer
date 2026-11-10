@@ -1,5 +1,5 @@
 /* =========================================================
-   CRUD PAGE
+   MUI CRUD LAYOUT & PAPERS
    ========================================================= */
 
 .crud-page {
@@ -8,63 +8,87 @@
 
 .crud-panel,
 .crud-form-panel {
-    overflow: hidden;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: var(--mui-radius-md);
+    box-shadow: var(--mui-shadow-1);
+    overflow: hidden;
+    margin-bottom: 20px;
 }
 
-/* =========================================================
-   PANEL HEADER
-   ========================================================= */
-
+/* Panel Header */
 .crud-panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
-    min-height: 70px;
-    padding: 16px 18px;
-    border-bottom: 1px solid #e5e7eb;
+    gap: 16px;
+    min-height: 58px;
+    padding: 12px 18px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--mui-divider);
 }
 
 .crud-panel-header h2,
 .crud-form-header h2 {
     margin: 0;
-    color: #0f172a;
-    font-size: 16px;
-    font-weight: 700;
+    color: var(--mui-text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
 .crud-panel-header p,
 .crud-form-header p {
-    margin: 4px 0 0;
-    color: #64748b;
-    font-size: 11px;
-    line-height: 1.5;
+    margin: 2px 0 0;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
+    line-height: 1.4;
 }
 
+/* MUI Chip for Count Badge */
 .crud-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
-    padding: 6px 10px;
-    color: #1d4ed8;
-    font-size: 10px;
-    font-weight: 700;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 999px;
+    height: 24px;
+    padding: 0 10px;
+    color: var(--mui-primary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: rgba(25, 118, 210, 0.08);
+    border: 1px solid rgba(25, 118, 210, 0.2);
+    border-radius: var(--mui-radius-pill);
 }
 
 .crud-count-badge.is-danger {
-    color: #991b1b;
-    background: #fef2f2;
-    border-color: #fecaca;
+    color: var(--mui-error);
+    background-color: var(--mui-error-bg);
+    border-color: var(--mui-error-border);
 }
 
-@media (max-width: 767.98px) {
+.crud-count-badge.is-warning {
+    color: var(--mui-warning);
+    background-color: var(--mui-warning-bg);
+    border-color: var(--mui-warning-border);
+}
+
+.crud-count-badge.is-success {
+    color: var(--mui-success);
+    background-color: var(--mui-success-bg);
+    border-color: var(--mui-success-border);
+}
+
+@media (max-width: 575.98px) {
     .crud-panel-header {
-        align-items: flex-start;
         flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        min-height: auto;
+        padding: 12px 16px;
+    }
+
+    .crud-panel-header > div {
+        width: 100%;
     }
 }

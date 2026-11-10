@@ -1,27 +1,26 @@
-
-
 /* =========================================================
-   STOCK LOG PAGE
+   MATERIAL UI - STOCK LOG PAGE (CLEAN, COMPACT, DENSE)
    ========================================================= */
 
 .stock-log-page {
     display: grid;
-    gap: 15px;
+    gap: 16px;
 }
 
 /* =========================================================
-   STOCK LOG NOTICE
+   STOCK LOG NOTICE BANNER
    ========================================================= */
 
 .stock-log-notice {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    padding: 14px 16px;
-    color: #075985;
-    background: #f0f9ff;
-    border: 1px solid #bae6fd;
-    border-radius: 12px;
+    gap: 14px;
+    padding: 14px 20px;
+    color: #014361;
+    background: #e5f6fd;
+    border: 1px solid #b3e5fc;
+    border-radius: var(--mui-radius-md);
+    box-shadow: var(--mui-shadow-1);
 }
 
 .stock-log-notice-icon {
@@ -32,10 +31,10 @@
     width: 28px;
     height: 28px;
     color: #ffffff;
-    font-size: 12px;
-    font-weight: 800;
-    background: #0284c7;
-    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    background: var(--mui-info);
+    border-radius: var(--mui-radius-sm);
 }
 
 .stock-log-notice > div {
@@ -45,42 +44,43 @@
 
 .stock-log-notice strong {
     display: block;
-    font-size: 11px;
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
 .stock-log-notice p {
-    margin: 4px 0 0;
-    font-size: 9px;
-    line-height: 1.55;
+    margin: 3px 0 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
 }
 
 .stock-log-notice-count {
     display: inline-flex;
     flex-shrink: 0;
-    padding: 5px 9px;
-    color: #075985;
-    font-size: 9px;
-    font-weight: 700;
-    background: rgba(255, 255, 255, 0.7);
+    padding: 3px 10px;
+    color: #014361;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.85);
     border: 1px solid #7dd3fc;
-    border-radius: 999px;
+    border-radius: var(--mui-radius-pill);
 }
 
 /* =========================================================
-   STOCK LOG SUMMARY
+   STOCK LOG SUMMARY STRIP (FIX FOR MEPET BOX)
    ========================================================= */
 
 .stock-log-summary {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1px;
-    background: #e5e7eb;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--mui-divider);
+    border-bottom: 1px solid var(--mui-divider);
 }
 
 .stock-log-summary > div {
-    padding: 12px 16px;
-    background: #fafcff;
+    padding: 12px 20px;
+    background: #ffffff;
 }
 
 .stock-log-summary span,
@@ -89,40 +89,100 @@
 }
 
 .stock-log-summary span {
-    color: #94a3b8;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.35px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
 .stock-log-summary strong {
-    margin-top: 5px;
-    color: #0f172a;
-    font-size: 13px;
+    margin-top: 3px;
+    color: var(--mui-text-primary);
+    font-size: 1rem;
+    font-weight: 700;
 }
 
 .stock-log-summary strong.is-positive {
-    color: #15803d;
+    color: var(--mui-success);
 }
 
 .stock-log-summary strong.is-negative {
-    color: #dc2626;
+    color: var(--mui-error);
 }
 
 .stock-log-summary strong.is-warning {
-    color: #d97706;
+    color: var(--mui-warning);
 }
 
 /* =========================================================
-   STOCK LOG TABLE
+   STOCK LOG FILTER PANEL
+   ========================================================= */
+
+.stock-log-filter-panel {
+    margin: 0;
+}
+
+.stock-log-filter-body {
+    padding: 18px 20px;
+}
+
+.stock-log-filter-body .form-label {
+    margin-bottom: 6px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.stock-log-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 2px;
+}
+
+.stock-log-filter-actions .btn {
+    min-width: 120px;
+    min-height: 38px;
+}
+
+.stock-log-active-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #f8fafc;
+    border-top: 1px solid var(--mui-divider);
+}
+
+.stock-log-filter-label {
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.stock-log-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    color: var(--mui-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(25, 118, 210, 0.08);
+    border: 1px solid rgba(25, 118, 210, 0.2);
+    border-radius: var(--mui-radius-pill);
+}
+
+/* =========================================================
+   STOCK LOG TABLE & CELLS
    ========================================================= */
 
 .stock-log-table {
     min-width: 1250px;
 }
-
-/* Date */
 
 .stock-log-date {
     min-width: 90px;
@@ -134,83 +194,16 @@
 }
 
 .stock-log-date strong {
-    color: #334155;
-    font-size: 10px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
 }
 
 .stock-log-date span {
-    margin-top: 3px;
-    color: #94a3b8;
-    font-size: 9px;
+    margin-top: 2px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
 }
-
-/* =========================================================
-   STOCK LOG FILTER
-   ========================================================= */
-
-.stock-log-filter-panel {
-    margin: 0;
-}
-
-.stock-log-filter-body {
-    padding: 18px;
-}
-
-.stock-log-filter-body .form-label {
-    margin-bottom: 7px;
-    color: #334155;
-    font-size: 10px;
-    font-weight: 650;
-}
-
-.stock-log-filter-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding-top: 2px;
-}
-
-.stock-log-filter-actions .btn {
-    min-width: 125px;
-    min-height: 41px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.stock-log-active-filters {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 7px;
-    padding: 12px 18px;
-    background: #f8fafc;
-    border-top: 1px solid #e5e7eb;
-}
-
-.stock-log-filter-label {
-    margin-right: 2px;
-    color: #64748b;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-}
-
-.stock-log-filter-chip {
-    display: inline-flex;
-    padding: 5px 8px;
-    color: #1e40af;
-    font-size: 9px;
-    font-weight: 600;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 999px;
-}
-
-/* =========================================================
-   STOCK LOG PRODUCT WITHOUT AVATAR
-   ========================================================= */
 
 .stock-log-product-info {
     min-width: 225px;
@@ -225,113 +218,94 @@
 .stock-log-product-info strong {
     max-width: 260px;
     overflow: hidden;
-    color: #0f172a;
-    font-size: 10px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 .stock-log-product-info span {
-    margin-top: 4px;
-    color: #64748b;
-    font-size: 9px;
+    margin-top: 2px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
 }
 
 .stock-log-product-info small {
-    margin-top: 2px;
-    color: #94a3b8;
-    font-size: 8px;
+    margin-top: 1px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
+    opacity: 0.85;
 }
 
-@media (max-width: 575.98px) {
-    .stock-log-filter-body {
-        padding: 15px;
-    }
-
-    .stock-log-filter-actions {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .stock-log-filter-actions .btn {
-        width: 100%;
-    }
-
-    .stock-log-active-filters {
-        padding-right: 15px;
-        padding-left: 15px;
-    }
-}
-
-/* Movement type */
-
+/* Movement Type */
 .stock-log-type {
     display: inline-flex;
-    padding: 5px 8px;
-    font-size: 9px;
-    font-weight: 700;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 0.6875rem;
+    font-weight: 600;
     white-space: nowrap;
     border: 1px solid;
-    border-radius: 999px;
+    border-radius: var(--mui-radius-pill);
 }
 
 .stock-log-type.is-in {
-    color: #166534;
-    background: #f0fdf4;
-    border-color: #bbf7d0;
+    color: var(--mui-success);
+    background: var(--mui-success-bg);
+    border-color: var(--mui-success-border);
 }
 
 .stock-log-type.is-out {
-    color: #991b1b;
-    background: #fef2f2;
-    border-color: #fecaca;
+    color: var(--mui-error);
+    background: var(--mui-error-bg);
+    border-color: var(--mui-error-border);
 }
 
 .stock-log-type.is-adjustment {
-    color: #92400e;
-    background: #fffbeb;
-    border-color: #fde68a;
+    color: var(--mui-warning);
+    background: var(--mui-warning-bg);
+    border-color: var(--mui-warning-border);
 }
 
 .stock-log-type.is-default {
-    color: #475569;
-    background: #f8fafc;
-    border-color: #e2e8f0;
+    color: var(--mui-text-secondary);
+    background: #f1f5f9;
+    border-color: var(--mui-divider);
 }
 
-/* Quantity change */
-
+/* Quantity Change */
 .stock-log-change {
     display: inline-flex;
-    min-width: 46px;
+    min-width: 44px;
     justify-content: center;
-    padding: 5px 8px;
-    font-size: 11px;
-    font-weight: 750;
+    align-items: center;
+    padding: 3px 8px;
+    font-size: 0.8125rem;
+    font-weight: 700;
     border: 1px solid;
-    border-radius: 8px;
+    border-radius: var(--mui-radius-sm);
 }
 
 .stock-log-change.is-positive {
-    color: #166534;
-    background: #f0fdf4;
-    border-color: #bbf7d0;
+    color: var(--mui-success);
+    background: var(--mui-success-bg);
+    border-color: var(--mui-success-border);
 }
 
 .stock-log-change.is-negative {
-    color: #991b1b;
-    background: #fef2f2;
-    border-color: #fecaca;
+    color: var(--mui-error);
+    background: var(--mui-error-bg);
+    border-color: var(--mui-error-border);
 }
 
 .stock-log-change.is-neutral {
-    color: #475569;
-    background: #f8fafc;
-    border-color: #e2e8f0;
+    color: var(--mui-text-secondary);
+    background: #f1f5f9;
+    border-color: var(--mui-divider);
 }
 
-/* Before and after */
-
+/* Before and After Flow */
 .stock-log-flow {
     display: grid;
     grid-template-columns: 58px auto 58px;
@@ -341,16 +315,16 @@
 }
 
 .stock-log-flow > div {
-    padding: 7px 6px;
+    padding: 5px 6px;
     text-align: center;
     background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-sm);
 }
 
 .stock-log-flow > div.is-result {
-    background: #eff6ff;
-    border-color: #bfdbfe;
+    background: rgba(25, 118, 210, 0.08);
+    border-color: rgba(25, 118, 210, 0.2);
 }
 
 .stock-log-flow span,
@@ -359,29 +333,29 @@
 }
 
 .stock-log-flow > div span {
-    color: #94a3b8;
-    font-size: 7px;
+    color: var(--mui-text-secondary);
+    font-size: 0.625rem;
     font-weight: 700;
     text-transform: uppercase;
 }
 
 .stock-log-flow > div strong {
-    margin-top: 3px;
-    color: #334155;
-    font-size: 10px;
+    margin-top: 2px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
 }
 
 .stock-log-flow > div.is-result strong {
-    color: #1d4ed8;
+    color: var(--mui-primary);
 }
 
 .stock-log-flow-arrow {
-    color: #94a3b8;
-    font-size: 11px;
+    color: var(--mui-text-secondary);
+    font-size: 0.875rem;
 }
 
-/* User */
-
+/* User Info */
 .stock-log-user {
     display: flex;
     align-items: center;
@@ -394,14 +368,14 @@
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    width: 29px;
-    height: 29px;
-    color: #475569;
-    font-size: 9px;
-    font-weight: 800;
+    width: 28px;
+    height: 28px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
     background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-pill);
 }
 
 .stock-log-user strong,
@@ -412,32 +386,32 @@
 .stock-log-user strong {
     max-width: 130px;
     overflow: hidden;
-    color: #334155;
-    font-size: 9px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 .stock-log-user small {
-    margin-top: 2px;
-    color: #94a3b8;
-    font-size: 8px;
+    margin-top: 1px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
 }
 
-/* Notes */
-
+/* Notes Column */
 .stock-log-note {
     max-width: 290px;
     min-width: 190px;
-    color: #475569;
-    font-size: 9px;
-    line-height: 1.55;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
+    line-height: 1.5;
     white-space: normal;
     overflow-wrap: anywhere;
 }
 
 /* =========================================================
-   STOCK LOG RESPONSIVE
+   RESPONSIVE DESIGN
    ========================================================= */
 
 @media (max-width: 767.98px) {
@@ -446,7 +420,7 @@
     }
 
     .stock-log-notice-count {
-        margin-left: 40px;
+        margin-left: 42px;
     }
 
     .stock-log-summary {
@@ -461,5 +435,23 @@
 
     .stock-log-summary {
         grid-template-columns: 1fr;
+    }
+
+    .stock-log-filter-body {
+        padding: 14px 16px;
+    }
+
+    .stock-log-filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .stock-log-filter-actions .btn {
+        width: 100%;
+    }
+
+    .stock-log-active-filters {
+        padding-right: 16px;
+        padding-left: 16px;
     }
 }

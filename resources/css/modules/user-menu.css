@@ -1,45 +1,47 @@
-
-
 /* =========================================================
-   USER MENU
+   MUI USER MENU & POPOVER (Paper Menu)
    ========================================================= */
 
 .app-user-menu {
     display: flex;
     align-items: center;
-    gap: 9px;
-    padding: 5px 7px;
-    color: var(--rn-text);
+    gap: 8px;
+    padding: 3px 8px;
+    color: var(--mui-text-primary);
     background: transparent;
-    border: 1px solid transparent;
-    border-radius: 10px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
 }
 
 .app-user-menu:hover,
 .app-user-menu[aria-expanded="true"] {
-    background: #f8fafc;
-    border-color: var(--rn-border);
+    background: rgba(0, 0, 0, 0.04);
+    box-shadow: none;
 }
 
+/* MUI Circular Avatar */
 .app-user-avatar {
     display: inline-flex;
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     color: #ffffff;
-    font-size: 11px;
-    font-weight: 700;
-    background: var(--rn-primary);
-    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--mui-primary);
+    border-radius: 50%;
+    box-shadow: var(--mui-shadow-1);
 }
 
 .app-user-avatar-large {
-    width: 42px;
-    height: 42px;
-    font-size: 13px;
-    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
 }
 
 .app-user-info {
@@ -50,81 +52,105 @@
 }
 
 .app-user-info strong {
-    max-width: 150px;
+    max-width: 140px;
     overflow: hidden;
-    font-size: 12px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--mui-text-primary);
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 .app-user-info small {
-    margin-top: 3px;
-    color: var(--rn-text-muted);
-    font-size: 10px;
+    margin-top: 1px;
+    color: var(--mui-text-secondary);
+    font-size: 10.5px;
 }
 
 .app-user-chevron {
-    color: var(--rn-text-muted);
-    font-size: 11px;
+    color: var(--mui-text-secondary);
+    font-size: 18px !important;
+    transition: transform 150ms;
 }
 
+.app-user-menu[aria-expanded="true"] .app-user-chevron {
+    transform: rotate(180deg);
+}
+
+/* MUI Menu Paper */
 .app-user-dropdown {
-    width: 250px;
-    padding: 8px;
-    margin-top: 8px !important;
-    border: 1px solid var(--rn-border);
-    border-radius: 12px;
-    box-shadow: 0 16px 35px rgba(15, 23, 42, 0.12);
+    min-width: 230px;
+    padding: 6px;
+    margin-top: 6px !important;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: var(--mui-radius-md);
+    box-shadow: var(--mui-shadow-8);
 }
 
 .app-user-dropdown-header {
     display: flex;
     align-items: center;
-    gap: 11px;
-    padding: 8px;
+    gap: 10px;
+    padding: 8px 10px;
 }
 
 .app-user-dropdown-header div {
     min-width: 0;
 }
 
-.app-user-dropdown-header strong,
+.app-user-dropdown-header strong {
+    display: block;
+    overflow: hidden;
+    color: var(--mui-text-primary);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 .app-user-dropdown-header small {
     display: block;
+    margin-top: 2px;
+    color: var(--mui-text-secondary);
+    font-size: 11px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.app-user-dropdown-header strong {
-    color: var(--rn-text);
-    font-size: 13px;
-}
-
-.app-user-dropdown-header small {
-    margin-top: 3px;
-    color: var(--rn-text-muted);
-    font-size: 10px;
+.app-user-dropdown .dropdown-divider {
+    margin: 4px 0;
+    border-top: 1px solid var(--mui-divider);
 }
 
 .app-user-dropdown .dropdown-item {
-    padding: 9px 10px;
-    color: #334155;
-    font-size: 12px;
-    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    color: var(--mui-text-primary);
+    font-size: 12.5px;
+    font-weight: 400;
+    border-radius: var(--mui-radius-sm);
+    text-transform: none;
+    transition: background-color 150ms;
 }
 
 .app-user-dropdown .dropdown-item:hover {
-    background: #f1f5f9;
+    background-color: rgba(0, 0, 0, 0.04);
+    color: var(--mui-primary);
 }
 
 .app-logout-button {
     width: 100%;
-    color: #b91c1c !important;
+    color: var(--mui-error) !important;
     text-align: left;
+    background: transparent;
+    border: none;
 }
 
 .app-logout-button:hover {
-    color: #991b1b !important;
-    background: #fef2f2 !important;
+    color: var(--mui-error-dark) !important;
+    background-color: var(--mui-error-bg) !important;
 }

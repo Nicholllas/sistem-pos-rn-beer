@@ -1,79 +1,38 @@
-
-
-/* CSS tabel report stok */
-.inventory-report-table th,
-.inventory-report-table td {
-    vertical-align: middle !important;
-}
-.inventory-report-table th {
-    white-space: nowrap;
-}
-.inventory-report-table td {
-    font-size: 14px;
-}
-.inventory-report-table .product-stock-name {
-    min-width: 280px;
-}
-.inventory-report-table .update-stock-info {
-    min-width: 150px;
-    line-height: 1.5;
-}
-.inventory-report-table .text-nowrap {
-    white-space: nowrap;
-}
-.inventory-summary-card {
-    min-height: 118px;
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
-    background: #ffffff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-.inventory-summary-label {
-    font-size: 0.875rem;
-    color: #6c757d;
-    margin-bottom: 6px;
-}
-.inventory-summary-value {
-    font-size: 1.55rem;
-    font-weight: 700;
-    line-height: 1.2;
-}
-.inventory-summary-note {
-    font-size: 0.8rem;
-    color: #6c757d;
-    margin-top: 6px;
-}
-.inventory-section-title {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-.inventory-compare-table td,
-.inventory-compare-table th {
-    padding: 0.55rem 0.75rem;
-}
 /* =========================================================
-   INVENTORY REPORT PAGE
+   MATERIAL UI - INVENTORY REPORT (CLEAN, COMPACT, DENSE)
    ========================================================= */
+
 .inventory-report-page {
     display: grid;
     gap: 16px;
 }
-/* Summary */
+
+/* =========================================================
+   SUMMARY CARDS
+   ========================================================= */
+
 .inventory-report-summary {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
 }
+
 .inventory-report-summary-card,
 .inventory-value-summary > article {
     min-width: 0;
-    padding: 16px;
+    padding: 14px 18px;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 13px;
-    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.035);
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-md);
+    box-shadow: var(--mui-shadow-1);
+    transition: box-shadow 150ms ease;
 }
+
+.inventory-report-summary-card:hover,
+.inventory-value-summary > article:hover {
+    box-shadow: var(--mui-shadow-2);
+}
+
 .inventory-report-summary-card > span,
 .inventory-report-summary-card > strong,
 .inventory-report-summary-card > small,
@@ -82,413 +41,514 @@
 .inventory-value-summary small {
     display: block;
 }
+
 .inventory-report-summary-card > span,
 .inventory-value-summary span {
-    color: #64748b;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.45px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
+
 .inventory-report-summary-card > strong,
 .inventory-value-summary strong {
-    margin-top: 7px;
+    margin-top: 5px;
     overflow: hidden;
-    color: #0f172a;
-    font-size: 17px;
-    font-weight: 750;
+    color: var(--mui-text-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
 .inventory-report-summary-card > strong.is-primary,
 .inventory-value-summary strong.is-primary {
-    color: #1d4ed8;
+    color: var(--mui-primary);
 }
+
 .inventory-report-summary-card > strong.is-success,
 .inventory-value-summary strong.is-success {
-    color: #15803d;
+    color: var(--mui-success);
 }
+
 .inventory-report-summary-card > strong.is-danger,
 .inventory-value-summary strong.is-danger {
-    color: #dc2626;
+    color: var(--mui-error);
 }
+
 .inventory-report-summary-card > small,
 .inventory-value-summary small {
-    margin-top: 5px;
-    color: #94a3b8;
-    font-size: 8px;
-    line-height: 1.45;
+    margin-top: 3px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
+    line-height: 1.4;
 }
-/* Filter */
+
+/* =========================================================
+   FILTER PANEL
+   ========================================================= */
+
 .inventory-report-filter-panel,
 .inventory-reconciliation-panel,
 .inventory-report-detail-panel {
     margin: 0;
 }
+
 .inventory-report-filter-body {
-    padding: 18px;
+    padding: 18px 20px;
 }
+
 .inventory-report-filter-body .form-label {
-    margin-bottom: 7px;
-    color: #334155;
-    font-size: 10px;
-    font-weight: 650;
+    margin-bottom: 6px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
 }
+
 .inventory-report-filter-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
-    padding: 13px 18px;
-    background: #fafcff;
-    border-top: 1px solid #e5e7eb;
+    gap: 16px;
+    padding: 12px 20px;
+    background: #f8fafc;
+    border-top: 1px solid var(--mui-divider);
 }
+
 .inventory-report-filter-description span,
 .inventory-report-filter-description strong {
     display: block;
 }
+
 .inventory-report-filter-description span {
-    color: #94a3b8;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.35px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
+
 .inventory-report-filter-description strong {
-    margin-top: 4px;
-    color: #334155;
-    font-size: 10px;
+    margin-top: 2px;
+    color: var(--mui-text-primary);
+    font-size: 0.875rem;
+    font-weight: 600;
 }
+
 .inventory-report-filter-actions {
     display: flex;
     flex-shrink: 0;
     gap: 8px;
 }
+
 .inventory-report-filter-actions .btn {
-    min-width: 125px;
-    border-radius: 8px;
-    font-size: 10px;
-    font-weight: 650;
+    min-width: 120px;
 }
+
 .inventory-report-active-filters {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 7px;
-    padding: 11px 18px;
+    gap: 8px;
+    padding: 10px 20px;
     background: #f8fafc;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--mui-divider);
 }
+
 .inventory-report-filter-label {
-    color: #64748b;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
+
 .inventory-report-filter-chip {
     display: inline-flex;
-    padding: 5px 8px;
-    color: #1e40af;
-    font-size: 8px;
-    font-weight: 650;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 999px;
+    align-items: center;
+    padding: 3px 10px;
+    color: var(--mui-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(25, 118, 210, 0.08);
+    border: 1px solid rgba(25, 118, 210, 0.2);
+    border-radius: var(--mui-radius-pill);
 }
-/* Sync warning */
+
+/* =========================================================
+   SYNC WARNING BANNER
+   ========================================================= */
+
 .inventory-report-sync-warning {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
-    padding: 14px 16px;
-    color: #991b1b;
-    background: #fffafa;
-    border: 1px solid #fecaca;
-    border-radius: 11px;
+    gap: 16px;
+    padding: 14px 20px;
+    color: var(--mui-error-contrast, #5f2120);
+    background: #fdeded;
+    border: 1px solid #f5c2c7;
+    border-radius: var(--mui-radius-md);
+    box-shadow: var(--mui-shadow-1);
 }
+
 .inventory-report-sync-warning > div {
     min-width: 0;
 }
+
 .inventory-report-sync-warning strong {
     display: block;
-    font-size: 11px;
+    font-size: 0.875rem;
+    font-weight: 600;
 }
+
 .inventory-report-sync-warning p {
-    margin: 4px 0 0;
-    font-size: 9px;
-    line-height: 1.55;
+    margin: 3px 0 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
 }
-/* Reconciliation */
+
+/* =========================================================
+   RECONCILIATION SECTION
+   ========================================================= */
+
 .inventory-reconciliation-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1px;
-    background: #e5e7eb;
+    background: var(--mui-divider);
 }
+
 .inventory-reconciliation-card {
     min-width: 0;
-    padding: 17px;
+    padding: 18px 20px;
     background: #ffffff;
 }
+
 .inventory-reconciliation-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
 }
+
 .inventory-reconciliation-header span,
 .inventory-reconciliation-header strong {
     display: block;
 }
+
 .inventory-reconciliation-header > div > span {
-    color: #94a3b8;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
+
 .inventory-reconciliation-header > div > strong {
-    margin-top: 4px;
-    color: #0f172a;
-    font-size: 13px;
+    margin-top: 3px;
+    color: var(--mui-text-primary);
+    font-size: 0.9375rem;
+    font-weight: 700;
 }
+
 .inventory-reconciliation-status {
     display: inline-flex !important;
     flex-shrink: 0;
-    padding: 5px 8px;
-    font-size: 8px;
-    font-weight: 700;
+    padding: 2px 8px;
+    font-size: 0.6875rem;
+    font-weight: 600;
     border: 1px solid;
-    border-radius: 999px;
+    border-radius: var(--mui-radius-pill);
 }
+
 .inventory-reconciliation-status.is-success {
-    color: #166534;
-    background: #f0fdf4;
-    border-color: #bbf7d0;
+    color: var(--mui-success);
+    background: var(--mui-success-bg);
+    border-color: var(--mui-success-border);
 }
+
 .inventory-reconciliation-status.is-warning {
-    color: #92400e;
-    background: #fffbeb;
-    border-color: #fde68a;
+    color: var(--mui-warning);
+    background: var(--mui-warning-bg);
+    border-color: var(--mui-warning-border);
 }
+
 .inventory-reconciliation-status.is-danger {
-    color: #991b1b;
-    background: #fef2f2;
-    border-color: #fecaca;
+    color: var(--mui-error);
+    background: var(--mui-error-bg);
+    border-color: var(--mui-error-border);
 }
+
 .inventory-comparison-values {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
-    margin-top: 17px;
+    margin-top: 14px;
 }
+
 .inventory-comparison-values > div {
-    padding: 11px;
+    padding: 8px 10px;
     background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-radius: 9px;
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-sm);
 }
+
 .inventory-comparison-values span,
 .inventory-comparison-values strong,
 .inventory-comparison-values small {
     display: block;
 }
+
 .inventory-comparison-values span {
-    color: #94a3b8;
-    font-size: 7px;
+    color: var(--mui-text-secondary);
+    font-size: 0.625rem;
     font-weight: 700;
     text-transform: uppercase;
 }
+
 .inventory-comparison-values strong {
-    margin-top: 5px;
-    color: #334155;
-    font-size: 14px;
+    margin-top: 3px;
+    color: var(--mui-text-primary);
+    font-size: 1rem;
+    font-weight: 700;
 }
+
 .inventory-comparison-values strong.is-success {
-    color: #15803d;
+    color: var(--mui-success);
 }
+
 .inventory-comparison-values strong.is-danger {
-    color: #dc2626;
+    color: var(--mui-error);
 }
+
 .inventory-comparison-values small {
-    margin-top: 2px;
-    color: #94a3b8;
-    font-size: 7px;
+    margin-top: 1px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
 }
+
 .inventory-sync-progress {
-    margin-top: 15px;
+    margin-top: 14px;
 }
+
 .inventory-sync-progress > div:first-child {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
 }
+
 .inventory-sync-progress span {
-    color: #64748b;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
 }
+
 .inventory-sync-progress strong {
-    color: #334155;
-    font-size: 9px;
+    color: var(--mui-text-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
 }
+
 .inventory-sync-progress-bar {
     width: 100%;
-    height: 5px;
-    margin-top: 7px;
+    height: 6px;
+    margin-top: 6px;
     overflow: hidden;
-    background: #e5e7eb;
+    background: var(--mui-divider);
     border-radius: 999px;
 }
+
 .inventory-sync-progress-bar > span {
     display: block;
     height: 100%;
-    background: #2563eb;
+    background: var(--mui-primary);
     border-radius: inherit;
 }
+
 .inventory-value-comparison {
     display: grid;
-    gap: 8px;
-    margin-top: 17px;
+    gap: 6px;
+    margin-top: 14px;
 }
+
 .inventory-value-comparison > div {
-    padding: 11px 12px;
+    padding: 8px 12px;
     background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-radius: 9px;
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-sm);
 }
+
 .inventory-value-comparison span,
 .inventory-value-comparison strong,
 .inventory-value-comparison small {
     display: block;
 }
+
 .inventory-value-comparison span {
-    color: #94a3b8;
-    font-size: 7px;
+    color: var(--mui-text-secondary);
+    font-size: 0.625rem;
     font-weight: 700;
     text-transform: uppercase;
 }
+
 .inventory-value-comparison strong {
-    margin-top: 5px;
-    color: #334155;
-    font-size: 11px;
-}
-.inventory-value-comparison strong.is-success {
-    color: #15803d;
-}
-.inventory-value-comparison strong.is-warning {
-    color: #b45309;
-}
-.inventory-value-comparison small {
     margin-top: 3px;
-    color: #94a3b8;
-    font-size: 7px;
+    color: var(--mui-text-primary);
+    font-size: 0.875rem;
+    font-weight: 700;
 }
+
+.inventory-value-comparison strong.is-success {
+    color: var(--mui-success);
+}
+
+.inventory-value-comparison strong.is-warning {
+    color: var(--mui-warning);
+}
+
+.inventory-value-comparison small {
+    margin-top: 1px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
+}
+
 .inventory-reconciliation-note {
-    margin: 14px 0 0;
-    color: #64748b;
-    font-size: 8px;
-    line-height: 1.55;
+    margin: 12px 0 0;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
+    line-height: 1.5;
 }
-/* Value summary */
+
+/* =========================================================
+   RINGKASAN NILAI
+   ========================================================= */
+
 .inventory-value-summary {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
 }
-/* Page summary */
+
+/* =========================================================
+   PAGE SUMMARY STRIP (FIX FOR MEPET BOX)
+   ========================================================= */
+
 .inventory-report-page-summary {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 1px;
-    background: #e5e7eb;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--mui-divider);
+    border-bottom: 1px solid var(--mui-divider);
 }
+
 .inventory-report-page-summary > div {
     min-width: 0;
-    padding: 11px 14px;
-    background: #fafcff;
+    padding: 12px 20px;
+    background: #ffffff;
 }
+
 .inventory-report-page-summary span,
 .inventory-report-page-summary strong {
     display: block;
 }
+
 .inventory-report-page-summary span {
-    color: #94a3b8;
-    font-size: 7px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.35px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
+
 .inventory-report-page-summary strong {
-    margin-top: 5px;
+    margin-top: 3px;
     overflow: hidden;
-    color: #0f172a;
-    font-size: 10px;
+    color: var(--mui-text-primary);
+    font-size: 0.9375rem;
+    font-weight: 700;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
 .inventory-report-page-summary strong.is-success {
-    color: #15803d;
+    color: var(--mui-success);
 }
-/* Detail table */
+
+/* =========================================================
+   DETAIL TABLE & CELLS
+   ========================================================= */
+
 .inventory-report-detail-table {
     min-width: 1350px;
 }
+
 .inventory-report-detail-table tbody tr.has-stock-mismatch {
-    background: #fffafa;
+    background: #fff8f8;
 }
+
 .inventory-report-detail-table tbody tr.has-stock-mismatch:hover {
-    background: #fef2f2;
+    background: #fee;
 }
+
 .inventory-report-detail-table tbody tr.is-inactive {
     opacity: 0.75;
 }
+
 .inventory-report-product-cell {
     min-width: 215px;
 }
+
 .inventory-report-product-cell strong,
 .inventory-report-product-cell span,
 .inventory-report-product-cell small {
     display: block;
 }
+
 .inventory-report-product-cell > strong {
     max-width: 250px;
     overflow: hidden;
-    color: #0f172a;
-    font-size: 10px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
 .inventory-report-product-cell > span {
-    margin-top: 4px;
-    color: #64748b;
-    font-size: 9px;
-}
-.inventory-report-product-cell small {
     margin-top: 2px;
-    color: #94a3b8;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.75rem;
 }
+
+.inventory-report-product-cell small {
+    margin-top: 1px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
+    opacity: 0.85;
+}
+
 .inventory-product-inactive {
     display: inline-flex !important;
     width: fit-content;
-    padding: 3px 6px;
-    margin-top: 5px !important;
-    color: #64748b !important;
-    font-size: 7px !important;
+    padding: 1px 6px;
+    margin-top: 3px !important;
+    color: var(--mui-text-secondary) !important;
+    font-size: 0.625rem !important;
     font-weight: 700;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 999px;
+    background: #f1f5f9;
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-pill);
 }
-.inventory-price-comparison {
+
+.inventory-price-comparison,
+.inventory-stock-comparison {
     display: grid;
-    gap: 5px;
-    min-width: 160px;
+    gap: 4px;
+    min-width: 140px;
 }
+
 .inventory-price-comparison > div,
 .inventory-stock-comparison > div {
     display: flex;
@@ -496,79 +556,96 @@
     justify-content: space-between;
     gap: 10px;
 }
+
 .inventory-price-comparison span,
 .inventory-stock-comparison span {
-    color: #94a3b8;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
 }
+
 .inventory-price-comparison strong,
 .inventory-stock-comparison strong {
-    color: #334155;
-    font-size: 9px;
+    color: var(--mui-text-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
     white-space: nowrap;
 }
-.inventory-stock-comparison {
-    display: grid;
-    gap: 5px;
-    min-width: 125px;
-}
+
 .inventory-stock-mismatch {
-    padding: 5px 7px;
-    margin-top: 7px;
-    color: #991b1b;
-    font-size: 8px;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 7px;
+    padding: 3px 6px;
+    margin-top: 4px;
+    color: var(--mui-error);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    background: var(--mui-error-bg);
+    border: 1px solid var(--mui-error-border);
+    border-radius: var(--mui-radius-sm);
 }
+
 .inventory-status-list {
     display: grid;
     justify-items: start;
-    gap: 5px;
+    gap: 4px;
 }
+
 .inventory-money-cell {
     min-width: 130px;
 }
+
 .inventory-money-cell strong,
 .inventory-money-cell small {
     display: block;
 }
+
 .inventory-money-cell strong {
-    color: #0f172a;
-    font-size: 10px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     white-space: nowrap;
 }
+
 .inventory-money-cell strong.is-success {
-    color: #15803d;
+    color: var(--mui-success);
 }
+
 .inventory-money-cell strong.is-danger {
-    color: #dc2626;
+    color: var(--mui-error);
 }
+
 .inventory-money-cell small {
-    margin-top: 3px;
-    color: #94a3b8;
-    font-size: 8px;
+    margin-top: 2px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
     line-height: 1.4;
 }
+
 .inventory-report-detail-table tfoot th {
-    padding: 12px 14px;
-    color: #334155;
-    font-size: 9px;
+    padding: 12px 18px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     background: #f8fafc;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--mui-divider);
 }
+
 .inventory-footer-stock {
     display: grid;
-    gap: 3px;
+    gap: 2px;
 }
+
 .inventory-footer-stock span {
-    color: #64748b;
-    font-size: 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
 }
+
 .inventory-footer-stock strong {
-    color: #0f172a;
+    color: var(--mui-text-primary);
 }
-/* Responsive */
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   ========================================================= */
+
 @media (max-width: 1199.98px) {
     .inventory-report-summary {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -578,16 +655,19 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
+
 @media (max-width: 991.98px) {
     .inventory-reconciliation-grid {
         grid-template-columns: 1fr;
     }
 }
+
 @media (max-width: 767.98px) {
     .inventory-report-filter-footer,
     .inventory-report-sync-warning {
         align-items: flex-start;
         flex-direction: column;
+        gap: 12px;
     }
 
     .inventory-report-filter-actions {
@@ -603,13 +683,14 @@
         grid-template-columns: 1fr;
     }
 }
+
 @media (max-width: 575.98px) {
     .inventory-report-summary {
         grid-template-columns: 1fr;
     }
 
     .inventory-report-filter-body {
-        padding: 15px;
+        padding: 14px 16px;
     }
 
     .inventory-report-filter-actions {
@@ -621,8 +702,8 @@
     }
 
     .inventory-report-active-filters {
-        padding-right: 15px;
-        padding-left: 15px;
+        padding-right: 16px;
+        padding-left: 16px;
     }
 
     .inventory-comparison-values {

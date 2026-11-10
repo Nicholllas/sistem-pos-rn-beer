@@ -1,10 +1,5 @@
 /* =========================================================
-   PURCHASE MODULE
-   Loaded after crud-core.css by admin-crud.css.
-   ========================================================= */
-
-/* =========================================================
-   PURCHASE HISTORY
+   MUI PURCHASE HISTORY (DENSE & CLEAN)
    ========================================================= */
 
 .purchase-history-page {
@@ -18,15 +13,15 @@
 }
 
 .purchase-history-table {
-    min-width: 1040px;
+    min-width: 1000px;
 }
 
 .purchase-history-table tbody tr.is-void {
-    background: #fffafa;
+    background: #fff8f8;
 }
 
 .purchase-history-table tbody tr.is-void:hover {
-    background: #fef2f2;
+    background: #fdeded;
 }
 
 .purchase-number-cell,
@@ -37,7 +32,7 @@
 }
 
 .purchase-number-cell {
-    min-width: 175px;
+    min-width: 160px;
 }
 
 .purchase-number-cell a,
@@ -54,84 +49,86 @@
 }
 
 .purchase-number-cell a {
-    color: #2563eb;
-    font-size: 11px;
-    font-weight: 700;
+    color: var(--mui-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     text-decoration: none;
 }
 
 .purchase-number-cell a:hover {
-    color: #1d4ed8;
+    color: var(--mui-primary-dark);
     text-decoration: underline;
 }
 
 .purchase-number-cell span {
-    margin-top: 4px;
-    color: #475569;
-    font-size: 9px;
+    margin-top: 2px;
+    color: var(--mui-text-primary);
+    font-size: 0.75rem;
 }
 
 .purchase-number-cell small,
 .purchase-supplier-info small,
 .purchase-total-cell small,
 .purchase-account-cell small {
-    margin-top: 3px;
-    color: #94a3b8;
-    font-size: 8px;
+    margin-top: 1px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
 }
 
 .purchase-supplier-info {
-    min-width: 170px;
+    min-width: 160px;
 }
 
 .purchase-supplier-info strong {
     max-width: 220px;
     overflow: hidden;
-    color: #334155;
-    font-size: 10px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 500;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 .purchase-total-cell {
-    min-width: 125px;
+    min-width: 120px;
 }
 
 .purchase-total-cell strong {
-    color: #0f172a;
-    font-size: 11px;
+    color: var(--mui-text-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
     white-space: nowrap;
 }
 
 .purchase-history-table .is-void .purchase-total-cell strong {
-    color: #94a3b8;
+    color: var(--mui-text-disabled);
     text-decoration: line-through;
 }
 
 .purchase-history-table .is-void .purchase-total-cell small {
-    color: #b91c1c;
+    color: var(--mui-error);
 }
 
 .purchase-account-cell {
-    min-width: 165px;
+    min-width: 150px;
 }
 
 .purchase-account-cell strong {
-    color: #1d4ed8;
-    font-size: 9px;
-    font-weight: 700;
+    color: var(--mui-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
 .purchase-account-cell strong.is-muted {
-    color: #64748b;
+    color: var(--mui-text-secondary);
 }
 
 .purchase-account-cell span {
-    max-width: 190px;
-    margin-top: 3px;
+    max-width: 180px;
+    margin-top: 2px;
     overflow: hidden;
-    color: #334155;
-    font-size: 10px;
+    color: var(--mui-text-primary);
+    font-size: 0.75rem;
     white-space: nowrap;
     text-overflow: ellipsis;
 }

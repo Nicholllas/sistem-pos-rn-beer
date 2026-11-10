@@ -1,65 +1,80 @@
-
-
 /* =========================================================
-   GENERIC CRUD COMPONENTS
+   MUI STATUS CHIPS & BADGES
    ========================================================= */
 
 .crud-neutral-badge {
     display: inline-flex;
-    padding: 5px 8px;
-    color: #475569;
-    font-size: 9px;
-    font-weight: 650;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 7px;
+    align-items: center;
+    height: 22px;
+    padding: 0 8px;
+    color: var(--mui-text-secondary);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    background-color: #f5f5f5;
+    border: 1px solid var(--mui-divider);
+    border-radius: var(--mui-radius-pill);
 }
 
 .crud-status {
     display: inline-flex;
-    padding: 5px 8px;
-    font-size: 9px;
-    font-weight: 700;
-    border: 1px solid;
-    border-radius: 999px;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding: 0 8px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1;
+    border: 1px solid transparent;
+    border-radius: var(--mui-radius-pill);
+    white-space: nowrap;
 }
 
 .crud-status.is-success {
-    color: #166534;
-    background: #f0fdf4;
-    border-color: #bbf7d0;
+    color: var(--mui-success-text);
+    background-color: var(--mui-success-bg);
+    border-color: var(--mui-success-border);
 }
-
-.crud-status.is-muted {
-    color: #64748b;
-    background: #f8fafc;
-    border-color: #e2e8f0;
-}
-
-/* =========================================================
-   GENERIC STATUS VARIANTS
-   ========================================================= */
 
 .crud-status.is-danger {
-    color: #991b1b;
-    background: #fef2f2;
-    border-color: #fecaca;
+    color: var(--mui-error-text);
+    background-color: var(--mui-error-bg);
+    border-color: var(--mui-error-border);
 }
 
 .crud-status.is-warning {
-    color: #92400e;
-    background: #fffbeb;
-    border-color: #fde68a;
+    color: var(--mui-warning-text);
+    background-color: var(--mui-warning-bg);
+    border-color: var(--mui-warning-border);
 }
 
-.crud-count-badge.is-success {
-    color: #166534;
-    background: #f0fdf4;
-    border-color: #bbf7d0;
+.crud-status.is-info {
+    color: var(--mui-info-text);
+    background-color: var(--mui-info-bg);
+    border-color: var(--mui-info-border);
 }
 
-.crud-count-badge.is-warning {
-    color: #92400e;
-    background: #fffbeb;
-    border-color: #fde68a;
+.crud-status.is-muted {
+    color: var(--mui-text-secondary);
+    background-color: #f5f5f5;
+    border-color: var(--mui-divider);
+}
+
+/* Status dots */
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-dot.is-success {
+    background-color: var(--mui-success);
+}
+
+.status-dot.is-danger {
+    background-color: var(--mui-error);
+}
+
+.status-dot.is-warning {
+    background-color: var(--mui-warning);
 }
