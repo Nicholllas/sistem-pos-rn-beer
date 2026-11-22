@@ -7,6 +7,7 @@ use App\Models\FinanceAccount;
 use App\Models\FinanceCategory;
 use App\Models\FinanceTransaction;
 use App\Support\TextNormalizer;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -105,18 +106,18 @@ class FinanceTransactionController extends Controller
             )
             ->when(
                 $filters['start_date'] ?? null,
-                fn ($query, $startDate) => $query->whereDate(
+                fn ($query, $startDate) => $query->where(
                     'transaction_date',
                     '>=',
-                    $startDate
+                    Carbon::parse($startDate)->startOfDay()
                 )
             )
             ->when(
                 $filters['end_date'] ?? null,
-                fn ($query, $endDate) => $query->whereDate(
+                fn ($query, $endDate) => $query->where(
                     'transaction_date',
                     '<=',
-                    $endDate
+                    Carbon::parse($endDate)->endOfDay()
                 )
             )
             ->when(
@@ -153,39 +154,26 @@ class FinanceTransactionController extends Controller
                 )
             );
 
-        $summaryQuery = clone $query;
-
-        $income = (clone $summaryQuery)
+        $summaryRaw = (clone $query)
             ->where('status', 'posted')
-            ->where('type', 'income')
-            ->sum('amount');
+            ->selectRaw("
+                COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as income,
+                COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as expense,
+                COALESCE(SUM(CASE WHEN type = 'transfer' THEN amount ELSE 0 END), 0) as transfer
+            ")
+            ->when($selectedAccountId !== null, function ($q) use ($selectedAccountId) {
+                $q->selectRaw("
+                    COALESCE(SUM(CASE WHEN type = 'transfer' AND transfer_account_id = ? THEN amount ELSE 0 END), 0) as incoming_transfer,
+                    COALESCE(SUM(CASE WHEN type = 'transfer' AND account_id = ? THEN amount ELSE 0 END), 0) as outgoing_transfer
+                ", [$selectedAccountId, $selectedAccountId]);
+            })
+            ->first();
 
-        $expense = (clone $summaryQuery)
-            ->where('status', 'posted')
-            ->where('type', 'expense')
-            ->sum('amount');
-
-        $transfer = (clone $summaryQuery)
-            ->where('status', 'posted')
-            ->where('type', 'transfer')
-            ->sum('amount');
-
-        $incomingTransfer = 0;
-        $outgoingTransfer = 0;
-
-        if ($selectedAccountId !== null) {
-            $incomingTransfer = (clone $summaryQuery)
-                ->where('status', 'posted')
-                ->where('type', 'transfer')
-                ->where('transfer_account_id', $selectedAccountId)
-                ->sum('amount');
-
-            $outgoingTransfer = (clone $summaryQuery)
-                ->where('status', 'posted')
-                ->where('type', 'transfer')
-                ->where('account_id', $selectedAccountId)
-                ->sum('amount');
-        }
+        $income = (float) ($summaryRaw->income ?? 0);
+        $expense = (float) ($summaryRaw->expense ?? 0);
+        $transfer = (float) ($summaryRaw->transfer ?? 0);
+        $incomingTransfer = (float) ($summaryRaw->incoming_transfer ?? 0);
+        $outgoingTransfer = (float) ($summaryRaw->outgoing_transfer ?? 0);
 
         $summary = [
             'income' => $income,
@@ -193,10 +181,10 @@ class FinanceTransactionController extends Controller
             'transfer' => $transfer,
             'incoming_transfer' => $incomingTransfer,
             'outgoing_transfer' => $outgoingTransfer,
-            'net_cash_flow' => (float) $income
-                + (float) $incomingTransfer
-                - (float) $expense
-                - (float) $outgoingTransfer,
+            'net_cash_flow' => $income
+                + $incomingTransfer
+                - $expense
+                - $outgoingTransfer,
         ];
 
         $transactions = $query

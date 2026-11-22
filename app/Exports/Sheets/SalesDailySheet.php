@@ -3,7 +3,6 @@
 namespace App\Exports\Sheets;
 
 use App\Models\Sale;
-use App\Models\SaleItem;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -35,9 +34,11 @@ class SalesDailySheet implements FromArray, ShouldAutoSize, WithColumnFormatting
         | Void tidak masuk omzet, qty, pendapatan bersih, dan laba kotor.
         |--------------------------------------------------------------------------
         */
+        $startDateTime = Carbon::parse($this->startDate)->startOfDay();
+        $endDateTime = Carbon::parse($this->endDate)->endOfDay();
+
         $sales = Sale::with(['soldBy', 'items.product.category'])
-            ->whereDate('created_at', '>=', $this->startDate)
-            ->whereDate('created_at', '<=', $this->endDate)
+            ->whereBetween('created_at', [$startDateTime, $endDateTime])
             ->where('status', 'completed')
             ->when($this->paymentMethod, fn ($q) => $q->where('payment_method', $this->paymentMethod))
             ->latest()
@@ -47,8 +48,7 @@ class SalesDailySheet implements FromArray, ShouldAutoSize, WithColumnFormatting
 
         $totalTransactions = $sales->count();
 
-        $totalItemsSold = SaleItem::whereIn('sale_id', $completedSaleIds)
-            ->sum('qty');
+        $totalItemsSold = $sales->sum(fn ($sale) => $sale->items->sum('qty'));
 
         $totalPendapatan = $sales->sum('total');
 

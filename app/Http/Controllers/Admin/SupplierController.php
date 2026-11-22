@@ -12,7 +12,11 @@ class SupplierController extends Controller
 {
     public function index()
     {
-        $suppliers = Supplier::latest()->paginate(10);
+        $suppliers = Supplier::query()
+            ->with(['createdBy', 'updatedBy'])
+            ->withCount('purchases')
+            ->latest()
+            ->paginate(10);
 
         return view('admin.suppliers.index', compact('suppliers'));
     }

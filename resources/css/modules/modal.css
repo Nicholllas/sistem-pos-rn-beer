@@ -6,9 +6,9 @@
 .modal-content {
     overflow: hidden;
     background-color: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: var(--mui-radius-lg);
-    box-shadow: var(--mui-shadow-24);
+    box-shadow: var(--shadow-modal);
 }
 
 .crud-modal .modal-header,
@@ -66,6 +66,21 @@
     .crud-modal .modal-dialog,
     .modal-dialog {
         margin: 12px;
+    }
+
+    .modal-content {
+        position: relative;
+    }
+
+    .modal-content::before {
+        content: "";
+        display: block;
+        width: 36px;
+        height: 5px;
+        margin: 8px auto -2px;
+        background: rgba(0, 0, 0, 0.18);
+        border-radius: 999px;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
     }
 
     .crud-modal .modal-footer,

@@ -40,6 +40,10 @@ class Supplier extends Model
 
     public function hasTransactionHistory(): bool
     {
+        if (isset($this->purchases_count)) {
+            return (int) $this->purchases_count > 0;
+        }
+
         return $this->purchases()->exists();
     }
 }

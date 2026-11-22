@@ -55,6 +55,7 @@ class PurchaseController extends Controller
             ->get();
 
         $financeAccounts = FinanceAccount::query()
+            ->withCurrentBalance()
             ->where('is_active', true)
             ->orderBy('name')
             ->get();

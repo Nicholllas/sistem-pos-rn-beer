@@ -33,9 +33,9 @@
     --pos-radius-card: 12px;
     --pos-radius-item: 8px;
     --pos-radius-sm: 6px;
-    --pos-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-    --pos-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.05);
-    --pos-shadow-cta: 0 2px 6px rgba(24, 119, 242, 0.25);
+    --pos-shadow-card: var(--shadow-card);
+    --pos-shadow-hover: var(--shadow-card-hover);
+    --pos-shadow-cta: var(--shadow-primary);
 }
 
 .pos-page {
@@ -173,7 +173,7 @@
     cursor: pointer;
     white-space: nowrap;
     text-decoration: none;
-    transition: all 150ms ease;
+    transition: all var(--dur-hover) var(--ease-out), transform var(--dur-press) var(--ease-out);
 }
 
 .pos-filter-pill:hover {
@@ -181,11 +181,15 @@
     background-color: #E2E8F0;
 }
 
+.pos-filter-pill:active {
+    transform: scale(0.94);
+}
+
 .pos-filter-pill.is-active {
     color: #FFFFFF;
     background-color: var(--pos-primary);
     border-color: var(--pos-primary);
-    box-shadow: 0 2px 4px rgba(24, 119, 242, 0.2);
+    box-shadow: var(--shadow-primary);
 }
 
 /* =========================================================
@@ -197,7 +201,9 @@
     border: 1px solid var(--pos-border);
     border-radius: 10px;
     box-shadow: var(--pos-shadow-card);
-    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    transition: border-color var(--dur-hover) var(--ease-out),
+                box-shadow var(--dur-hover) var(--ease-out),
+                transform var(--dur-press) var(--ease-out);
     height: 100%;
 }
 
@@ -205,6 +211,10 @@
     border-color: #CBD5E1;
     box-shadow: var(--pos-shadow-hover);
     transform: translateY(-1px);
+}
+
+.pos-product-card:active {
+    transform: scale(0.99);
 }
 
 .pos-product-card .card-body {
@@ -329,7 +339,10 @@
     border: none !important;
     border-radius: var(--pos-radius-sm);
     cursor: pointer;
-    transition: background-color 150ms ease, transform 100ms ease;
+    box-shadow: var(--shadow-primary);
+    transition: background-color var(--dur-hover) var(--ease-out),
+                box-shadow var(--dur-hover) var(--ease-out),
+                transform var(--dur-press) var(--ease-out);
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -337,12 +350,14 @@
 
 .pos-product-footer .add-to-cart:hover {
     background-color: var(--pos-primary-hover) !important;
+    box-shadow: 0 4px 10px rgba(24, 119, 242, 0.35);
     transform: translateY(-1px);
 }
 
 .pos-product-footer .add-to-cart:active {
     background-color: var(--pos-primary-active) !important;
-    transform: translateY(0);
+    box-shadow: var(--shadow-primary) !important;
+    transform: scale(0.95) !important;
 }
 
 /* Empty State */
@@ -464,13 +479,17 @@
     cursor: pointer;
     font-size: 15px;
     line-height: 1;
-    transition: all 150ms ease;
+    transition: all var(--dur-hover) var(--ease-out), transform var(--dur-press) var(--ease-out);
 }
 
 .pos-cart-remove:hover {
     color: #FFFFFF;
     background-color: var(--pos-danger);
     border-color: var(--pos-danger);
+}
+
+.pos-cart-remove:active {
+    transform: scale(0.90);
 }
 
 .pos-cart-item-footer {
@@ -503,11 +522,17 @@
     border: none;
     font-size: 14px;
     cursor: pointer;
-    transition: background-color 150ms ease;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    transition: background-color var(--dur-hover) var(--ease-out),
+                transform var(--dur-press) var(--ease-out);
 }
 
 .pos-quantity-button:hover {
     background-color: #E2E8F0;
+}
+
+.pos-quantity-button:active {
+    transform: scale(0.90);
 }
 
 .pos-quantity-value {
@@ -684,15 +709,20 @@
     background-color: #F8FAFC;
     border: 1px solid var(--pos-border);
     border-radius: 4px;
+    box-shadow: var(--shadow-button);
     cursor: pointer;
     white-space: nowrap;
-    transition: all 120ms ease;
+    transition: all var(--dur-hover) var(--ease-out), transform var(--dur-press) var(--ease-out);
 }
 
 .pos-quick-cash-btn:hover {
     color: var(--pos-primary);
     background-color: var(--pos-primary-subtle);
     border-color: var(--pos-primary-border);
+}
+
+.pos-quick-cash-btn:active {
+    transform: scale(0.94);
 }
 
 /* Payment Status Hints */
@@ -798,21 +828,23 @@
     background-color: var(--pos-primary) !important;
     border: none !important;
     border-radius: var(--pos-radius-sm);
-    box-shadow: var(--pos-shadow-cta);
+    box-shadow: var(--shadow-primary);
     cursor: pointer;
-    transition: background-color 150ms ease, transform 100ms ease, box-shadow 150ms ease;
+    transition: background-color var(--dur-hover) var(--ease-out),
+                box-shadow var(--dur-hover) var(--ease-out),
+                transform var(--dur-press) var(--ease-out);
 }
 
 .pos-checkout-button:hover:not(:disabled) {
     background-color: var(--pos-primary-hover) !important;
-    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.35);
+    box-shadow: 0 4px 14px rgba(24, 119, 242, 0.4);
     transform: translateY(-1px);
 }
 
 .pos-checkout-button:active:not(:disabled) {
     background-color: var(--pos-primary-active) !important;
-    box-shadow: var(--pos-shadow-cta);
-    transform: translateY(0);
+    box-shadow: var(--shadow-primary) !important;
+    transform: scale(0.97) !important;
 }
 
 .pos-checkout-button:disabled {
@@ -845,8 +877,9 @@
     width: min(440px, calc(100% - 32px));
     padding: 24px;
     background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 12px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-modal);
     font-family: inherit;
 }
 

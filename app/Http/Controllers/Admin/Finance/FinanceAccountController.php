@@ -45,6 +45,7 @@ class FinanceAccountController extends Controller
         );
 
         $accounts = FinanceAccount::query()
+            ->withCurrentBalance()
             ->withCount([
                 'transactions',
                 'incomingTransfers',

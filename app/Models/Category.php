@@ -32,6 +32,10 @@ class Category extends Model
 
     public function hasProducts(): bool
     {
+        if (isset($this->products_count)) {
+            return (int) $this->products_count > 0;
+        }
+
         return $this->products()->withTrashed()->exists();
     }
 }

@@ -50,8 +50,7 @@ class PurchaseSummarySheet implements FromArray, ShouldAutoSize, WithColumnForma
         $statusLabel = $this->status ? strtoupper($this->status) : 'SEMUA';
 
         $baseQuery = Purchase::query()
-            ->whereDate('purchase_date', '>=', $this->startDate)
-            ->whereDate('purchase_date', '<=', $this->endDate)
+            ->whereBetween('purchase_date', [$this->startDate, $this->endDate])
             ->when($this->supplierId, function ($query) {
                 $query->where('supplier_id', $this->supplierId);
             });

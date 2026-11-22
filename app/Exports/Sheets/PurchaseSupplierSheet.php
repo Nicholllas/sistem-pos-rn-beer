@@ -64,8 +64,7 @@ class PurchaseSupplierSheet implements FromArray, ShouldAutoSize, WithColumnForm
         $summary = Purchase::query()
             ->join('suppliers', 'suppliers.id', '=', 'purchases.supplier_id')
             ->leftJoin('purchase_items', 'purchase_items.purchase_id', '=', 'purchases.id')
-            ->whereDate('purchases.purchase_date', '>=', $this->startDate)
-            ->whereDate('purchases.purchase_date', '<=', $this->endDate)
+            ->whereBetween('purchases.purchase_date', [$this->startDate, $this->endDate])
             ->where('purchases.status', 'completed')
             ->when($this->supplierId, function ($query) {
                 $query->where('purchases.supplier_id', $this->supplierId);

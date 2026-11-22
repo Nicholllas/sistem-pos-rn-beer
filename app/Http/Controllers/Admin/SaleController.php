@@ -12,6 +12,7 @@ use App\Models\StockBatch;
 use App\Models\StockMovement;
 use App\Models\User;
 use App\Services\Finance\FinancePostingService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -295,14 +296,22 @@ class SaleController extends Controller
             ->when(
                 $filters['start_date'] ?? null,
                 function ($query, $startDate) {
-                    $query->whereDate('created_at', '>=', $startDate);
+                    $query->where(
+                        'created_at',
+                        '>=',
+                        Carbon::parse($startDate)->startOfDay()
+                    );
                 }
             )
 
             ->when(
                 $filters['end_date'] ?? null,
                 function ($query, $endDate) {
-                    $query->whereDate('created_at', '<=', $endDate);
+                    $query->where(
+                        'created_at',
+                        '<=',
+                        Carbon::parse($endDate)->endOfDay()
+                    );
                 }
             )
 

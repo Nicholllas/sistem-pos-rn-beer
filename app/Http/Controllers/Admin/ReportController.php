@@ -445,62 +445,23 @@ class ReportController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $totalProducts = (clone $baseQuery)
-            ->count('products.id');
-
-        $totalSystemStock = (clone $baseQuery)
-            ->sum('products.stock');
-
-        $totalFifoStockQty = (clone $baseQuery)
+        $inventoryStats = (clone $baseQuery)
             ->selectRaw('
-                COALESCE(
-                    SUM(
-                        COALESCE(
-                            fifo_batches.fifo_stock_qty,
-                            0
-                        )
-                    ),
-                    0
-                ) as total_qty
+                COUNT(products.id) as total_products,
+                COALESCE(SUM(products.stock), 0) as total_system_stock,
+                COALESCE(SUM(COALESCE(fifo_batches.fifo_stock_qty, 0)), 0) as total_fifo_stock_qty,
+                COALESCE(SUM(COALESCE(fifo_batches.fifo_stock_value, 0)), 0) as total_fifo_stock_value,
+                COALESCE(SUM(products.stock * products.cost_price), 0) as total_last_cost_stock_value,
+                COUNT(CASE WHEN products.stock <> COALESCE(fifo_batches.fifo_stock_qty, 0) THEN 1 END) as stock_mismatch_count
             ')
-            ->value('total_qty') ?? 0;
+            ->first();
 
-        $totalFifoStockValue = (clone $baseQuery)
-            ->selectRaw('
-                COALESCE(
-                    SUM(
-                        COALESCE(
-                            fifo_batches.fifo_stock_value,
-                            0
-                        )
-                    ),
-                    0
-                ) as total_value
-            ')
-            ->value('total_value') ?? 0;
-
-        $totalLastCostStockValue = (clone $baseQuery)
-            ->selectRaw('
-                COALESCE(
-                    SUM(
-                        products.stock
-                        * products.cost_price
-                    ),
-                    0
-                ) as total_value
-            ')
-            ->value('total_value') ?? 0;
-
-        $stockMismatchCount = (clone $baseQuery)
-            ->whereRaw('
-                products.stock
-                <>
-                COALESCE(
-                    fifo_batches.fifo_stock_qty,
-                    0
-                )
-            ')
-            ->count('products.id');
+        $totalProducts = (int) ($inventoryStats->total_products ?? 0);
+        $totalSystemStock = (int) ($inventoryStats->total_system_stock ?? 0);
+        $totalFifoStockQty = (int) ($inventoryStats->total_fifo_stock_qty ?? 0);
+        $totalFifoStockValue = (float) ($inventoryStats->total_fifo_stock_value ?? 0);
+        $totalLastCostStockValue = (float) ($inventoryStats->total_last_cost_stock_value ?? 0);
+        $stockMismatchCount = (int) ($inventoryStats->stock_mismatch_count ?? 0);
 
         /*
         |--------------------------------------------------------------------------
@@ -721,15 +682,9 @@ class ReportController extends Controller
         */
 
         $baseQuery = fn () => Purchase::query()
-            ->whereDate(
+            ->whereBetween(
                 'purchase_date',
-                '>=',
-                $startDate
-            )
-            ->whereDate(
-                'purchase_date',
-                '<=',
-                $endDate
+                [$startDate, $endDate]
             )
             ->when(
                 $supplierId,

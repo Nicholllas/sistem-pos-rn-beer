@@ -74,14 +74,30 @@
 
     /* MUI Elevation Shadows (Material Elevation Scale) */
     --mui-shadow-0: none;
-    --mui-shadow-1: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
-    --mui-shadow-2: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
-    --mui-shadow-3: 0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12);
-    --mui-shadow-4: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
-    --mui-shadow-6: 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
-    --mui-shadow-8: 0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
-    --mui-shadow-16: 0px 8px 10px -5px rgba(0,0,0,0.2), 0px 16px 24px 2px rgba(0,0,0,0.14), 0px 6px 30px 5px rgba(0,0,0,0.12);
-    --mui-shadow-24: 0px 11px 15px -7px rgba(0,0,0,0.2), 0px 24px 38px 3px rgba(0,0,0,0.14), 0px 9px 46px 8px rgba(0,0,0,0.12);
+    --mui-shadow-1: 0 0 0 1px rgba(0, 0, 0, 0.07), 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+    --mui-shadow-2: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.06);
+    --mui-shadow-3: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 6px 10px -3px rgba(0, 0, 0, 0.08);
+    --mui-shadow-4: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.12), 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+    --mui-shadow-6: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 6px 12px -2px rgba(0, 0, 0, 0.14), 0 12px 20px -4px rgba(0, 0, 0, 0.12);
+    --mui-shadow-8: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.12), 0 4px 8px -4px rgba(0, 0, 0, 0.16);
+    --mui-shadow-16: 0 0 0 1px rgba(0, 0, 0, 0.07), 0 1px 2px 0 rgba(0, 0, 0, 0.14), 0 6px 16px -4px rgba(0, 0, 0, 0.16);
+    --mui-shadow-24: 0 0 0 1px rgba(0, 0, 0, 0.07), 0 1px 2px 0 rgba(0, 0, 0, 0.14), 0 8px 24px -4px rgba(0, 0, 0, 0.2);
+
+    /* Tactile Design System Core Tokens */
+    --shadow-button: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.12);
+    --shadow-primary: 0 0 0 1px rgba(24, 119, 242, 0.4), 0 1px 2px 0 rgba(24, 119, 242, 0.25);
+    --shadow-toggle: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.12);
+    --shadow-card: 0 0 0 1px rgba(0, 0, 0, 0.07), 0 1px 2px 0 rgba(0, 0, 0, 0.08), 0 3px 4px -2px rgba(0, 0, 0, 0.06);
+    --shadow-card-hover: 0 0 0 1px rgba(0, 0, 0, 0.09), 0 2px 4px 0 rgba(0, 0, 0, 0.08), 0 6px 12px -3px rgba(0, 0, 0, 0.08);
+    --shadow-table: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-menu: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.12), 0 4px 8px -4px rgba(0, 0, 0, 0.16);
+    --shadow-modal: 0 0 0 1px rgba(0, 0, 0, 0.07), 0 1px 2px 0 rgba(0, 0, 0, 0.14), 0 6px 16px -4px rgba(0, 0, 0, 0.16);
+    --shadow-badge: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+    /* Tactile Motion Physics */
+    --ease-out: cubic-bezier(.23, 1, .32, 1);
+    --dur-hover: 150ms;
+    --dur-press: 100ms;
 
     /* Shape Radii */
     --mui-radius-sm: 4px;
@@ -171,144 +187,182 @@ body {
     user-select: none;
     vertical-align: middle;
     text-decoration: none;
-    font-family: "Roboto", sans-serif;
+    font-family: inherit;
     font-weight: 500;
     font-size: 0.8125rem;
-    line-height: 1.75;
-    letter-spacing: 0.02857em;
-    text-transform: uppercase;
-    min-height: 34px;
-    padding: 4px 14px;
-    border-radius: var(--mui-radius-sm);
-    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-                box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-                border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-                color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    min-height: 36px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    transition: transform var(--dur-hover) var(--ease-out),
+                background-color var(--dur-hover) var(--ease-out),
+                box-shadow var(--dur-hover) var(--ease-out),
+                border-color var(--dur-hover) var(--ease-out),
+                color var(--dur-hover) var(--ease-out);
 }
 
 .btn:active {
-    transform: translateY(1px);
+    transform: scale(0.97);
 }
 
-/* Contained Primary */
+/* Contained Primary (Tactile Primary) */
 .btn-primary {
-    color: var(--mui-primary-contrast);
+    color: #ffffff;
     background-color: var(--mui-primary);
-    box-shadow: var(--mui-shadow-1);
+    box-shadow: var(--shadow-primary);
     border: 1px solid transparent;
 }
 
 .btn-primary:hover,
 .btn-primary:focus {
-    color: var(--mui-primary-contrast);
+    color: #ffffff;
     background-color: var(--mui-primary-dark);
-    box-shadow: var(--mui-shadow-2);
+    box-shadow: 0 0 0 1px rgba(24, 119, 242, 0.5), 0 2px 4px 0 rgba(24, 119, 242, 0.3);
 }
 
-/* Contained Secondary */
+.btn-primary:active {
+    transform: scale(0.97);
+    box-shadow: 0 0 0 1px rgba(24, 119, 242, 0.6), 0 1px 1px 0 rgba(24, 119, 242, 0.2);
+}
+
+/* Contained Secondary (Tactile Pure White Raised Surface) */
 .btn-secondary {
     color: var(--mui-text-primary);
     background-color: #ffffff;
-    border: 1px solid var(--mui-divider);
-    box-shadow: var(--mui-shadow-1);
+    border: none;
+    box-shadow: var(--shadow-button);
 }
 
 .btn-secondary:hover,
 .btn-secondary:focus {
     color: var(--mui-text-primary);
-    background-color: var(--mui-bg-hover);
-    box-shadow: var(--mui-shadow-2);
+    background-color: #fafaf9;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 4px 0 rgba(0, 0, 0, 0.12);
+}
+
+.btn-secondary:active {
+    transform: scale(0.97);
+    background-color: #f5f5f4;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 1px 1px 0 rgba(0, 0, 0, 0.08);
 }
 
 /* Contained Danger / Error */
 .btn-danger {
-    color: var(--mui-error-contrast);
+    color: #ffffff;
     background-color: var(--mui-error);
-    box-shadow: var(--mui-shadow-1);
+    box-shadow: 0 0 0 1px rgba(211, 47, 47, 0.4), 0 1px 2px 0 rgba(211, 47, 47, 0.25);
     border: 1px solid transparent;
 }
 
 .btn-danger:hover,
 .btn-danger:focus {
-    color: var(--mui-error-contrast);
+    color: #ffffff;
     background-color: var(--mui-error-dark);
-    box-shadow: var(--mui-shadow-2);
+    box-shadow: 0 0 0 1px rgba(211, 47, 47, 0.5), 0 2px 4px 0 rgba(211, 47, 47, 0.3);
+}
+
+.btn-danger:active {
+    transform: scale(0.97);
 }
 
 /* Contained Success */
 .btn-success {
-    color: var(--mui-success-contrast);
+    color: #ffffff;
     background-color: var(--mui-success);
-    box-shadow: var(--mui-shadow-1);
+    box-shadow: 0 0 0 1px rgba(46, 125, 50, 0.4), 0 1px 2px 0 rgba(46, 125, 50, 0.25);
     border: 1px solid transparent;
 }
 
 .btn-success:hover,
 .btn-success:focus {
-    color: var(--mui-success-contrast);
+    color: #ffffff;
     background-color: var(--mui-success-dark);
-    box-shadow: var(--mui-shadow-2);
+    box-shadow: 0 0 0 1px rgba(46, 125, 50, 0.5), 0 2px 4px 0 rgba(46, 125, 50, 0.3);
 }
 
-/* Outlined Buttons */
+.btn-success:active {
+    transform: scale(0.97);
+}
+
+/* Outlined Buttons with Tactile Press */
 .btn-outline-primary {
     color: var(--mui-primary);
-    background-color: transparent;
-    border: 1px solid rgba(25, 118, 210, 0.5);
-    box-shadow: none;
+    background-color: #ffffff;
+    border: none;
+    box-shadow: 0 0 0 1px rgba(25, 118, 210, 0.35), 0 1px 2px 0 rgba(25, 118, 210, 0.12);
 }
 
 .btn-outline-primary:hover,
 .btn-outline-primary:focus {
     color: var(--mui-primary-dark);
     background-color: rgba(25, 118, 210, 0.04);
-    border-color: var(--mui-primary);
-    box-shadow: none;
+    box-shadow: 0 0 0 1px var(--mui-primary), 0 2px 4px 0 rgba(25, 118, 210, 0.18);
+}
+
+.btn-outline-primary:active {
+    transform: scale(0.97);
 }
 
 .btn-outline-secondary {
     color: var(--mui-text-secondary);
-    background-color: transparent;
-    border: 1px solid rgba(0, 0, 0, 0.23);
-    box-shadow: none;
+    background-color: #ffffff;
+    border: none;
+    box-shadow: var(--shadow-button);
 }
 
 .btn-outline-secondary:hover,
 .btn-outline-secondary:focus {
     color: var(--mui-text-primary);
-    background-color: rgba(0, 0, 0, 0.04);
-    border-color: rgba(0, 0, 0, 0.87);
-    box-shadow: none;
+    background-color: #fafaf9;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.btn-outline-secondary:active {
+    transform: scale(0.97);
 }
 
 .btn-outline-danger {
     color: var(--mui-error);
-    background-color: transparent;
-    border: 1px solid rgba(211, 47, 47, 0.5);
-    box-shadow: none;
+    background-color: #ffffff;
+    border: none;
+    box-shadow: 0 0 0 1px rgba(211, 47, 47, 0.3), 0 1px 2px 0 rgba(211, 47, 47, 0.1);
 }
 
 .btn-outline-danger:hover,
 .btn-outline-danger:focus {
     color: var(--mui-error-dark);
     background-color: rgba(211, 47, 47, 0.04);
-    border-color: var(--mui-error);
-    box-shadow: none;
+    box-shadow: 0 0 0 1px var(--mui-error), 0 2px 4px 0 rgba(211, 47, 47, 0.15);
 }
 
-/* Compact / Dense Sizing (MUI size="small") */
+.btn-outline-danger:active {
+    transform: scale(0.97);
+}
+
+/* Compact / Dense Sizing (Tactile Small Button) */
 .btn-sm {
-    min-height: 28px;
+    min-height: 30px;
     padding: 3px 10px;
     font-size: 0.75rem;
-    line-height: 1.5;
+    line-height: 1.4;
+    border-radius: 6px;
+}
+
+.btn-sm:active {
+    transform: scale(0.95);
 }
 
 /* Large Sizing */
 .btn-lg {
-    min-height: 42px;
+    min-height: 44px;
     padding: 8px 22px;
     font-size: 0.9375rem;
+    border-radius: 8px;
+}
+
+.btn-lg:active {
+    transform: scale(0.98);
 }
 
 /* =========================================================
@@ -334,39 +388,62 @@ body {
                 box-shadow 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
 }
 
+.form-control,
+.form-select {
+    display: block;
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.43;
+    color: var(--mui-text-primary);
+    background-color: #fafaf9;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: border-color var(--dur-hover) var(--ease-out),
+                box-shadow var(--dur-hover) var(--ease-out),
+                background-color var(--dur-hover) var(--ease-out);
+}
+
 .form-control:hover,
 .form-select:hover {
-    border-color: rgba(0, 0, 0, 0.87);
+    border-color: rgba(0, 0, 0, 0.35);
+    background-color: #ffffff;
 }
 
 .form-control:focus,
 .form-select:focus {
     color: var(--mui-text-primary);
     background-color: #ffffff;
-    border: 2px solid var(--mui-primary) !important;
-    padding: 7px 11px; /* compensate for 2px border */
+    border-color: var(--mui-primary) !important;
+    padding: 8px 12px;
     outline: 0;
-    box-shadow: none;
+    box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.16);
 }
 
 .form-control::placeholder {
     color: var(--mui-text-disabled);
-    opacity: 1;
+    opacity: 0.8;
 }
 
 .form-control.is-invalid,
 .form-select.is-invalid {
     border-color: var(--mui-error) !important;
+    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.14) !important;
 }
 
 .form-label {
     display: inline-block;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     font-size: 0.75rem;
     font-weight: 500;
-    line-height: 1.2;
+    line-height: 1.25;
     color: var(--mui-text-secondary);
-    letter-spacing: 0.02em;
+    letter-spacing: -0.01em;
 }
 
 /* Input group */
@@ -388,13 +465,14 @@ body {
     color: var(--mui-text-secondary);
     text-align: center;
     white-space: nowrap;
-    background-color: #f5f5f5;
-    border: 1px solid rgba(0, 0, 0, 0.23);
-    border-radius: var(--mui-radius-sm);
+    background-color: #f4f4f2;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 /* =========================================================
-   MUI CARDS & SURFACES (Paper)
+   TACTILE CARDS & SURFACES
    ========================================================= */
 
 .card {
@@ -405,17 +483,22 @@ body {
     word-wrap: break-word;
     background-color: var(--mui-bg-paper);
     background-clip: border-box;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: var(--mui-radius-md);
-    box-shadow: var(--mui-shadow-1);
-    transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    border: none;
+    border-radius: 8px;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow var(--dur-hover) var(--ease-out),
+                transform var(--dur-hover) var(--ease-out);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-card-hover);
 }
 
 .card-header {
     padding: 12px 18px;
     margin-bottom: 0;
     background-color: transparent;
-    border-bottom: 1px solid var(--mui-divider);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
     font-weight: 500;
 }
 
@@ -427,11 +510,11 @@ body {
 .card-footer {
     padding: 12px 18px;
     background-color: transparent;
-    border-top: 1px solid var(--mui-divider);
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
 }
 
 /* =========================================================
-   MUI CHIPS & BADGES
+   TACTILE CHIPS & BADGES
    ========================================================= */
 
 .badge {
@@ -439,51 +522,54 @@ body {
     align-items: center;
     justify-content: center;
     gap: 4px;
-    height: 24px;
+    height: 22px;
     padding: 0 8px;
-    font-family: "Roboto", sans-serif;
-    font-size: 0.75rem;
+    font-family: inherit;
+    font-size: 0.72rem;
     font-weight: 500;
     line-height: 1;
-    border-radius: var(--mui-radius-pill);
+    border-radius: 9999px;
     white-space: nowrap;
     box-sizing: border-box;
     user-select: none;
-    border: 1px solid transparent;
+    border: none;
+    box-shadow: var(--shadow-badge);
 }
 
 .badge.bg-primary {
-    background-color: var(--mui-primary) !important;
-    color: #ffffff;
+    background-color: #e7f3ff !important;
+    color: #1877f2 !important;
+    box-shadow: 0 0 0 1px rgba(24, 119, 242, 0.25);
 }
 
 .badge.bg-secondary {
-    background-color: #e0e0e0 !important;
-    color: var(--mui-text-primary);
+    background-color: #f4f4f2 !important;
+    color: #63635e !important;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
 .badge.bg-success {
     background-color: var(--mui-success-bg) !important;
     color: var(--mui-success-text) !important;
-    border-color: var(--mui-success-border);
+    box-shadow: 0 0 0 1px rgba(46, 125, 50, 0.25);
 }
 
 .badge.bg-danger {
     background-color: var(--mui-error-bg) !important;
     color: var(--mui-error-text) !important;
-    border-color: var(--mui-error-border);
+    box-shadow: 0 0 0 1px rgba(211, 47, 47, 0.25);
 }
 
 .badge.bg-warning {
     background-color: var(--mui-warning-bg) !important;
     color: var(--mui-warning-text) !important;
-    border-color: var(--mui-warning-border);
+    box-shadow: 0 0 0 1px rgba(237, 108, 2, 0.25);
 }
 
 .badge.bg-info {
     background-color: var(--mui-info-bg) !important;
     color: var(--mui-info-text) !important;
-    border-color: var(--mui-info-border);
+    box-shadow: 0 0 0 1px rgba(2, 136, 209, 0.25);
 }
 
 /* =========================================================

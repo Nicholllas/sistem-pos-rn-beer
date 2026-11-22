@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Admin\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\FinanceAccount;
-use App\Models\FinanceCategory;
 use App\Models\FinanceTransaction;
 use App\Services\Finance\FinanceReconciliationService;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -55,25 +53,23 @@ class FinanceDashboardController extends Controller
 
         $totalBalance = $accountBalances->sum('current_balance');
 
-        $periodBaseQuery = FinanceTransaction::query()
+        $periodTotals = FinanceTransaction::query()
             ->where('status', 'posted')
             ->whereBetween('transaction_date', [
                 $startDate,
                 $endDate,
-            ]);
+            ])
+            ->selectRaw("
+                COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) as income,
+                COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) as expense,
+                COALESCE(SUM(CASE WHEN type = 'transfer' THEN amount ELSE 0 END), 0) as transfer
+            ")
+            ->first();
 
         $periodSummary = [
-            'income' => (float) (clone $periodBaseQuery)
-                ->where('type', 'income')
-                ->sum('amount'),
-
-            'expense' => (float) (clone $periodBaseQuery)
-                ->where('type', 'expense')
-                ->sum('amount'),
-
-            'transfer' => (float) (clone $periodBaseQuery)
-                ->where('type', 'transfer')
-                ->sum('amount'),
+            'income' => (float) ($periodTotals->income ?? 0),
+            'expense' => (float) ($periodTotals->expense ?? 0),
+            'transfer' => (float) ($periodTotals->transfer ?? 0),
         ];
 
         $periodSummary['net_cash_flow'] =
@@ -181,30 +177,7 @@ class FinanceDashboardController extends Controller
     private function getAccountBalances()
     {
         return FinanceAccount::query()
-            ->withSum([
-                'transactions as posted_income' =>
-                    fn (Builder $query) => $query
-                        ->where('status', 'posted')
-                        ->where('type', 'income'),
-            ], 'amount')
-            ->withSum([
-                'transactions as posted_expense' =>
-                    fn (Builder $query) => $query
-                        ->where('status', 'posted')
-                        ->where('type', 'expense'),
-            ], 'amount')
-            ->withSum([
-                'transactions as outgoing_transfer' =>
-                    fn (Builder $query) => $query
-                        ->where('status', 'posted')
-                        ->where('type', 'transfer'),
-            ], 'amount')
-            ->withSum([
-                'incomingTransfers as incoming_transfer' =>
-                    fn (Builder $query) => $query
-                        ->where('status', 'posted')
-                        ->where('type', 'transfer'),
-            ], 'amount')
+            ->withCurrentBalance()
             ->orderByDesc('is_active')
             ->orderBy('name')
             ->get()
@@ -235,8 +208,7 @@ class FinanceDashboardController extends Controller
                     'expense' => $expense,
                     'incoming_transfer' => $incomingTransfer,
                     'outgoing_transfer' => $outgoingTransfer,
-                    'current_balance' =>
-                        $openingBalance
+                    'current_balance' => $openingBalance
                         + $income
                         + $incomingTransfer
                         - $expense

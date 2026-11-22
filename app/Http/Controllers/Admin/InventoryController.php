@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\StockBatch;
 use App\Models\StockMovement;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -289,10 +290,10 @@ class InventoryController extends Controller
              */
             ->when(
                 $validated['start_date'] ?? null,
-                fn ($query, $startDate) => $query->whereDate(
+                fn ($query, $startDate) => $query->where(
                     'created_at',
                     '>=',
-                    $startDate
+                    Carbon::parse($startDate)->startOfDay()
                 )
             )
 
@@ -301,10 +302,10 @@ class InventoryController extends Controller
              */
             ->when(
                 $validated['end_date'] ?? null,
-                fn ($query, $endDate) => $query->whereDate(
+                fn ($query, $endDate) => $query->where(
                     'created_at',
                     '<=',
-                    $endDate
+                    Carbon::parse($endDate)->endOfDay()
                 )
             );
 
@@ -360,11 +361,21 @@ class InventoryController extends Controller
                     : $q->where('qty_remaining', '<=', 0);
             });
 
-        $totalBatches = (clone $query)->count();
-        $activeBatches = (clone $query)->where('qty_remaining', '>', 0)->count();
-        $emptyBatches = (clone $query)->where('qty_remaining', '<=', 0)->count();
-        $totalRemainingQty = (clone $query)->sum('qty_remaining');
-        $totalRemainingValue = (clone $query)->selectRaw('COALESCE(SUM(qty_remaining * cost_price), 0) as total_value')->value('total_value');
+        $batchStats = (clone $query)
+            ->selectRaw('
+                COUNT(*) as total_batches,
+                COUNT(CASE WHEN qty_remaining > 0 THEN 1 END) as active_batches,
+                COUNT(CASE WHEN qty_remaining <= 0 THEN 1 END) as empty_batches,
+                COALESCE(SUM(qty_remaining), 0) as total_remaining_qty,
+                COALESCE(SUM(qty_remaining * cost_price), 0) as total_remaining_value
+            ')
+            ->first();
+
+        $totalBatches = (int) ($batchStats->total_batches ?? 0);
+        $activeBatches = (int) ($batchStats->active_batches ?? 0);
+        $emptyBatches = (int) ($batchStats->empty_batches ?? 0);
+        $totalRemainingQty = (int) ($batchStats->total_remaining_qty ?? 0);
+        $totalRemainingValue = (float) ($batchStats->total_remaining_value ?? 0);
 
         $batches = $query->orderByDesc('batch_date')->orderByDesc('id')->paginate(15)->withQueryString();
 

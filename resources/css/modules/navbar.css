@@ -29,8 +29,9 @@
     border: none;
     border-radius: 50%;
     color: var(--mui-text-secondary);
-    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
-                color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color var(--dur-hover) var(--ease-out),
+                color var(--dur-hover) var(--ease-out),
+                transform var(--dur-press) var(--ease-out);
     box-shadow: none;
 }
 
@@ -39,6 +40,10 @@
     background-color: rgba(0, 0, 0, 0.05);
     color: var(--mui-text-primary);
     box-shadow: none;
+}
+
+.app-sidebar-toggle:active {
+    transform: scale(0.92);
 }
 
 .app-sidebar-toggle .material-symbols-outlined {

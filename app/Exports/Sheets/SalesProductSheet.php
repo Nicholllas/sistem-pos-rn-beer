@@ -27,8 +27,10 @@ class SalesProductSheet implements FromArray, ShouldAutoSize, WithColumnFormatti
 
     public function array(): array
     {
-        $completedSaleIds = Sale::whereDate('created_at', '>=', $this->startDate)
-            ->whereDate('created_at', '<=', $this->endDate)
+        $startDateTime = Carbon::parse($this->startDate)->startOfDay();
+        $endDateTime = Carbon::parse($this->endDate)->endOfDay();
+
+        $completedSaleIds = Sale::whereBetween('created_at', [$startDateTime, $endDateTime])
             ->where('status', 'completed')
             ->when($this->paymentMethod, fn ($q) => $q->where('payment_method', $this->paymentMethod))
             ->pluck('id');

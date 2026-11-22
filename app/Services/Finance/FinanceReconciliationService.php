@@ -4,6 +4,7 @@ namespace App\Services\Finance;
 
 use App\Models\Purchase;
 use App\Models\Sale;
+use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -334,10 +335,10 @@ class FinanceReconciliationService
                 fn (
                     Builder $query,
                     string $startDate
-                ) => $query->whereDate(
+                ) => $query->where(
                     'sources.source_date',
                     '>=',
-                    $startDate
+                    Carbon::parse($startDate)->startOfDay()
                 )
             )
             ->when(
@@ -345,10 +346,10 @@ class FinanceReconciliationService
                 fn (
                     Builder $query,
                     string $endDate
-                ) => $query->whereDate(
+                ) => $query->where(
                     'sources.source_date',
                     '<=',
-                    $endDate
+                    Carbon::parse($endDate)->endOfDay()
                 )
             );
     }

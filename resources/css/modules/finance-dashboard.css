@@ -44,9 +44,10 @@
     align-items: center;
     gap: 1rem;
     padding: 1.15rem 1.25rem;
-    border: 1px solid var(--bs-border-color);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: var(--bs-border-radius-lg);
-    background: var(--bs-body-bg);
+    background: #ffffff;
+    box-shadow: var(--shadow-card);
 }
 
 .finance-health-panel.is-healthy {
@@ -84,7 +85,9 @@
     min-width: 92px;
     padding: .6rem .75rem;
     border-radius: .65rem;
-    background: var(--bs-tertiary-bg);
+    background: #f8fafc;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.03);
     text-align: center;
     font-size: .75rem;
     color: var(--bs-secondary-color);
@@ -106,9 +109,19 @@
     display: grid;
     gap: 1rem;
     padding: 1rem;
-    border: 1px solid var(--bs-border-color);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: var(--bs-border-radius-lg);
-    background: var(--bs-body-bg);
+    background: #ffffff;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow var(--dur-hover) var(--ease-out), transform var(--dur-press) var(--ease-out);
+}
+
+.finance-account-card:hover {
+    box-shadow: var(--shadow-card-hover);
+}
+
+.finance-account-card:active {
+    transform: scale(0.99);
 }
 
 .finance-account-card.is-inactive {
@@ -246,10 +259,11 @@
 
 .finance-flow-track,
 .finance-expense-track {
-    height: 7px;
+    height: 8px;
     overflow: hidden;
     border-radius: 999px;
-    background: var(--bs-tertiary-bg);
+    background: #e5e7eb;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 .finance-flow-track span,
@@ -258,6 +272,7 @@
     min-width: 2px;
     height: 100%;
     border-radius: inherit;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .finance-flow-track .is-income {
@@ -282,7 +297,8 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: var(--bs-tertiary-bg);
+    background: #f1f5f9;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
     font-size: .78rem;
     font-weight: 700;
 }

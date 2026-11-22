@@ -93,6 +93,18 @@ class Product extends Model
 
     public function hasTransactionHistory(): bool
     {
+        if (
+            isset($this->sale_items_count)
+            || isset($this->purchase_items_count)
+            || isset($this->stock_movements_count)
+            || isset($this->stock_batches_count)
+        ) {
+            return ((int) ($this->sale_items_count ?? 0) > 0)
+                || ((int) ($this->purchase_items_count ?? 0) > 0)
+                || ((int) ($this->stock_movements_count ?? 0) > 0)
+                || ((int) ($this->stock_batches_count ?? 0) > 0);
+        }
+
         return $this->saleItems()->exists()
             || $this->purchaseItems()->exists()
             || $this->stockMovements()->exists()

@@ -17,33 +17,35 @@ class DashboardController extends Controller
     public function index()
     {
         $today = Carbon::today();
+        $todayStart = $today->copy()->startOfDay();
+        $todayEnd = $today->copy()->endOfDay();
+        $todayDateStr = $today->toDateString();
 
         /*
         |--------------------------------------------------------------------------
         | Sales Summary
         |--------------------------------------------------------------------------
         */
-        $todayTransactions = Sale::whereDate('created_at', $today)
-            ->where('status', 'completed')
-            ->count();
+        $salesAggregates = Sale::query()
+            ->whereBetween('created_at', [$todayStart, $todayEnd])
+            ->selectRaw("
+                COUNT(CASE WHEN status = 'completed' THEN 1 END) as today_transactions,
+                COALESCE(SUM(CASE WHEN status = 'completed' THEN total ELSE 0 END), 0) as today_sales,
+                COUNT(CASE WHEN status = 'void' THEN 1 END) as today_void_transactions,
+                COALESCE(SUM(CASE WHEN status = 'void' THEN total ELSE 0 END), 0) as today_void_amount
+            ")
+            ->first();
 
-        $todaySales = Sale::whereDate('created_at', $today)
-            ->where('status', 'completed')
-            ->sum('total');
+        $todayTransactions = (int) ($salesAggregates->today_transactions ?? 0);
+        $todaySales = (float) ($salesAggregates->today_sales ?? 0);
+        $todayVoidTransactions = (int) ($salesAggregates->today_void_transactions ?? 0);
+        $todayVoidAmount = (float) ($salesAggregates->today_void_amount ?? 0);
 
         $todayGrossProfit = SaleItem::join('sales', 'sales.id', '=', 'sale_items.sale_id')
-            ->whereDate('sales.created_at', $today)
+            ->whereBetween('sales.created_at', [$todayStart, $todayEnd])
             ->where('sales.status', 'completed')
             ->selectRaw('COALESCE(SUM(sale_items.subtotal - (sale_items.qty * sale_items.cost_price)), 0) as gross_profit')
             ->value('gross_profit') ?? 0;
-
-        $todayVoidTransactions = Sale::whereDate('created_at', $today)
-            ->where('status', 'void')
-            ->count();
-
-        $todayVoidAmount = Sale::whereDate('created_at', $today)
-            ->where('status', 'void')
-            ->sum('total');
 
         $averageTransaction = $todayTransactions > 0
             ? $todaySales / $todayTransactions
@@ -54,49 +56,52 @@ class DashboardController extends Controller
         | Purchase Summary
         |--------------------------------------------------------------------------
         */
-        $todayPurchaseTransactions = Purchase::whereDate('purchase_date', $today)
-            ->where('status', 'completed')
-            ->count();
+        $purchaseAggregates = Purchase::query()
+            ->where('purchase_date', $todayDateStr)
+            ->selectRaw("
+                COUNT(CASE WHEN status = 'completed' THEN 1 END) as today_purchase_transactions,
+                COALESCE(SUM(CASE WHEN status = 'completed' THEN total ELSE 0 END), 0) as today_purchase_amount,
+                COUNT(CASE WHEN status = 'void' THEN 1 END) as today_void_purchase_transactions,
+                COALESCE(SUM(CASE WHEN status = 'void' THEN total ELSE 0 END), 0) as today_void_purchase_amount
+            ")
+            ->first();
 
-        $todayPurchaseAmount = Purchase::whereDate('purchase_date', $today)
-            ->where('status', 'completed')
-            ->sum('total');
+        $todayPurchaseTransactions = (int) ($purchaseAggregates->today_purchase_transactions ?? 0);
+        $todayPurchaseAmount = (float) ($purchaseAggregates->today_purchase_amount ?? 0);
+        $todayVoidPurchaseTransactions = (int) ($purchaseAggregates->today_void_purchase_transactions ?? 0);
+        $todayVoidPurchaseAmount = (float) ($purchaseAggregates->today_void_purchase_amount ?? 0);
 
         $todayPurchaseQty = Purchase::join('purchase_items', 'purchase_items.purchase_id', '=', 'purchases.id')
-            ->whereDate('purchases.purchase_date', $today)
+            ->where('purchases.purchase_date', $todayDateStr)
             ->where('purchases.status', 'completed')
             ->sum('purchase_items.qty');
-
-        $todayVoidPurchaseTransactions = Purchase::whereDate('purchase_date', $today)
-            ->where('status', 'void')
-            ->count();
-
-        $todayVoidPurchaseAmount = Purchase::whereDate('purchase_date', $today)
-            ->where('status', 'void')
-            ->sum('total');
 
         /*
         |--------------------------------------------------------------------------
         | Inventory Summary
         |--------------------------------------------------------------------------
         */
-        $totalProducts = Product::where('is_active', true)
-            ->count();
+        $productStats = Product::where('is_active', true)
+            ->selectRaw('
+                COUNT(*) as total_products,
+                COUNT(CASE WHEN stock <= minimum_stock THEN 1 END) as low_stock_products,
+                COUNT(CASE WHEN stock = 0 THEN 1 END) as out_of_stock_products
+            ')
+            ->first();
 
-        $lowStockProducts = Product::where('is_active', true)
-            ->whereColumn('stock', '<=', 'minimum_stock')
-            ->count();
+        $totalProducts = (int) ($productStats->total_products ?? 0);
+        $lowStockProducts = (int) ($productStats->low_stock_products ?? 0);
+        $outOfStockProducts = (int) ($productStats->out_of_stock_products ?? 0);
 
-        $outOfStockProducts = Product::where('is_active', true)
-            ->where('stock', 0)
-            ->count();
+        $fifoStats = StockBatch::where('qty_remaining', '>', 0)
+            ->selectRaw('
+                COALESCE(SUM(qty_remaining), 0) as total_qty,
+                COALESCE(SUM(qty_remaining * cost_price), 0) as total_value
+            ')
+            ->first();
 
-        $totalFifoStockQty = StockBatch::where('qty_remaining', '>', 0)
-            ->sum('qty_remaining');
-
-        $totalFifoStockValue = StockBatch::where('qty_remaining', '>', 0)
-            ->selectRaw('COALESCE(SUM(qty_remaining * cost_price), 0) as total_value')
-            ->value('total_value') ?? 0;
+        $totalFifoStockQty = (int) ($fifoStats->total_qty ?? 0);
+        $totalFifoStockValue = (float) ($fifoStats->total_value ?? 0);
 
         $lowStockList = Product::with([
             'category',
@@ -131,7 +136,7 @@ class DashboardController extends Controller
         | Pakai sale_payments agar split payment tetap akurat.
         */
         $paymentSummary = Sale::query()
-            ->whereDate('created_at', $today)
+            ->whereBetween('created_at', [$todayStart, $todayEnd])
             ->where('status', 'completed')
             ->select('payment_method')
             ->selectRaw('COUNT(*) as total_transactions')
@@ -149,7 +154,7 @@ class DashboardController extends Controller
 
         $splitPaymentBreakdown = SalePayment::query()
             ->join('sales', 'sales.id', '=', 'sale_payments.sale_id')
-            ->whereDate('sales.created_at', $today)
+            ->whereBetween('sales.created_at', [$todayStart, $todayEnd])
             ->where('sales.status', 'completed')
             ->where('sales.payment_method', 'split')
             ->selectRaw("
@@ -172,7 +177,7 @@ class DashboardController extends Controller
         )
             ->join('products', 'products.id', '=', 'sale_items.product_id')
             ->join('sales', 'sales.id', '=', 'sale_items.sale_id')
-            ->whereDate('sales.created_at', $today)
+            ->whereBetween('sales.created_at', [$todayStart, $todayEnd])
             ->where('sales.status', 'completed')
             ->groupBy('products.id', 'products.name')
             ->orderByDesc('total_qty')
