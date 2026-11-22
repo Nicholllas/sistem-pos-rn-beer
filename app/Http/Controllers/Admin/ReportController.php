@@ -470,7 +470,10 @@ class ReportController extends Controller
         */
 
         $products = (clone $baseQuery)
-            ->with('category')
+            ->with([
+                'category',
+                'lastStockUpdatedBy',
+            ])
             ->select('products.*')
             ->selectRaw('
                 COALESCE(
