@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\CashierShiftController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Finance\FinanceAccountController;
@@ -15,9 +17,27 @@ use App\Http\Controllers\Admin\SaleController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('login'));
+Route::get('/', function (Request $request) {
+    $user = $request->user();
+
+    if ($user) {
+        if (! $user->is_active) {
+            User::logoutSession($request);
+
+            return redirect()->route('login')->withErrors([
+                'email' => 'Akun kamu sudah dinonaktifkan.',
+            ]);
+        }
+
+        return redirect()->route($user->homeRouteName());
+    }
+
+    return redirect()->route('login');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])
@@ -37,11 +57,11 @@ Route::middleware('auth')
 
         /*
         |--------------------------------------------------------------------------
-        | Admin dan Cashier
+        | Operasional POS (Admin, Supervisor, Cashier)
         |--------------------------------------------------------------------------
         */
 
-        Route::middleware('role:admin,cashier')->group(function () {
+        Route::middleware('role:admin,supervisor,cashier')->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])
                 ->name('dashboard');
 
@@ -60,6 +80,19 @@ Route::middleware('auth')
 
             Route::put('/sales/{sale}/void', [SaleController::class, 'void'])
                 ->name('sales.void');
+
+            // Cashier Shifts
+            Route::post('/shifts/open', [CashierShiftController::class, 'open'])
+                ->name('shifts.open');
+
+            Route::get('/shifts/current', [CashierShiftController::class, 'current'])
+                ->name('shifts.current');
+
+            Route::post('/shifts/{shift}/close', [CashierShiftController::class, 'close'])
+                ->name('shifts.close');
+
+            Route::get('/shifts/{shift}/summary', [CashierShiftController::class, 'summary'])
+                ->name('shifts.summary');
 
             // Inventory
             Route::get('/inventory/stock-in', [InventoryController::class, 'stockIn'])
@@ -121,6 +154,18 @@ Route::middleware('auth')
 
         /*
         |--------------------------------------------------------------------------
+        | Supervisor & Admin
+        |--------------------------------------------------------------------------
+        */
+
+        Route::middleware('role:admin,supervisor')->group(function () {
+            // Shift Monitoring & Tutup Shift Kasir
+            Route::get('/shifts', [CashierShiftController::class, 'index'])
+                ->name('shifts.index');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
         | Admin Only
         |--------------------------------------------------------------------------
         */
@@ -162,6 +207,20 @@ Route::middleware('auth')
 
             Route::put('/users/{user}/reset-password', [UserController::class, 'resetPassword'])
                 ->name('users.reset-password');
+
+            // Shift Settlement & Catch-Up Sale (Admin Only)
+            Route::post('/shifts/{shift}/resolve-discrepancy', [CashierShiftController::class, 'resolveDiscrepancy'])
+                ->name('shifts.resolve-discrepancy');
+
+            Route::get('/shifts/{shift}/catchup-sale', [CashierShiftController::class, 'createCatchupSale'])
+                ->name('shifts.catchup-sale.create');
+
+            Route::post('/shifts/{shift}/catchup-sale', [CashierShiftController::class, 'storeCatchupSale'])
+                ->name('shifts.catchup-sale.store');
+
+            // Audit Trail / Activity Logs
+            Route::get('/activity-logs', [ActivityLogController::class, 'index'])
+                ->name('activity-logs.index');
 
             /*
             |--------------------------------------------------------------------------

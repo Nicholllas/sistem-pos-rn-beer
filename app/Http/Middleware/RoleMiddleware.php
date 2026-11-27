@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +24,7 @@ class RoleMiddleware
         $user = Auth::user();
 
         if (! $user->is_active) {
-            Auth::logout();
+            User::logoutSession($request);
 
             return redirect()
                 ->route('login')

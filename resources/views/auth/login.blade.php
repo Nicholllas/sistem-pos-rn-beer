@@ -93,12 +93,6 @@
                         </div>
                     </div>
 
-                    <!-- Remember Me -->
-                    <label for="remember_me" class="auth-checkbox">
-                        <input id="remember_me" type="checkbox" name="remember" class="auth-checkbox-input">
-                        <span class="auth-checkbox-label">Ingat sesi saya di perangkat kasir ini</span>
-                    </label>
-
                     <!-- Primary CTA Submit Button -->
                     <button type="submit" class="auth-submit">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

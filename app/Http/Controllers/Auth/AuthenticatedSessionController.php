@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -31,10 +31,7 @@ class AuthenticatedSessionController extends Controller
         $user = $request->user();
 
         if (! $user->is_active) {
-            Auth::guard('web')->logout();
-
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            User::logoutSession($request);
 
             return back()
                 ->withErrors([
@@ -43,11 +40,10 @@ class AuthenticatedSessionController extends Controller
                 ->onlyInput('email');
         }
 
-        if ($user->role === 'cashier') {
-            return redirect()->intended(route('admin.sales.pos'));
-        }
+        // Single Active Session: kick any older device sessions for this user
+        $user->revokeAllSessions($request->session()->getId());
 
-        return redirect()->intended(route('admin.dashboard'));
+        return redirect()->intended(route($user->homeRouteName()));
     }
 
     /**
@@ -55,11 +51,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
+        User::logoutSession($request);
 
         return redirect('/');
     }
