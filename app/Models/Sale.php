@@ -11,6 +11,8 @@ class Sale extends Model
     protected $fillable = [
         'invoice_number',
         'sold_by',
+        'cashier_shift_id',
+        'settled_shift_id',
         'total',
         'paid_amount',
         'change_amount',
@@ -36,6 +38,16 @@ class Sale extends Model
     public function soldBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'sold_by');
+    }
+
+    public function cashierShift(): BelongsTo
+    {
+        return $this->belongsTo(CashierShift::class, 'cashier_shift_id');
+    }
+
+    public function settledShift(): BelongsTo
+    {
+        return $this->belongsTo(CashierShift::class, 'settled_shift_id');
     }
 
     public function voidedBy(): BelongsTo

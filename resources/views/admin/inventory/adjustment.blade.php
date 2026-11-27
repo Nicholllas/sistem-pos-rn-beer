@@ -216,6 +216,33 @@
                                 </span>
                             </div>
                         </section>
+
+                        @if (!auth()->user()->canAuthorizeCashier())
+                            <section class="crud-form-section">
+                                <div class="crud-form-section-header">
+                                    <h3>Otorisasi Supervisor</h3>
+                                    <p>Penyesuaian stok oleh kasir membutuhkan otorisasi PIN supervisor.</p>
+                                </div>
+
+                                <label for="supervisor_pin" class="form-label">
+                                    PIN Supervisor <span class="crud-required">*</span>
+                                </label>
+
+                                <input type="password" name="supervisor_pin" id="supervisor_pin"
+                                    class="form-control crud-form-control @error('supervisor_pin') is-invalid @enderror"
+                                    placeholder="Masukkan PIN Supervisor" maxlength="10" required autocomplete="off">
+
+                                @error('supervisor_pin')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+
+                                <div class="crud-field-help">
+                                    <span>Minta supervisor/admin memasukkan PIN untuk memvalidasi perubahan stok fisik.</span>
+                                </div>
+                            </section>
+                        @endif
                     </div>
 
                     <div class="crud-form-footer">

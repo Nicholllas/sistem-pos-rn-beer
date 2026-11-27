@@ -121,6 +121,7 @@ class FinanceTransaction extends Model
         ) {
             'sale' => 'Penjualan',
             'purchase' => 'Pembelian',
+            'cashiershift' => 'Selisih Shift',
             default => 'Sistem',
         };
     }

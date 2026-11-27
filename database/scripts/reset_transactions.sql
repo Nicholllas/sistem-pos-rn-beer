@@ -32,6 +32,7 @@ TRUNCATE TABLE `sale_item_batches`;
 TRUNCATE TABLE `sale_items`;
 TRUNCATE TABLE `sale_payments`;
 TRUNCATE TABLE `sales`;
+TRUNCATE TABLE `cashier_shifts`;
 
 -- ------------------------------------------------------------------------------
 -- 2. BERSIHKAN DATA PEMBELIAN STOK (PROCUREMENT)

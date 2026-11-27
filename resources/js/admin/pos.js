@@ -329,6 +329,17 @@ function calculatePaymentInfo() {
         return false;
     }
 
+    if (nonCashPaid >= total && cashPaid > 0) {
+        setPaymentHint(
+            "danger",
+            "Pembayaran QRIS/transfer sudah melunasi total transaksi. Kosongkan nominal cash.",
+        );
+
+        updateCheckoutButton(false);
+
+        return false;
+    }
+
     if (totalPaid < total) {
         setPaymentHint(
             "danger",
@@ -730,6 +741,21 @@ checkoutForm?.addEventListener("submit", async function (event) {
         return;
     }
 
+    if (window.POS_CONFIG && !window.POS_CONFIG.hasActiveShift) {
+        await showWarning(
+            "Shift Belum Dibuka",
+            "Silakan buka shift kasir dan masukkan modal awal sebelum memproses transaksi.",
+        );
+
+        const openShiftModalEl = document.getElementById("openShiftModal");
+        if (openShiftModalEl && typeof bootstrap !== "undefined") {
+            const modal = new bootstrap.Modal(openShiftModalEl);
+            modal.show();
+        }
+
+        return;
+    }
+
     if (cart.length === 0) {
         await showWarning(
             "Keranjang masih kosong",
@@ -760,6 +786,15 @@ checkoutForm?.addEventListener("submit", async function (event) {
         await showError(
             "Pembayaran tidak valid",
             "Total pembayaran QRIS dan transfer tidak boleh melebihi total transaksi.",
+        );
+
+        return;
+    }
+
+    if (nonCashPaid >= total && cashPaid > 0) {
+        await showError(
+            "Pembayaran tidak valid",
+            "Pembayaran QRIS/transfer sudah melunasi total transaksi. Kosongkan nominal cash jika tidak ada sisa tagihan tunai.",
         );
 
         return;

@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
+use App\Models\CashierShift;
 use App\Models\Product;
 use App\Models\Sale;
-use App\Models\SaleItem;
-use App\Models\SaleItemBatch;
-use App\Models\SalePayment;
 use App\Models\StockBatch;
 use App\Models\StockMovement;
 use App\Models\User;
 use App\Services\Finance\FinancePostingService;
+use App\Services\Sales\SaleCheckoutService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,18 +22,24 @@ use Illuminate\Validation\ValidationException;
 class SaleController extends Controller
 {
     public function __construct(
-        private readonly FinancePostingService $financePostingService
+        private readonly FinancePostingService $financePostingService,
+        private readonly SaleCheckoutService $saleCheckoutService
     ) {}
 
     public function pos()
     {
+        $activeShift = CashierShift::open()
+            ->where('user_id', Auth::id())
+            ->latest('opened_at')
+            ->first();
+
         $products = Product::with('category')
             ->active()
             ->where('stock', '>', 0)
             ->orderBy('name')
             ->get();
 
-        return view('admin.sales.pos', compact('products'));
+        return view('admin.sales.pos', compact('products', 'activeShift'));
     }
 
     public function checkout(Request $request)
@@ -63,174 +69,33 @@ class SaleController extends Controller
         ]);
 
         $sale = DB::transaction(function () use ($validated) {
-            $invoiceNumber = $this->generateInvoiceNumber();
+            $activeShift = CashierShift::open()
+                ->where('user_id', Auth::id())
+                ->lockForUpdate()
+                ->latest('opened_at')
+                ->first();
 
-            $cartItems = collect($validated['items'])
-                ->groupBy(fn ($item) => (int) $item['product_id'])
-                ->map(function ($items, $productId) {
-                    return [
-                        'product_id' => (int) $productId,
-                        'qty' => $items->sum(fn ($item) => (int) $item['qty']),
-                    ];
-                })
-                ->sortBy('product_id')
-                ->values();
-
-            $total = 0;
-            $preparedItems = [];
-
-            foreach ($cartItems as $item) {
-                $product = Product::whereKey($item['product_id'])
-                    ->where('is_active', true)
-                    ->whereNull('deleted_at')
-                    ->lockForUpdate()
-                    ->firstOrFail();
-
-                $qty = (int) $item['qty'];
-
-                if ($product->stock < $qty) {
-                    throw ValidationException::withMessages([
-                        'items' => "Stok produk {$product->name} tidak cukup. Stok tersedia: {$product->stock}.",
-                    ]);
-                }
-
-                $subtotal = (float) $product->price * $qty;
-                $total += $subtotal;
-
-                $preparedItems[] = [
-                    'product' => $product,
-                    'qty' => $qty,
-                    'price' => (float) $product->price,
-                    'subtotal' => $subtotal,
-                    'previous_stock' => $product->stock,
-                    'new_stock' => $product->stock - $qty,
-                ];
-            }
-
-            $payments = collect($validated['payments'])
-                ->map(function ($payment) {
-                    return [
-                        'payment_method' => strtolower(trim($payment['payment_method'])),
-                        'amount' => (float) $payment['amount'],
-                    ];
-                })
-                ->filter(fn ($payment) => $payment['amount'] > 0)
-                ->groupBy('payment_method')
-                ->map(function ($items, $method) {
-                    return [
-                        'payment_method' => $method,
-                        'amount' => $items->sum('amount'),
-                    ];
-                })
-                ->values();
-
-            if ($payments->isEmpty()) {
+            if (! $activeShift) {
                 throw ValidationException::withMessages([
-                    'payments' => 'Minimal satu pembayaran harus diisi.',
+                    'items' => 'Shift kasir belum dibuka. Silakan buka shift kasir terlebih dahulu dengan mengisi modal awal.',
                 ]);
             }
 
-            $totalPaid = $payments->sum('amount');
-            $cashPaid = $payments->where('payment_method', 'cash')->sum('amount');
-            $nonCashPaid = $payments->whereIn('payment_method', ['qris', 'transfer'])->sum('amount');
+            $sale = $this->saleCheckoutService->recordSale(
+                $validated['items'],
+                $validated['payments'],
+                activeShift: $activeShift
+            );
 
-            if ($totalPaid < $total) {
-                throw ValidationException::withMessages([
-                    'payments' => 'Total pembayaran tidak boleh kurang dari total transaksi.',
-                ]);
-            }
+            $activeShift->recalculateTotals();
 
-            if ($nonCashPaid > $total) {
-                throw ValidationException::withMessages([
-                    'payments' => 'Total pembayaran QRIS/transfer tidak boleh melebihi total transaksi.',
-                ]);
-            }
-
-            $changeAmount = $totalPaid - $total;
-
-            if ($changeAmount > 0 && $cashPaid <= 0) {
-                throw ValidationException::withMessages([
-                    'payments' => 'Kelebihan pembayaran hanya diperbolehkan jika ada pembayaran cash.',
-                ]);
-            }
-
-            $paymentMethod = $payments->count() > 1
-                ? 'split'
-                : $payments->first()['payment_method'];
-
-            $sale = Sale::create([
-                'invoice_number' => $invoiceNumber,
-                'sold_by' => Auth::id(),
-                'total' => $total,
-                'paid_amount' => $totalPaid,
-                'change_amount' => $changeAmount,
-                'payment_method' => $paymentMethod,
-                'status' => 'completed',
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Sales',
+                'action' => 'checkout',
+                'description' => "Checkout transaksi {$sale->invoice_number} senilai Rp ".number_format((float) $sale->total, 0, ',', '.')." ({$sale->payment_method})",
+                'ip_address' => request()->ip(),
             ]);
-
-            foreach ($payments as $payment) {
-                SalePayment::create([
-                    'sale_id' => $sale->id,
-                    'payment_method' => $payment['payment_method'],
-                    'amount' => $payment['amount'],
-                ]);
-            }
-
-            foreach ($preparedItems as $item) {
-                $product = $item['product'];
-                $qty = $item['qty'];
-
-                $fifoCost = $this->consumeFifoBatches(
-                    $product,
-                    $qty
-                );
-
-                $saleItem = SaleItem::create([
-                    'sale_id' => $sale->id,
-                    'product_id' => $product->id,
-                    'qty' => $qty,
-                    'price' => $item['price'],
-                    'cost_price' => $fifoCost['average_cost'],
-                    'subtotal' => $item['subtotal'],
-                ]);
-
-                foreach ($fifoCost['batches'] as $batch) {
-                    SaleItemBatch::create([
-                        'sale_item_id' => $saleItem->id,
-                        'stock_batch_id' => $batch['stock_batch_id'],
-                        'qty' => $batch['qty'],
-                        'cost_price' => $batch['cost_price'],
-                        'subtotal_cost' => $batch['subtotal_cost'],
-                    ]);
-                }
-
-                $product->update([
-                    'stock' => $item['new_stock'],
-                    'last_stock_updated_by' => Auth::id(),
-                    'last_stock_updated_at' => now(),
-                    'updated_by' => Auth::id(),
-                ]);
-
-                StockMovement::create([
-                    'product_id' => $product->id,
-                    'type' => 'out',
-                    'qty' => -$qty,
-                    'previous_stock' => $item['previous_stock'],
-                    'new_stock' => $item['new_stock'],
-                    'note' => 'Penjualan invoice '.$sale->invoice_number,
-                    'created_by' => Auth::id(),
-                ]);
-            }
-
-            /*
-             * Posting Finance dilakukan masih di dalam DB transaction.
-             *
-             * Jika mapping Finance belum lengkap, seluruh checkout akan rollback:
-             * sale, payment, sale item, FIFO, stok, dan stock movement.
-             *
-             * Tidak akan ada transaksi setengah tersimpan.
-             */
-            $this->financePostingService->postSale($sale);
 
             return $sale;
         });
@@ -280,6 +145,7 @@ class SaleController extends Controller
         $sales = Sale::query()
             ->with([
                 'soldBy:id,name',
+                'settledShift:id',
             ])
 
             ->when(
@@ -366,6 +232,7 @@ class SaleController extends Controller
         $sale->load([
             'soldBy',
             'voidedBy',
+            'settledShift',
             'payments',
             'items.product',
             'items.saleItemBatches.stockBatch',
@@ -380,17 +247,35 @@ class SaleController extends Controller
             'void_reason' => $this->normalizeText($request->void_reason),
         ]);
 
-        $validated = $request->validate([
+        $rules = [
             'void_reason' => [
                 'required',
                 'string',
                 'max:1000',
             ],
-        ], [
+        ];
+
+        $authorizedSupervisor = null;
+        if (! Auth::user()->canAuthorizeCashier()) {
+            $rules['supervisor_pin'] = ['required', 'string'];
+        }
+
+        $validated = $request->validate($rules, [
             'void_reason.required' => 'Alasan void wajib diisi.',
+            'supervisor_pin.required' => 'PIN Supervisor wajib diisi untuk otorisasi pembatalan transaksi.',
         ]);
 
-        DB::transaction(function () use ($sale, $validated) {
+        if (! Auth::user()->canAuthorizeCashier()) {
+            $authorizedSupervisor = User::verifySupervisorPin($validated['supervisor_pin']);
+
+            if (! $authorizedSupervisor) {
+                throw ValidationException::withMessages([
+                    'supervisor_pin' => 'PIN Supervisor tidak valid atau tidak memiliki hak akses otorisasi.',
+                ]);
+            }
+        }
+
+        DB::transaction(function () use ($sale, $validated, $authorizedSupervisor, $request) {
             $sale = Sale::whereKey($sale->id)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -474,61 +359,54 @@ class SaleController extends Controller
                 $sale,
                 $validated['void_reason']
             );
+
+            $shiftNote = '';
+            if ($sale->cashierShift) {
+                if ($sale->cashierShift->status === 'open') {
+                    $sale->cashierShift->recalculateTotals();
+                } else {
+                    $shiftNote = " [Transaksi dari Shift #{$sale->cashierShift->id} yang sudah ditutup]";
+                }
+            }
+
+            if ($sale->settled_shift_id) {
+                $settledShift = CashierShift::whereKey($sale->settled_shift_id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (
+                    $settledShift
+                    && $settledShift->discrepancy_resolution === 'catchup_sale'
+                    && $settledShift->catchup_sale_id === $sale->id
+                ) {
+                    $settledShift->update([
+                        'discrepancy_status' => 'pending',
+                        'discrepancy_resolution' => null,
+                        'catchup_sale_id' => null,
+                        'finance_transaction_id' => null,
+                        'resolved_by' => null,
+                        'resolved_at' => null,
+                        'resolution_notes' => null,
+                    ]);
+
+                    $shiftNote .= " [Selisih lebih Shift #{$settledShift->id} dibuka kembali ke Pending]";
+                }
+            }
+
+            $authNote = $authorizedSupervisor ? ' (Diotorisasi oleh Supervisor: '.$authorizedSupervisor->name.')' : '';
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Sales',
+                'action' => 'void',
+                'description' => "Void transaksi {$sale->invoice_number}. Alasan: {$validated['void_reason']}{$authNote}{$shiftNote}",
+                'ip_address' => $request->ip(),
+            ]);
         });
 
         return redirect()
             ->route('admin.sales.receipt', $sale)
             ->with('success', 'Transaksi berhasil dibatalkan dan stok sudah dikembalikan.');
-    }
-
-    private function consumeFifoBatches(Product $product, int $qty): array
-    {
-        $remainingQty = $qty;
-        $totalCost = 0;
-        $usedBatches = [];
-
-        $batches = StockBatch::where('product_id', $product->id)
-            ->where('qty_remaining', '>', 0)
-            ->orderBy('batch_date')
-            ->orderBy('id')
-            ->lockForUpdate()
-            ->get();
-
-        foreach ($batches as $batch) {
-            if ($remainingQty <= 0) {
-                break;
-            }
-
-            $takenQty = min($remainingQty, $batch->qty_remaining);
-            $costPrice = (float) $batch->cost_price;
-            $subtotalCost = $takenQty * $costPrice;
-
-            $batch->update([
-                'qty_remaining' => $batch->qty_remaining - $takenQty,
-            ]);
-
-            $usedBatches[] = [
-                'stock_batch_id' => $batch->id,
-                'qty' => $takenQty,
-                'cost_price' => $costPrice,
-                'subtotal_cost' => $subtotalCost,
-            ];
-
-            $totalCost += $subtotalCost;
-            $remainingQty -= $takenQty;
-        }
-
-        if ($remainingQty > 0) {
-            throw ValidationException::withMessages([
-                'items' => "Batch FIFO produk {$product->name} tidak cukup. Silakan cek stock_batches.",
-            ]);
-        }
-
-        return [
-            'total_cost' => $totalCost,
-            'average_cost' => $qty > 0 ? $totalCost / $qty : 0,
-            'batches' => $usedBatches,
-        ];
     }
 
     private function normalizeText(?string $value): ?string

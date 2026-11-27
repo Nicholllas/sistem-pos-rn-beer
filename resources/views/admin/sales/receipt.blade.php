@@ -87,6 +87,13 @@
                                 @endif
                             </span>
                         </div>
+
+                        @if ($sale->settledShift)
+                            <div>
+                                <span>Keterangan</span>
+                                <span>SUSULAN SHIFT #{{ $sale->settledShift->id }}</span>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="receipt-line"></div>
@@ -363,6 +370,28 @@
                                             </div>
                                         @enderror
                                     </div>
+
+                                    @if (!auth()->user()->canAuthorizeCashier())
+                                        <div class="mb-3">
+                                            <label for="supervisor_pin" class="form-label">
+                                                PIN Supervisor <span class="text-danger">*</span>
+                                            </label>
+
+                                            <input type="password" name="supervisor_pin" id="supervisor_pin"
+                                                class="form-control @error('supervisor_pin') is-invalid @enderror"
+                                                placeholder="Masukkan PIN Supervisor untuk otorisasi" maxlength="10" required autocomplete="off">
+
+                                            @error('supervisor_pin')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+
+                                            <small class="text-muted d-block mt-1">
+                                                Kasir memerlukan otorisasi PIN dari supervisor/admin untuk membatalkan transaksi.
+                                            </small>
+                                        </div>
+                                    @endif
 
                                     <button type="submit" class="btn btn-danger w-100">
                                         Void / Batalkan Transaksi

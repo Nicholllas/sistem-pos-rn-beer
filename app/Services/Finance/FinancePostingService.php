@@ -2,6 +2,7 @@
 
 namespace App\Services\Finance;
 
+use App\Models\CashierShift;
 use App\Models\FinanceAccount;
 use App\Models\FinanceCategory;
 use App\Models\FinanceTransaction;
@@ -318,6 +319,112 @@ class FinancePostingService
                 'updated_by' => Auth::id(),
             ]);
         }
+    }
+
+    public function postShiftDiscrepancy(
+        CashierShift $shift,
+        FinanceAccount $account,
+        ?string $notes = null
+    ): FinanceTransaction {
+        if (! $shift->isClosed()) {
+            throw ValidationException::withMessages([
+                'resolution' => 'Penyesuaian kas hanya dapat dilakukan pada shift yang sudah ditutup.',
+            ]);
+        }
+
+        $discrepancy = (float) ($shift->cash_discrepancy ?? 0);
+
+        if ($discrepancy == 0.0) {
+            throw ValidationException::withMessages([
+                'resolution' => 'Shift ini tidak memiliki selisih kas untuk disesuaikan.',
+            ]);
+        }
+
+        if ($shift->discrepancy_status !== 'pending') {
+            throw ValidationException::withMessages([
+                'resolution' => 'Selisih shift ini sudah pernah diselesaikan.',
+            ]);
+        }
+
+        $isShortage = $discrepancy < 0;
+        $amount = abs($discrepancy);
+        $categoryCode = $isShortage ? 'CASH_SHORTAGE' : 'CASH_OVERAGE';
+        $transactionType = $isShortage ? 'expense' : 'income';
+
+        $category = FinanceCategory::query()
+            ->where('code', $categoryCode)
+            ->where('type', $transactionType)
+            ->where('is_system', true)
+            ->where('is_active', true)
+            ->first();
+
+        if (! $category) {
+            throw ValidationException::withMessages([
+                'resolution' => "Kategori sistem Finance {$categoryCode} belum tersedia atau tidak aktif.",
+            ]);
+        }
+
+        $lockedAccount = FinanceAccount::query()
+            ->whereKey($account->id)
+            ->where('is_active', true)
+            ->lockForUpdate()
+            ->first();
+
+        if (! $lockedAccount) {
+            throw ValidationException::withMessages([
+                'finance_account_id' => 'Akun Finance yang dipilih tidak ditemukan atau tidak aktif.',
+            ]);
+        }
+
+        $alreadyPosted = FinanceTransaction::withTrashed()
+            ->where('reference_type', $shift->getMorphClass())
+            ->where('reference_id', $shift->id)
+            ->where('status', 'posted')
+            ->exists();
+
+        if ($alreadyPosted) {
+            throw ValidationException::withMessages([
+                'resolution' => 'Selisih shift ini sudah pernah diposting ke Cash Ledger.',
+            ]);
+        }
+
+        if ($isShortage && (float) $lockedAccount->current_balance < $amount) {
+            throw ValidationException::withMessages([
+                'finance_account_id' => sprintf(
+                    'Saldo akun %s tidak cukup untuk menyesuaikan selisih kurang. Saldo tersedia Rp%s, sedangkan selisih Rp%s.',
+                    $lockedAccount->name,
+                    number_format((float) $lockedAccount->current_balance, 0, ',', '.'),
+                    number_format($amount, 0, ',', '.')
+                ),
+            ]);
+        }
+
+        $cashierName = $shift->user?->name ?? 'KASIR';
+        $label = $isShortage ? 'SELISIH KAS KURANG' : 'SELISIH KAS LEBIH';
+        $description = sprintf(
+            '%s SHIFT #%d (%s)%s',
+            $label,
+            $shift->id,
+            Str::upper($cashierName),
+            $notes ? ' - '.Str::upper(trim($notes)) : ''
+        );
+
+        return FinanceTransaction::create([
+            'transaction_number' => $this->generateTransactionNumber(),
+            'transaction_date' => now(),
+            'type' => $transactionType,
+            'account_id' => $lockedAccount->id,
+            'transfer_account_id' => null,
+            'category_id' => $category->id,
+            'amount' => $amount,
+            'reference_number' => 'SHIFT-'.$shift->id,
+            'reference_type' => $shift->getMorphClass(),
+            'reference_id' => $shift->id,
+            'description' => $description,
+            'status' => 'posted',
+            'created_by' => Auth::id(),
+            'updated_by' => Auth::id(),
+        ]);
     }
 
     private function generateTransactionNumber(): string

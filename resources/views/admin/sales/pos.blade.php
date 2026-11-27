@@ -10,6 +10,47 @@
     @endphp
 
     <div class="pos-page">
+        {{-- Shift Status Bar / Alert --}}
+        @if (! $activeShift)
+            <div class="pos-shift-notice" role="alert">
+                <div class="pos-shift-meta">
+                    <span class="material-symbols-outlined">lock_clock</span>
+                    <div class="pos-shift-details">
+                        <strong>Shift Kasir Belum Terbuka</strong>
+                        <small>Buka shift kasir dan masukkan modal awal di laci sebelum memproses transaksi penjualan.</small>
+                    </div>
+                </div>
+                <div class="pos-shift-actions">
+                    <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#openShiftModal">
+                        Buka Shift Sekarang
+                    </button>
+                </div>
+            </div>
+        @else
+            <div class="pos-shift-bar">
+                <div class="pos-shift-meta">
+                    <span class="crud-status is-success">
+                        <span class="status-dot is-success"></span>
+                        Shift Aktif (#{{ $activeShift->id }})
+                    </span>
+                    <div class="pos-shift-details">
+                        <strong>{{ auth()->user()->name }} · Buka sejak {{ $activeShift->opened_at->format('H:i') }}</strong>
+                        <small>Modal Awal Laci: Rp {{ number_format((float) $activeShift->starting_cash, 0, ',', '.') }}</small>
+                    </div>
+                </div>
+                <div class="pos-shift-actions">
+                    @if (auth()->user()->canViewShiftTotals())
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnOpenRunningShiftSummary" data-bs-toggle="modal" data-bs-target="#runningShiftSummaryModal">
+                            Ringkasan Shift
+                        </button>
+                    @endif
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#closeShiftModal">
+                        Tutup Shift
+                    </button>
+                </div>
+            </div>
+        @endif
+
         <div class="row g-3">
 
             {{-- =====================================================
@@ -296,13 +337,155 @@
         </div>
     </div>
 
+    {{-- Modal Buka Shift --}}
+    <div class="modal fade" id="openShiftModal" tabindex="-1" aria-labelledby="openShiftModalLabel" aria-hidden="true" {{ ! $activeShift ? 'data-bs-backdrop="static"' : '' }}>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="{{ route('admin.shifts.open') }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="openShiftModalLabel">Buka Shift Kasir</h5>
+                        @if ($activeShift)
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        @endif
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted small">
+                            Masukkan nominal modal awal (starting float / uang kembalian) yang ada di laci kasir saat ini.
+                        </p>
+                        <div class="mb-3">
+                            <label for="starting_cash" class="form-label fw-bold">Modal Awal Kas (Rp) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" name="starting_cash" id="starting_cash" class="form-control form-control-lg"
+                                    placeholder="0" min="0" step="1000" value="{{ old('starting_cash', 0) }}" required autofocus>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('starting_cash').value = 0;">Rp 0</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('starting_cash').value = 100000;">Rp 100.000</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('starting_cash').value = 200000;">Rp 200.000</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('starting_cash').value = 500000;">Rp 500.000</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                            Buka Shift & Mulai Transaksi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @if ($activeShift)
+        @if (auth()->user()->canViewShiftTotals())
+            {{-- Modal Ringkasan Shift Berjalan (Khusus Admin & Supervisor) --}}
+            <div class="modal fade" id="runningShiftSummaryModal" tabindex="-1" aria-labelledby="runningShiftSummaryModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="runningShiftSummaryModalLabel">Ringkasan Shift Berjalan (Sementara)</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="runningShiftSummaryContent">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="mt-2 text-muted small">Memuat ringkasan real-time shift aktif...</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Modal Tutup Shift & Rekonsiliasi Kas --}}
+        <div class="modal fade" id="closeShiftModal" tabindex="-1" aria-labelledby="closeShiftModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form action="{{ route('admin.shifts.close', $activeShift) }}" method="POST">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="closeShiftModalLabel">Tutup Shift & Rekonsiliasi Kas</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-info small mb-3">
+                                Hitung seluruh uang tunai fisik yang ada di dalam laci kasir (termasuk modal awal), lalu masukkan nominalnya di bawah ini.
+                            </div>
+
+                            @if ($errors->has('actual_cash') || $errors->has('supervisor_pin') || $errors->has('closing_notes'))
+                                <div class="alert alert-danger small mb-3" role="alert">
+                                    <strong>Penutupan shift belum dapat diproses:</strong>
+                                    <ul class="mb-0 mt-1 ps-3">
+                                        @foreach (['actual_cash', 'supervisor_pin', 'closing_notes'] as $field)
+                                            @error($field)
+                                                <li>{{ $message }}</li>
+                                            @enderror
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <div class="mb-3">
+                                <label for="actual_cash" class="form-label fw-bold">Total Uang Fisik di Laci Kas (Rp) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="number" name="actual_cash" id="actual_cash"
+                                        class="form-control form-control-lg @error('actual_cash') is-invalid @enderror"
+                                        placeholder="0" min="0" step="1000" value="{{ old('actual_cash') }}" required autofocus>
+                                </div>
+                                <small class="text-muted">Sistem akan membandingkan uang fisik dengan ekspektasi sistem secara otomatis.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="closing_notes" class="form-label">Catatan Penutupan</label>
+                                <textarea name="closing_notes" id="closing_notes" rows="3"
+                                    class="form-control @error('closing_notes') is-invalid @enderror"
+                                    placeholder="Catatan jika ada uang rusak, kelebihan/kekurangan, atau catatan serah terima shift...">{{ old('closing_notes') }}</textarea>
+                            </div>
+
+                            @if (! auth()->user()->canAuthorizeCashier())
+                                <div class="mb-3">
+                                    <label for="close_supervisor_pin" class="form-label fw-bold">
+                                        PIN Otorisasi Supervisor
+                                        @if ($errors->has('supervisor_pin'))
+                                            <span class="text-danger">* (Wajib karena terdapat selisih kas)</span>
+                                        @else
+                                            <span class="text-muted fw-normal">(Wajib jika terdapat selisih kas)</span>
+                                        @endif
+                                    </label>
+                                    <input type="password" name="supervisor_pin" id="close_supervisor_pin"
+                                        class="form-control @error('supervisor_pin') is-invalid @enderror"
+                                        placeholder="Kosongkan jika kas sesuai, isi PIN Supervisor jika ada selisih"
+                                        maxlength="10" autocomplete="off">
+                                    <small class="text-muted">Jika uang fisik berbeda dengan ekspektasi sistem, penutupan shift harus disetujui Supervisor.</small>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-danger fw-bold" onclick="return confirm('Apakah Anda yakin ingin menutup shift kasir ini? Tindakan ini tidak dapat dibatalkan.')">
+                                Tutup Shift & Buat Laporan Rekonsiliasi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
+
 @endsection
 
 @push('scripts')
     <script>
         window.POS_CONFIG = {
             checkoutUrl: "{{ route('admin.sales.checkout') }}",
-            csrfToken: "{{ csrf_token() }}"
+            csrfToken: "{{ csrf_token() }}",
+            hasActiveShift: {{ $activeShift ? 'true' : 'false' }}
         };
 
         // Keyboard Shortcut: '/' to quickly focus the product search input
@@ -365,6 +548,93 @@
                     cashInput.dispatchEvent(new Event('input', { bubbles: true }));
                 });
             });
+
+            // Shift Modals Integration
+            @if (!$activeShift)
+                const openShiftModalEl = document.getElementById('openShiftModal');
+                if (openShiftModalEl && typeof bootstrap !== 'undefined') {
+                    const modal = new bootstrap.Modal(openShiftModalEl);
+                    modal.show();
+                }
+            @else
+                @if ($errors->has('actual_cash') || $errors->has('supervisor_pin') || $errors->has('closing_notes'))
+                    const closeShiftModalEl = document.getElementById('closeShiftModal');
+                    if (closeShiftModalEl && typeof bootstrap !== 'undefined') {
+                        const closeModal = new bootstrap.Modal(closeShiftModalEl);
+                        closeModal.show();
+                    }
+                @endif
+
+                @if (auth()->user()->canViewShiftTotals())
+                    const btnOpenRunningShiftSummary = document.getElementById('btnOpenRunningShiftSummary');
+                    if (btnOpenRunningShiftSummary) {
+                        btnOpenRunningShiftSummary.addEventListener('click', function() {
+                            const summaryContent = document.getElementById('runningShiftSummaryContent');
+                            if (!summaryContent) return;
+
+                            summaryContent.innerHTML = `
+                                <div class="text-center py-3">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-2 text-muted small">Memuat ringkasan real-time shift aktif...</p>
+                                </div>
+                            `;
+
+                            fetch("{{ route('admin.shifts.current') }}")
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.has_active_shift) {
+                                        const s = data.shift;
+                                        const formatRp = (num) => 'Rp ' + Number(num).toLocaleString('id-ID');
+                                        summaryContent.innerHTML = `
+                                            <div class="p-2">
+                                                <div class="d-flex justify-content-between mb-2 pb-2 border-bottom">
+                                                    <span>Kasir:</span>
+                                                    <strong>${s.cashier_name}</strong>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>Waktu Buka:</span>
+                                                    <span>${s.opened_at}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>Modal Awal (Float):</span>
+                                                    <strong>${formatRp(s.starting_cash)}</strong>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>Penjualan Tunai Bersih (Cash):</span>
+                                                    <span>${formatRp(s.total_cash_sales)}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>Penjualan QRIS:</span>
+                                                    <span>${formatRp(s.total_qris_sales)}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>Penjualan Transfer:</span>
+                                                    <span>${formatRp(s.total_transfer_sales)}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2 pt-2 border-top fw-bold">
+                                                    <span>Total Penjualan Shift:</span>
+                                                    <span>${formatRp(s.total_sales)}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between pt-2 border-top fw-bold text-success">
+                                                    <span>Ekspektasi Uang Tunai di Laci:</span>
+                                                    <span class="fs-5">${formatRp(s.expected_cash)}</span>
+                                                </div>
+                                                <small class="text-muted d-block mt-2">
+                                                    * Ekspektasi kas = Modal awal + total penerimaan tunai bersih (setelah dikurangi kembalian).
+                                                </small>
+                                            </div>
+                                        `;
+                                    } else {
+                                        summaryContent.innerHTML = `<div class="alert alert-warning mb-0">Tidak ada shift yang sedang aktif.</div>`;
+                                    }
+                                })
+                                .catch(() => {
+                                    summaryContent.innerHTML = `<div class="alert alert-danger mb-0">Gagal mengambil ringkasan shift berjalan.</div>`;
+                                });
+                        });
+                    }
+                @endif
+            @endif
         });
     </script>
 

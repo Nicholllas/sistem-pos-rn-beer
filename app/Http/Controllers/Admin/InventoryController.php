@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Product;
 use App\Models\StockBatch;
 use App\Models\StockMovement;
@@ -76,6 +77,14 @@ class InventoryController extends Controller
                     .' | Modal: Rp '.number_format($costPrice, 0, ',', '.'),
                 'created_by' => Auth::id(),
             ]);
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Inventory',
+                'action' => 'stock_in',
+                'description' => "Stok masuk manual {$product->name} (+{$qty} unit, modal: Rp ".number_format($costPrice, 0, ',', '.').')',
+                'ip_address' => request()->ip(),
+            ]);
         });
 
         return redirect()->route('admin.inventory.stock-in')->with('success', 'Stok masuk berhasil disimpan dan batch FIFO sudah dibuat.');
@@ -92,15 +101,34 @@ class InventoryController extends Controller
     {
         $request->merge(['note' => $this->normalizeNote($request->note)]);
 
-        $validated = $request->validate([
+        $rules = [
             'product_id' => ['required', Rule::exists('products', 'id')->whereNull('deleted_at')->where('is_active', true)],
             'actual_stock' => ['required', 'integer', 'min:0'],
             'note' => ['required', 'string', 'max:1000'],
+        ];
+
+        $authorizedSupervisor = null;
+        if (! Auth::user()->canAuthorizeCashier()) {
+            $rules['supervisor_pin'] = ['required', 'string'];
+        }
+
+        $validated = $request->validate($rules, [
+            'supervisor_pin.required' => 'PIN Supervisor wajib diisi untuk otorisasi penyesuaian stok oleh kasir.',
         ]);
+
+        if (! Auth::user()->canAuthorizeCashier()) {
+            $authorizedSupervisor = User::verifySupervisorPin($validated['supervisor_pin']);
+
+            if (! $authorizedSupervisor) {
+                throw ValidationException::withMessages([
+                    'supervisor_pin' => 'PIN Supervisor tidak valid atau tidak memiliki hak akses otorisasi.',
+                ]);
+            }
+        }
 
         $hasChanged = false;
 
-        DB::transaction(function () use ($validated, &$hasChanged) {
+        DB::transaction(function () use ($validated, $authorizedSupervisor, &$hasChanged) {
             $product = Product::whereKey($validated['product_id'])
                 ->where('is_active', true)
                 ->whereNull('deleted_at')
@@ -158,6 +186,16 @@ class InventoryController extends Controller
                 'new_stock' => $newStock,
                 'note' => $movementNote,
                 'created_by' => Auth::id(),
+            ]);
+
+            $authNote = $authorizedSupervisor ? ' (Diotorisasi oleh Supervisor: '.$authorizedSupervisor->name.')' : '';
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Inventory',
+                'action' => 'adjustment',
+                'description' => "Penyesuaian stok {$product->name} dari {$previousStock} menjadi {$newStock} (selisih: {$difference}). Alasan: {$validated['note']}{$authNote}",
+                'ip_address' => request()->ip(),
             ]);
         });
 

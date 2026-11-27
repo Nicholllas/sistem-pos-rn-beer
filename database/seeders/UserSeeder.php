@@ -15,6 +15,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Nicholas Christhofer',
                 'password' => Hash::make('password'),
+                'supervisor_pin' => Hash::make('123456'),
                 'role' => 'admin',
             ]
         );
