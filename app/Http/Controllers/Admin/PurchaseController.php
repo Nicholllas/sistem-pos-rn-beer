@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\FinanceAccount;
 use App\Models\Product;
 use App\Models\Purchase;
@@ -467,6 +468,14 @@ class PurchaseController extends Controller
                 $purchase,
                 $validated['void_reason']
             );
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'module' => 'Purchases',
+                'action' => 'void',
+                'description' => "Void pembelian {$purchase->purchase_number} (Rp ".number_format((float) $purchase->total, 0, ',', '.')."). Alasan: {$validated['void_reason']}",
+                'ip_address' => request()->ip(),
+            ]);
         });
 
         return redirect()

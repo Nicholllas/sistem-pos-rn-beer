@@ -81,10 +81,20 @@
                                 </td>
 
                                 <td>
-                                    <span
-                                        class="user-role-badge
-                                            {{ $user->role === 'admin' ? 'is-admin' : 'is-cashier' }}">
-                                        {{ $user->role === 'admin' ? 'Administrator' : 'Kasir' }}
+                                    @php
+                                        $roleBadgeClass = match ($user->role) {
+                                            'admin' => 'is-admin',
+                                            'supervisor' => 'is-supervisor',
+                                            default => 'is-cashier',
+                                        };
+                                        $roleDisplayName = match ($user->role) {
+                                            'admin' => 'Administrator',
+                                            'supervisor' => 'Supervisor',
+                                            default => 'Kasir',
+                                        };
+                                    @endphp
+                                    <span class="user-role-badge {{ $roleBadgeClass }}">
+                                        {{ $roleDisplayName }}
                                     </span>
                                 </td>
 

@@ -124,6 +124,10 @@
                                                 Administrator
                                             </option>
 
+                                            <option value="supervisor" @selected(old('role') === 'supervisor')>
+                                                Supervisor
+                                            </option>
+
                                             <option value="cashier" @selected(old('role') === 'cashier')>
                                                 Kasir
                                             </option>
@@ -135,6 +139,30 @@
                                             </div>
                                         @enderror
                                     </div>
+
+                                    <div class="col-12">
+                                        <label for="supervisor_pin" class="form-label">
+                                            PIN Otorisasi Supervisor
+                                            <span class="text-muted">(Opsional, khusus Administrator &amp; Supervisor)</span>
+                                        </label>
+
+                                        <input type="password" name="supervisor_pin" id="supervisor_pin"
+                                            class="form-control crud-form-control @error('supervisor_pin') is-invalid @enderror"
+                                            placeholder="Contoh: 123456 (4-10 digit angka)" maxlength="10"
+                                            inputmode="numeric" autocomplete="new-password">
+
+                                        @error('supervisor_pin')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+
+                                        <div class="crud-field-help">
+                                            <span>
+                                                Digunakan untuk mengotorisasi void transaksi, penyesuaian stok, atau tutup shift berselisih oleh kasir.
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="user-role-guide">
@@ -144,8 +172,19 @@
                                         </span>
 
                                         <p>
-                                            Dapat mengakses dashboard, master data,
-                                            inventory, pembelian, dan laporan.
+                                            Akses penuh ke master data, keuangan,
+                                            user, laporan, dan audit sistem.
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <span class="user-role-badge is-supervisor">
+                                            Supervisor
+                                        </span>
+
+                                        <p>
+                                            Melihat ringkasan shift kasir, tutup paksa shift,
+                                            dan memegang PIN otorisasi.
                                         </p>
                                     </div>
 
@@ -156,7 +195,7 @@
 
                                         <p>
                                             Difokuskan untuk transaksi POS, struk,
-                                            dan riwayat penjualan.
+                                            dan tutup shift metode blind count.
                                         </p>
                                     </div>
                                 </div>

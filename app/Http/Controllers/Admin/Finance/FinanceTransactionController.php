@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Finance;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\FinanceAccount;
 use App\Models\FinanceCategory;
 use App\Models\FinanceTransaction;
@@ -514,6 +515,14 @@ class FinanceTransactionController extends Controller
                 'voided_at' => now(),
                 'voided_by' => auth()->id(),
                 'updated_by' => auth()->id(),
+            ]);
+
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'module' => 'Finance',
+                'action' => 'void',
+                'description' => "Void transaksi Cash Ledger {$financeTransaction->transaction_number} (Rp ".number_format((float) $financeTransaction->amount, 0, ',', '.')."). Alasan: {$validated['void_reason']}",
+                'ip_address' => request()->ip(),
             ]);
         });
 

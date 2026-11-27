@@ -141,6 +141,10 @@
                                         Administrator
                                     </option>
 
+                                    <option value="supervisor" @selected(old('role', $user->role) === 'supervisor')>
+                                        Supervisor
+                                    </option>
+
                                     <option value="cashier" @selected(old('role', $user->role) === 'cashier')>
                                         Kasir
                                     </option>
@@ -156,6 +160,30 @@
                                     </div>
                                 @enderror
 
+                                <div class="mt-3">
+                                    <label for="supervisor_pin" class="form-label">
+                                        PIN Otorisasi Supervisor
+                                        <span class="text-muted">(Khusus Administrator &amp; Supervisor)</span>
+                                    </label>
+
+                                    <input type="password" name="supervisor_pin" id="supervisor_pin"
+                                        class="form-control crud-form-control @error('supervisor_pin') is-invalid @enderror"
+                                        placeholder="Kosongkan jika tidak ingin mengubah PIN (4-10 digit angka)"
+                                        maxlength="10" inputmode="numeric" autocomplete="new-password">
+
+                                    @error('supervisor_pin')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+
+                                    <div class="crud-field-help">
+                                        <span>
+                                            Status PIN saat ini: {{ $user->supervisor_pin ? 'Sudah diatur' : 'Belum diatur' }}.
+                                        </span>
+                                    </div>
+                                </div>
+
                                 <div class="user-role-guide">
                                     <div>
                                         <span class="user-role-badge is-admin">
@@ -163,8 +191,19 @@
                                         </span>
 
                                         <p>
-                                            Memiliki akses penuh ke master data,
-                                            inventory, pembelian, dan laporan.
+                                            Akses penuh ke master data, keuangan,
+                                            user, laporan, dan audit sistem.
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <span class="user-role-badge is-supervisor">
+                                            Supervisor
+                                        </span>
+
+                                        <p>
+                                            Melihat ringkasan shift kasir, tutup paksa shift,
+                                            dan memegang PIN otorisasi.
                                         </p>
                                     </div>
 
@@ -174,8 +213,8 @@
                                         </span>
 
                                         <p>
-                                            Difokuskan pada POS, struk, dan riwayat
-                                            transaksi penjualan.
+                                            Difokuskan pada POS, struk, dan tutup shift
+                                            metode blind count.
                                         </p>
                                     </div>
                                 </div>

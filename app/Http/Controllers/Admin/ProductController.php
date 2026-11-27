@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
@@ -88,11 +89,19 @@ class ProductController extends Controller
                 ->withInput();
         }
 
-        Product::create([
+        $created = Product::create([
             ...$this->productFields($request, $validated, $sku),
             'stock' => 0,
             'created_by' => Auth::id(),
             'updated_by' => Auth::id(),
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'module' => 'Products',
+            'action' => 'create',
+            'description' => "Menambahkan produk baru {$created->name} (SKU: {$created->sku}, Harga: Rp ".number_format((float) $created->price, 0, ',', '.').')',
+            'ip_address' => $request->ip(),
         ]);
 
         return redirect()
@@ -133,9 +142,22 @@ class ProductController extends Controller
                 ->withInput();
         }
 
+        $oldPrice = (float) $product->price;
         $product->update([
             ...$this->productFields($request, $validated, $sku, $product),
             'updated_by' => Auth::id(),
+        ]);
+
+        $priceChangeDesc = $oldPrice !== (float) $product->price
+            ? ' (Harga diubah: Rp '.number_format($oldPrice, 0, ',', '.').' -> Rp '.number_format((float) $product->price, 0, ',', '.').')'
+            : '';
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'module' => 'Products',
+            'action' => 'update',
+            'description' => "Memperbarui master produk {$product->name}{$priceChangeDesc}",
+            'ip_address' => $request->ip(),
         ]);
 
         return redirect()
@@ -155,6 +177,14 @@ class ProductController extends Controller
 
         $product->update(['updated_by' => Auth::id()]);
         $product->delete();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'module' => 'Products',
+            'action' => 'delete',
+            'description' => "Menghapus produk {$product->name} (ke trash)",
+            'ip_address' => request()->ip(),
+        ]);
 
         return redirect()
             ->route('admin.products.index')
@@ -301,6 +331,7 @@ class ProductController extends Controller
     private function brandCode(string $brand): string
     {
         $clean = preg_replace('/[^A-Z0-9]/', '', $brand);
+
         return mb_substr($clean, 0, 3);
     }
 
@@ -325,6 +356,7 @@ class ProductController extends Controller
 
         if (count($words) === 1) {
             $clean = preg_replace('/[^A-Z0-9]/', '', $words[0]);
+
             return mb_substr($clean, 0, 3);
         }
 
@@ -333,7 +365,8 @@ class ProductController extends Controller
 
         if (str_starts_with($w1, 'ANG')) {
             $w2Char = mb_substr($w2, 0, 1);
-            return 'AG' . $w2Char;
+
+            return 'AG'.$w2Char;
         }
 
         if ($w1 === 'BIR') {
@@ -344,15 +377,17 @@ class ProductController extends Controller
                 return 'BPT';
             }
             $w2Chars = mb_substr($w2, 0, 2);
-            return 'B' . $w2Chars;
+
+            return 'B'.$w2Chars;
         }
 
         if (count($words) >= 3) {
             $w3 = preg_replace('/[^A-Z0-9]/', '', $words[2]);
-            return mb_substr($w1, 0, 1) . mb_substr($w2, 0, 1) . mb_substr($w3, 0, 1);
+
+            return mb_substr($w1, 0, 1).mb_substr($w2, 0, 1).mb_substr($w3, 0, 1);
         }
 
-        return mb_substr($w1, 0, 2) . mb_substr($w2, 0, 1);
+        return mb_substr($w1, 0, 2).mb_substr($w2, 0, 1);
     }
 
     private function generateSku(

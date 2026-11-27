@@ -29,6 +29,7 @@
 
         $roleLabels = [
             'admin' => 'Administrator',
+            'supervisor' => 'Supervisor',
             'cashier' => 'Kasir',
         ];
 
@@ -48,9 +49,11 @@
         $isProductActive = request()->routeIs('admin.products.*');
         $isSupplierActive = request()->routeIs('admin.suppliers.*');
         $isUserActive = request()->routeIs('admin.users.*');
+        $isActivityLogActive = request()->routeIs('admin.activity-logs.*');
 
         $isPosActive = request()->routeIs('admin.sales.pos');
         $isSalesHistoryActive = request()->routeIs('admin.sales.history', 'admin.sales.receipt');
+        $isShiftActive = request()->routeIs('admin.shifts.*');
 
         $isPurchaseCreateActive = request()->routeIs('admin.purchases.create');
 
@@ -240,6 +243,15 @@
                                     <p>Manajemen User</p>
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.activity-logs.index') }}"
+                                    class="nav-link {{ $isActivityLogActive ? 'active' : '' }}"
+                                    @if ($isActivityLogActive) aria-current="page" @endif>
+                                    <span class="material-symbols-outlined nav-icon">history_edu</span>
+                                    <p>Log Aktivitas</p>
+                                </a>
+                            </li>
                         @endif
 
                         <li class="nav-header">
@@ -270,6 +282,17 @@
                                 <p>Riwayat Penjualan</p>
                             </a>
                         </li>
+
+                        @if ($authUser->isSupervisorOrAdmin())
+                            <li class="nav-item">
+                                <a href="{{ route('admin.shifts.index') }}"
+                                    class="nav-link {{ $isShiftActive ? 'active' : '' }}"
+                                    @if ($isShiftActive) aria-current="page" @endif>
+                                    <span class="material-symbols-outlined nav-icon">badge</span>
+                                    <p>Shift & Rekonsiliasi Kas</p>
+                                </a>
+                            </li>
+                        @endif
 
                         @if ($authUser->role === 'admin')
                             <li class="nav-item">
