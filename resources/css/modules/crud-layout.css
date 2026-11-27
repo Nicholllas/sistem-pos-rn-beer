@@ -1,9 +1,7 @@
-/* =========================================================
-   MUI CRUD LAYOUT & PAPERS
-   ========================================================= */
+/* MUI CRUD LAYOUT & PAPERS */
 
 .crud-page {
-    padding-bottom: 24px;
+    padding-bottom: 32px;
 }
 
 .crud-panel,
@@ -13,7 +11,7 @@
     border-radius: 8px;
     box-shadow: var(--shadow-card);
     overflow: hidden;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 /* Panels with filters, forms, or searchable comboboxes must allow dropdowns to overflow */
@@ -39,16 +37,70 @@
     z-index: 1050 !important;
 }
 
-/* Panel Header */
+/* Panel Header & Body */
 .crud-panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    min-height: 58px;
-    padding: 12px 18px;
+    min-height: 60px;
+    padding: 15px 22px;
     background: #ffffff;
     border-bottom: 1px solid var(--mui-divider);
+}
+
+.crud-panel-body {
+    padding: 18px 22px;
+    background: #ffffff;
+}
+
+.crud-panel-body.is-flush {
+    padding: 0;
+}
+
+.crud-kv-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.crud-kv-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 0.8125rem;
+}
+
+.crud-kv-row:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.crud-kv-row > span:first-child {
+    color: var(--mui-text-secondary);
+}
+
+.crud-kv-row > strong {
+    color: var(--mui-text-primary);
+    text-align: right;
+    font-feature-settings: "tnum";
+}
+
+.crud-filter-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.crud-filter-actions .btn {
+    min-width: 100px;
+    min-height: 36px;
+    font-size: 0.75rem;
+    font-weight: 500;
 }
 
 .crud-panel-header h2,
@@ -111,7 +163,24 @@
         padding: 12px 16px;
     }
 
+    .crud-panel-body {
+        padding: 14px 16px;
+    }
+
+    .crud-panel-body.is-flush {
+        padding: 0;
+    }
+
     .crud-panel-header > div {
+        width: 100%;
+    }
+
+    .crud-filter-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .crud-filter-actions .btn {
         width: 100%;
     }
 }

@@ -344,7 +344,13 @@
                                                 {{ $sale->soldBy?->name ?? 'User tidak ditemukan' }}
                                             </strong>
 
-                                            <small>Kasir</small>
+                                            <small>
+                                                @if ($sale->settledShift)
+                                                    Susulan Shift #{{ $sale->settledShift->id }}
+                                                @else
+                                                    Kasir
+                                                @endif
+                                            </small>
                                         </div>
                                     </div>
                                 </td>

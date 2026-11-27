@@ -1,15 +1,11 @@
-/* =========================================================
-   MATERIAL UI - SALES REPORT (CLEAN, COMPACT, DENSE)
-   ========================================================= */
+/* MATERIAL UI - SALES REPORT (CLEAN, COMPACT, DENSE) */
 
 .sales-report-page {
     display: grid;
     gap: 16px;
 }
 
-/* =========================================================
-   REPORT SUMMARY CARDS
-   ========================================================= */
+/* REPORT SUMMARY CARDS */
 
 .sales-report-summary {
     display: grid;
@@ -74,9 +70,7 @@
     line-height: 1.4;
 }
 
-/* =========================================================
-   FILTER PANEL
-   ========================================================= */
+/* FILTER PANEL */
 
 .sales-report-filter-panel,
 .sales-payment-summary-panel,
@@ -165,9 +159,7 @@
     border-radius: var(--mui-radius-pill);
 }
 
-/* =========================================================
-   PAYMENT SUMMARY
-   ========================================================= */
+/* PAYMENT SUMMARY */
 
 .sales-payment-summary-table {
     min-width: 850px;
@@ -262,9 +254,7 @@
     font-size: 0.75rem;
 }
 
-/* =========================================================
-   REPORT RESULT SUMMARY (FIX FOR MEPET BOX)
-   ========================================================= */
+/* REPORT RESULT SUMMARY (FIX FOR MEPET BOX) */
 
 .sales-report-result-summary {
     display: flex;
@@ -433,9 +423,7 @@
     font-weight: 600;
 }
 
-/* =========================================================
-   RESPONSIVE DESIGN
-   ========================================================= */
+/* RESPONSIVE DESIGN */
 
 @media (max-width: 1199.98px) {
     .sales-report-summary {

@@ -137,7 +137,6 @@ export function initMuiCombobox(selectElement) {
         e.preventDefault();
     });
 
-    // Helper: Build option items from native <select>
     function renderItems() {
         dropdown.innerHTML = "";
         const options = Array.from(selectElement.options);
@@ -437,7 +436,7 @@ export function initMuiCombobox(selectElement) {
         }
     });
 
-    // Handle blur: validate / revert if typed text does not match
+    // Revert or select exact match on blur
     input.addEventListener("blur", () => {
         setTimeout(() => {
             if (document.activeElement === input || wrapper.contains(document.activeElement)) {
@@ -544,7 +543,6 @@ export function initMuiCombobox(selectElement) {
     });
     observer.observe(selectElement, { childList: true, subtree: true });
 
-    // Initial render
     renderItems();
     syncFromNativeSelect();
 }

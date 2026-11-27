@@ -1,6 +1,4 @@
-/* =========================================================
-   MUI APPBAR (TOP NAVBAR)
-   ========================================================= */
+/* MUI APPBAR (TOP NAVBAR) */
 
 .app-header {
     min-height: 56px;
@@ -72,7 +70,7 @@
 .app-header-brand-module {
     padding-left: 8px;
     color: var(--mui-text-secondary);
-    font-size: 11px;
+    font-size: 0.75rem;
     font-weight: 500;
     border-left: 1px solid var(--mui-divider);
     letter-spacing: 0.02em;

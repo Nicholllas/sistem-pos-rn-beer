@@ -1,6 +1,4 @@
-/* =========================================================
-   MUI CRUD FORM & INPUTS (Outlined Dense)
-   ========================================================= */
+/* MUI CRUD FORM & INPUTS (Outlined Dense) */
 
 .crud-form-header {
     display: flex;
@@ -122,9 +120,7 @@
     font-weight: 500;
 }
 
-/* =========================================================
-   FORM SECTION
-   ========================================================= */
+/* FORM SECTION */
 
 .crud-form-section {
     padding-bottom: 20px;
@@ -169,9 +165,7 @@
     border-color: rgba(0, 0, 0, 0.23);
 }
 
-/* =========================================================
-   GENERIC STATUS SETTING
-   ========================================================= */
+/* GENERIC STATUS SETTING */
 
 .crud-status-setting {
     display: flex;

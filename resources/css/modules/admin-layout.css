@@ -8,25 +8,24 @@
     background: var(--rn-content-bg);
 }
 
-/* =========================================================
-   MAIN CONTENT
-   ========================================================= */
+/* MAIN CONTENT */
 
 .app-content {
-    padding-bottom: 24px;
+    padding-top: 6px;
+    padding-bottom: 32px;
 }
 
 .app-content > .container-fluid,
 .app-content-header > .container-fluid {
-    padding-right: 20px;
-    padding-left: 20px;
+    padding-right: 24px;
+    padding-left: 24px;
 }
 
 @media (max-width: 767.98px) {
 
     .app-content > .container-fluid,
     .app-content-header > .container-fluid {
-        padding-right: 14px;
-        padding-left: 14px;
+        padding-right: 16px;
+        padding-left: 16px;
     }
 }

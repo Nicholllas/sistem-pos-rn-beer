@@ -1,6 +1,4 @@
-/* =========================================================
-   MUI NAVIGATION DRAWER (SIDEBAR)
-   ========================================================= */
+/* MUI NAVIGATION DRAWER (SIDEBAR) */
 
 .app-sidebar {
     background: #111827 !important; /* Material Dark Drawer */
@@ -38,7 +36,7 @@
     width: 32px;
     height: 32px;
     color: #ffffff;
-    font-size: 11px;
+    font-size: 0.75rem;
     font-weight: 700;
     background: var(--mui-primary);
     border-radius: var(--mui-radius-sm);
@@ -61,7 +59,7 @@
 .brand-content small {
     margin-top: 1px;
     color: #9ca3af;
-    font-size: 9.5px;
+    font-size: 0.6875rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
 }
@@ -73,7 +71,7 @@
 .sidebar-menu .nav-header {
     padding: 12px 12px 4px;
     color: rgba(255, 255, 255, 0.45);
-    font-size: 10px;
+    font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -145,7 +143,7 @@
 .nav-link-badge {
     padding: 2px 7px;
     color: #ffffff;
-    font-size: 9px;
+    font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.05em;
     background: var(--mui-primary);
@@ -182,11 +180,11 @@
 
 .sidebar-footer strong {
     color: #f3f4f6;
-    font-size: 11px;
+    font-size: 0.8125rem;
     font-weight: 500;
 }
 
 .sidebar-footer small {
     color: #9ca3af;
-    font-size: 9.5px;
+    font-size: 0.75rem;
 }

@@ -1,8 +1,6 @@
 
 
-/* =========================================================
-   PURCHASE CREATE
-   ========================================================= */
+/* PURCHASE CREATE */
 
 .purchase-create-page {
     width: 100%;
@@ -41,14 +39,14 @@
 .purchase-information-header h2 {
     margin: 0;
     color: #0f172a;
-    font-size: 13px;
-    font-weight: 750;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 .purchase-information-header p {
     margin: 4px 0 0;
     color: #64748b;
-    font-size: 9px;
+    font-size: 0.75rem;
     line-height: 1.5;
 }
 
@@ -59,8 +57,8 @@
 .purchase-information-body .form-label {
     margin-bottom: 7px;
     color: #334155;
-    font-size: 10px;
-    font-weight: 650;
+    font-size: 0.75rem;
+    font-weight: 500;
 }
 
 .purchase-form-group {
@@ -115,8 +113,8 @@
 }
 
 .purchase-finance-reference-header > div > span {
-    color: #94a3b8;
-    font-size: 7px;
+    color: #64748b;
+    font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.35px;
     text-transform: uppercase;
@@ -126,7 +124,7 @@
     margin-top: 3px;
     overflow: hidden;
     color: #334155;
-    font-size: 10px;
+    font-size: 0.8125rem;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -135,8 +133,8 @@
     flex-shrink: 0;
     padding: 4px 7px;
     color: #1d4ed8;
-    font-size: 8px;
-    font-weight: 700;
+    font-size: 0.75rem;
+    font-weight: 600;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
     border-radius: 999px;
@@ -161,8 +159,8 @@
 }
 
 .purchase-finance-reference-grid span {
-    color: #94a3b8;
-    font-size: 7px;
+    color: #64748b;
+    font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.3px;
     text-transform: uppercase;
@@ -172,7 +170,7 @@
     margin-top: 4px;
     overflow: hidden;
     color: #334155;
-    font-size: 10px;
+    font-size: 0.8125rem;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -191,8 +189,8 @@
 
 .purchase-finance-balance-message {
     padding: 9px 12px;
-    font-size: 8px;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 500;
     line-height: 1.5;
     border-top: 1px solid;
 }
@@ -216,7 +214,7 @@
 }
 
 .purchase-process-info {
-    padding: 12px 13px;
+    padding: 14px 16px;
     margin-top: 18px;
     color: #075985;
     background: #f0f9ff;
@@ -227,32 +225,96 @@
 .purchase-process-info strong {
     display: block;
     color: #075985;
-    font-size: 10px;
+    font-size: 0.8125rem;
+    font-weight: 600;
 }
 
 .purchase-process-info ul {
     display: grid;
-    gap: 5px;
-    padding-left: 16px;
+    gap: 6px;
+    padding-left: 18px;
     margin: 8px 0 0;
 }
 
 .purchase-process-info li {
     color: #0c4a6e;
-    font-size: 8px;
-    line-height: 1.45;
+    font-size: 0.75rem;
+    line-height: 1.5;
 }
 
 .purchase-items-panel {
     min-width: 0;
     margin: 0;
-    overflow: hidden;
+    overflow: visible !important;
+}
+
+.catchup-items-grid-header,
+.catchup-item-row {
+    display: grid;
+    grid-template-columns:
+        minmax(220px, 2.5fr)
+        minmax(80px, 0.6fr)
+        minmax(120px, 0.9fr)
+        44px;
+    gap: 12px;
+    align-items: center;
+}
+
+.catchup-items-grid-header {
+    padding: 11px 17px;
+    color: #475569;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: #f8fafc;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.catchup-item-row {
+    position: relative;
+    padding: 13px 17px;
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.catchup-item-row:hover {
+    background: #fcfdff;
+}
+
+.catchup-row-subtotal {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--mui-text-primary);
+    text-align: right;
+    font-feature-settings: "tnum";
+}
+
+.catchup-notes-section {
+    padding: 18px 20px;
+    border-top: 1px solid #e5e7eb;
+    background: #ffffff;
+}
+
+@media (max-width: 767.98px) {
+    .catchup-items-grid-header {
+        display: none;
+    }
+
+    .catchup-item-row {
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+    }
+
+    .catchup-item-row > div:first-child {
+        grid-column: 1 / -1;
+    }
 }
 
 .purchase-items-error {
     padding: 11px 17px;
     color: #991b1b;
-    font-size: 10px;
+    font-size: 0.8125rem;
     background: #fef2f2;
     border-bottom: 1px solid #fecaca;
 }
@@ -290,9 +352,10 @@
 }
 
 .purchase-summary-strip span {
-    color: #94a3b8;
-    font-size: 8px;
+    color: #64748b;
+    font-size: 0.6875rem;
     font-weight: 600;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
@@ -300,7 +363,8 @@
     margin-top: 4px;
     overflow: hidden;
     color: #0f172a;
-    font-size: 13px;
+    font-size: 0.9375rem;
+    font-weight: 700;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -325,10 +389,10 @@
 
 .purchase-items-grid-header {
     padding: 11px 17px;
-    color: #64748b;
-    font-size: 8px;
+    color: #475569;
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     background: #f8fafc;
     border-bottom: 1px solid #e5e7eb;
@@ -358,9 +422,9 @@
     display: none;
     margin-bottom: 6px;
     color: #64748b;
-    font-size: 8px;
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.35px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
@@ -372,7 +436,7 @@
     min-height: 43px;
     padding-right: 38px;
     overflow: hidden;
-    font-size: 10px;
+    font-size: 0.875rem;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -398,7 +462,7 @@
     justify-content: center;
     min-height: 43px;
     color: #334155;
-    font-size: 11px;
+    font-size: 0.8125rem;
     font-weight: 600;
     line-height: 1;
     background: #f8fafc;
@@ -413,7 +477,8 @@
     min-height: 43px;
     padding: 0 11px;
     color: #0f172a;
-    font-size: 11px;
+    font-size: 0.875rem;
+    font-weight: 500;
     text-align: right;
     border: 1px solid #dbe2ea;
     border-radius: 0 9px 9px 0;
@@ -435,8 +500,8 @@
     display: block;
     overflow: hidden;
     color: #0f172a;
-    font-size: 10px;
-    font-weight: 750;
+    font-size: 0.875rem;
+    font-weight: 700;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -489,15 +554,16 @@
 }
 
 .purchase-items-grid-total span {
-    font-size: 10px;
-    font-weight: 700;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #475569;
 }
 
 .purchase-items-grid-total strong {
     min-width: 125px;
     color: #0f172a;
-    font-size: 11px;
-    font-weight: 750;
+    font-size: 1.125rem;
+    font-weight: 700;
     text-align: right;
     white-space: nowrap;
 }
@@ -519,13 +585,15 @@
 
 .purchase-items-footer strong {
     color: #334155;
-    font-size: 10px;
+    font-size: 0.8125rem;
+    font-weight: 600;
 }
 
 .purchase-items-footer p {
     margin: 3px 0 0;
-    color: #94a3b8;
-    font-size: 8px;
+    color: #64748b;
+    font-size: 0.75rem;
+    line-height: 1.4;
 }
 
 .purchase-submit-actions {
@@ -537,7 +605,7 @@
 .purchase-submit-actions .btn {
     min-width: 120px;
     border-radius: 8px;
-    font-size: 11px;
+    font-size: 0.8125rem;
     font-weight: 600;
 }
 
@@ -645,6 +713,11 @@
     .purchase-item-action {
         top: 15px;
         right: 14px;
+    }
+
+    .purchase-remove-button {
+        width: 44px;
+        height: 44px;
     }
 
     .purchase-items-grid-total {

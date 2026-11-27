@@ -1,6 +1,4 @@
-/* =========================================================
-   MUI SWEETALERT2 INTEGRATION
-   ========================================================= */
+/* MUI SWEETALERT2 INTEGRATION */
 
 .crud-alert-popup.swal2-popup {
     width: min(400px, calc(100% - 32px));

@@ -1,15 +1,11 @@
-/* =========================================================
-   MATERIAL UI - FIFO BATCH PAGE (CLEAN, COMPACT, DENSE)
-   ========================================================= */
+/* MATERIAL UI - FIFO BATCH PAGE (CLEAN, COMPACT, DENSE) */
 
 .fifo-batch-page {
     display: grid;
     gap: 16px;
 }
 
-/* =========================================================
-   FIFO SUMMARY CARDS
-   ========================================================= */
+/* FIFO SUMMARY CARDS */
 
 .fifo-summary-grid {
     display: grid;
@@ -74,9 +70,7 @@
     line-height: 1.4;
 }
 
-/* =========================================================
-   FIFO FILTER PANEL
-   ========================================================= */
+/* FIFO FILTER PANEL */
 
 .fifo-filter-panel,
 .fifo-result-panel {
@@ -136,9 +130,7 @@
     border-radius: var(--mui-radius-pill);
 }
 
-/* =========================================================
-   FIFO INFORMATION BANNER
-   ========================================================= */
+/* FIFO INFORMATION BANNER */
 
 .fifo-information-banner {
     display: flex;
@@ -168,9 +160,7 @@
     line-height: 1.5;
 }
 
-/* =========================================================
-   FIFO PAGE SUMMARY (FIX FOR MEPET BOX)
-   ========================================================= */
+/* FIFO PAGE SUMMARY (FIX FOR MEPET BOX) */
 
 .fifo-page-summary {
     display: grid;
@@ -217,9 +207,7 @@
     color: var(--mui-success);
 }
 
-/* =========================================================
-   FIFO TABLE & CELLS
-   ========================================================= */
+/* FIFO TABLE & CELLS */
 
 .fifo-batch-table {
     min-width: 1220px;
@@ -369,8 +357,9 @@
 
 .fifo-usage-values span {
     color: var(--mui-text-secondary);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
     font-weight: 700;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
@@ -486,9 +475,7 @@
     color: var(--mui-text-primary);
 }
 
-/* =========================================================
-   RESPONSIVE DESIGN
-   ========================================================= */
+/* RESPONSIVE DESIGN */
 
 @media (max-width: 1199.98px) {
     .fifo-summary-grid {

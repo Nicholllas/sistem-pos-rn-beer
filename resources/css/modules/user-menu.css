@@ -1,6 +1,4 @@
-/* =========================================================
-   MUI USER MENU & POPOVER (Paper Menu)
-   ========================================================= */
+/* MUI USER MENU & POPOVER (Paper Menu) */
 
 .app-user-menu {
     display: flex;
@@ -69,7 +67,7 @@
 .app-user-info small {
     margin-top: 1px;
     color: var(--mui-text-secondary);
-    font-size: 10.5px;
+    font-size: 0.75rem;
 }
 
 .app-user-chevron {
@@ -118,7 +116,7 @@
     display: block;
     margin-top: 2px;
     color: var(--mui-text-secondary);
-    font-size: 11px;
+    font-size: 0.75rem;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

@@ -1,15 +1,11 @@
-/* =========================================================
-   MATERIAL UI - LOW STOCK PAGE (CLEAN, COMPACT, DENSE)
-   ========================================================= */
+/* MATERIAL UI - LOW STOCK PAGE (CLEAN, COMPACT, DENSE) */
 
 .low-stock-page {
     display: grid;
     gap: 16px;
 }
 
-/* =========================================================
-   WARNING NOTICE BANNER
-   ========================================================= */
+/* WARNING NOTICE BANNER */
 
 .low-stock-notice {
     display: flex;
@@ -66,9 +62,7 @@
     border-radius: var(--mui-radius-pill);
 }
 
-/* =========================================================
-   LOW STOCK SUMMARY STRIP (FIX FOR MEPET BOX)
-   ========================================================= */
+/* LOW STOCK SUMMARY STRIP (FIX FOR MEPET BOX) */
 
 .low-stock-summary {
     display: grid;
@@ -103,9 +97,7 @@
     font-weight: 700;
 }
 
-/* =========================================================
-   LOW STOCK TABLE
-   ========================================================= */
+/* LOW STOCK TABLE */
 
 .low-stock-table {
     min-width: 1050px;
@@ -198,9 +190,7 @@
     background: var(--mui-error);
 }
 
-/* =========================================================
-   RESPONSIVE DESIGN
-   ========================================================= */
+/* RESPONSIVE DESIGN */
 
 @media (max-width: 767.98px) {
     .low-stock-notice {

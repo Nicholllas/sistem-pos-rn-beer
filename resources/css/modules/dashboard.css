@@ -1,9 +1,7 @@
-/* =========================================================
-   MUI DASHBOARD (CLEAN, COMPACT, DENSE)
-   ========================================================= */
+/* MUI DASHBOARD (CLEAN, COMPACT, DENSE) */
 
 .dashboard-page {
-    padding-bottom: 24px;
+    padding-bottom: 32px;
 }
 
 /* Welcome Card */
@@ -12,8 +10,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    padding: 18px 22px;
-    margin-bottom: 16px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
     background: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.07);
     border-radius: var(--mui-radius-md);
@@ -50,24 +48,24 @@
 }
 
 .dashboard-section {
-    margin-bottom: 16px;
+    margin-bottom: 24px;
 }
 
 .dashboard-section-heading {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .dashboard-section-heading h3,
 .dashboard-panel-header h3 {
     margin: 0;
     color: var(--mui-text-primary);
-    font-size: 0.9375rem;
+    font-size: 0.95rem;
     font-weight: 600;
 }
 
 .dashboard-section-heading p,
 .dashboard-panel-header p {
-    margin: 2px 0 0;
+    margin: 4px 0 0;
     color: var(--mui-text-secondary);
     font-size: 0.75rem;
 }
@@ -76,7 +74,7 @@
 .dashboard-kpi,
 .dashboard-secondary-kpi {
     height: 100%;
-    padding: 14px 16px;
+    padding: 16px 20px;
     background: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.07);
     border-radius: var(--mui-radius-md);
@@ -178,7 +176,7 @@
 
 /* Dashboard Panel */
 .dashboard-panel {
-    margin-bottom: 16px;
+    margin-bottom: 24px;
     overflow: hidden;
     background: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.07);
@@ -186,13 +184,17 @@
     box-shadow: var(--shadow-card);
 }
 
+.dashboard-panel.h-100 {
+    margin-bottom: 0;
+}
+
 .dashboard-panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    min-height: 54px;
-    padding: 12px 18px;
+    min-height: 58px;
+    padding: 14px 20px;
     background: #ffffff;
     border-bottom: 1px solid var(--mui-divider);
 }
@@ -216,16 +218,16 @@
 .dashboard-action-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-    padding: 16px;
+    gap: 14px;
+    padding: 18px 20px;
 }
 
 .dashboard-action-item {
     position: relative;
     display: flex;
     flex-direction: column;
-    min-height: 105px;
-    padding: 12px 34px 12px 14px;
+    min-height: 80px;
+    padding: 14px 16px;
     color: var(--mui-text-primary);
     text-decoration: none;
     background: #ffffff;
@@ -293,8 +295,8 @@
 }
 
 .dashboard-summary-item {
-    min-height: 100px;
-    padding: 14px 16px;
+    min-height: 105px;
+    padding: 16px 20px;
     background: #ffffff;
 }
 
@@ -307,7 +309,7 @@
 
 .dashboard-summary-item strong {
     display: block;
-    margin-top: 6px;
+    margin-top: 8px;
     color: var(--mui-text-primary);
     font-size: 1.125rem;
     font-weight: 700;
@@ -316,18 +318,18 @@
 
 .dashboard-summary-item small {
     display: block;
-    margin-top: 2px;
+    margin-top: 4px;
     color: var(--mui-text-secondary);
     font-size: 0.6875rem;
 }
 
 /* Payment List */
 .dashboard-payment-list {
-    padding: 6px 16px;
+    padding: 10px 20px;
 }
 
 .dashboard-payment-item {
-    padding: 10px 0;
+    padding: 12px 0;
     border-bottom: 1px solid var(--mui-divider);
 }
 
@@ -430,7 +432,7 @@
 }
 
 .dashboard-table thead th {
-    padding: 8px 14px;
+    padding: 12px 18px;
     color: var(--mui-text-secondary);
     font-size: 0.6875rem;
     font-weight: 600;
@@ -442,7 +444,7 @@
 }
 
 .dashboard-table tbody td {
-    padding: 8px 14px;
+    padding: 12px 18px;
     color: var(--mui-text-primary);
     border-bottom: 1px solid var(--mui-divider);
     vertical-align: middle;
@@ -499,14 +501,14 @@
 
 /* Ranking List */
 .dashboard-ranking-list {
-    padding: 4px 16px;
+    padding: 8px 20px;
 }
 
 .dashboard-ranking-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 0;
+    gap: 14px;
+    padding: 12px 0;
     border-bottom: 1px solid var(--mui-divider);
 }
 
@@ -592,11 +594,15 @@
 }
 
 .dashboard-main-grid {
-    margin-bottom: 2px;
+    margin-bottom: 24px;
+}
+
+.dashboard-main-grid + .dashboard-main-grid {
+    margin-top: 8px;
 }
 
 .dashboard-history-panel {
-    margin-top: 16px;
+    margin-top: 24px;
 }
 
 @media (max-width: 575.98px) {

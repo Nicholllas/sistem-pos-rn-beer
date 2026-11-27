@@ -208,46 +208,34 @@
 
             <div class="dashboard-action-grid">
                 <a href="{{ route('admin.sales.pos') }}" class="dashboard-action-item is-primary">
-                    <span class="dashboard-action-label">Transaksi</span>
                     <strong>Penjualan Baru</strong>
                     <small>Buka kasir dan mulai transaksi</small>
-                    <span class="dashboard-action-arrow">→</span>
                 </a>
 
                 <a href="{{ route('admin.sales.history') }}" class="dashboard-action-item">
-                    <span class="dashboard-action-label">Penjualan</span>
                     <strong>Riwayat Transaksi</strong>
                     <small>Lihat transaksi dan struk terdahulu</small>
-                    <span class="dashboard-action-arrow">→</span>
                 </a>
 
                 @if ($isAdmin)
                     <a href="{{ route('admin.purchases.create') }}" class="dashboard-action-item">
-                        <span class="dashboard-action-label">Inventory</span>
                         <strong>Pembelian Stok</strong>
                         <small>Catat pembelian dari supplier</small>
-                        <span class="dashboard-action-arrow">→</span>
                     </a>
 
                     <a href="{{ route('admin.products.create') }}" class="dashboard-action-item">
-                        <span class="dashboard-action-label">Master Data</span>
                         <strong>Tambah Produk</strong>
                         <small>Daftarkan produk baru</small>
-                        <span class="dashboard-action-arrow">→</span>
                     </a>
 
                     <a href="{{ route('admin.inventory.batches') }}" class="dashboard-action-item">
-                        <span class="dashboard-action-label">Persediaan</span>
                         <strong>Batch FIFO</strong>
                         <small>Periksa batch dan nilai stok</small>
-                        <span class="dashboard-action-arrow">→</span>
                     </a>
 
                     <a href="{{ route('admin.reports.sales') }}" class="dashboard-action-item">
-                        <span class="dashboard-action-label">Laporan</span>
                         <strong>Laporan Penjualan</strong>
                         <small>Analisis transaksi dan pendapatan</small>
-                        <span class="dashboard-action-arrow">→</span>
                     </a>
                 @endif
             </div>

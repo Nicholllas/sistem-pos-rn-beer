@@ -1,6 +1,4 @@
-/* =========================================================
-   MATERIAL UI - INVENTORY STOCK IN (CLEAN, COMPACT, DENSE)
-   ========================================================= */
+/* MATERIAL UI - INVENTORY STOCK IN (CLEAN, COMPACT, DENSE) */
 
 .inventory-stock-layout {
     display: grid;
@@ -48,9 +46,7 @@
     overflow-wrap: anywhere;
 }
 
-/* =========================================================
-   INVENTORY STOCK PREVIEW
-   ========================================================= */
+/* INVENTORY STOCK PREVIEW */
 
 .inventory-stock-preview {
     position: sticky;
@@ -131,8 +127,9 @@
 
 .inventory-stock-flow > div span {
     color: var(--mui-text-secondary);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
     font-weight: 700;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
@@ -208,9 +205,7 @@
     line-height: 1.5;
 }
 
-/* =========================================================
-   RESPONSIVE DESIGN
-   ========================================================= */
+/* RESPONSIVE DESIGN */
 
 @media (max-width: 991.98px) {
     .inventory-stock-layout {

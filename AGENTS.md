@@ -71,6 +71,25 @@ Before relying on a package's API, confirm its installed version:
 
 - Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
 
+=== database safety rules ===
+
+# Strict Database Safety Rules (NEVER RESET/WIPE DATABASE)
+
+- **NEVER** run commands or scripts that wipe, reset, drop, or truncate database tables (such as `php artisan migrate:fresh`, `migrate:reset`, `db:wipe`, `TRUNCATE`, `DROP DATABASE`, or tests using `RefreshDatabase` against the development/main database) without explicit, unambiguous confirmation and permission from the user.
+- **NEVER** run `RefreshDatabase` or broad test commands on the primary application database (`sistem_pos_rn_beer`). Automated tests MUST ALWAYS use the dedicated test database (`sistem_pos_rn_beer_testing`) or in-memory database as configured in `phpunit.xml`.
+- When in doubt, ALWAYS ask the user for confirmation before executing any database altering or cleanup operations.
+
+=== ui & ux design system rules ===
+
+# UI / UX & Component Architecture Rules (MUST FOLLOW FOR EVERY NEW MODULE)
+
+- Always inspect a sibling Blade view (such as `resources/views/admin/purchases/create.blade.php`, `resources/views/admin/sales/history.blade.php`, or `resources/views/admin/sales/receipt.blade.php`) before creating a new Admin or POS view. Never invent unstyled class names or mix raw unstyled Bootstrap cards/tables when shared MUI/Tactile classes exist.
+- **Page & Panel Containers:** Wrap Admin index/form pages in `<div class="crud-page">`. Inside `.crud-panel`, always use `.crud-panel-header` paired with `.crud-panel-body` (or `.crud-panel-body.is-flush` for full-bleed tables). Inside `.crud-form-panel`, use `.crud-form-header`, `.crud-form-body`, `.crud-form-section`, and `.crud-form-footer`.
+- **Filter Panels & Searchable Comboboxes:** Give every filter panel a class ending in `-filter-panel` (so `crud-layout.css` applies `overflow: visible !important` and `z-index: 25`), add `.crud-form-control` to every `<input>` and `<select>` (so `combobox.js` auto-enhances selects), and NEVER place `<select class="crud-form-control">` inside `.table-responsive` or `overflow: hidden` containers that clip dropdown menus. Use CSS Grid item rows (`.purchase-items-grid` / `.purchase-item-row` pattern) for dynamic multi-row forms.
+- **Two-Column Create / Entry Screens:** Reuse `.purchase-create-layout`, `.purchase-information-panel`, `.purchase-information-body`, `.purchase-process-info`, `.purchase-summary-strip`, and `.purchase-items-footer` so master-detail forms share consistent sticky sidebars, bullet notices, and CTA alignment. NEVER use inline `<code>` tags inside user-facing prose or alert boxes.
+- **Tables, Status Chips, Actions & Pagination:** NEVER build tables that trigger a horizontal scrollbar ("slider") on desktop viewports, and NEVER force large `min-width` on `.crud-table`. Keep every table to 5–6 compact columns by stacking related fields with `.crud-cell-stack` / `.crud-cell-kv` (or `.crud-record-cell` / `.crud-audit-cell` with `tnum` numeric alignment) and adding `.is-dense` to `.crud-table` on data-heavy views. Always use `.crud-status.is-{success|danger|warning|info|muted}` for status pills instead of oversized Bootstrap `.badge`. Wrap all table row actions inside `<div class="crud-actions">` (right-aligned, allows clean multi-button wrapping on narrow viewports while `.crud-actions .btn` keeps `flex-shrink: 0` and `white-space: nowrap` so button labels never squash or wrap mid-label), use uniform dense outlined variants (`btn btn-sm btn-outline-primary` for Inspect/Edit/Report, `btn-outline-secondary` for Utility/Reset, `btn-outline-warning` for Pending/Resolution such as `Selesaikan`, `btn-outline-danger` for Delete/Void/Force Close), and NEVER override button text/padding with Bootstrap utilities like `text-dark` or `px-*`/`py-*`. Wrap Laravel pagination links in `<div class="crud-pagination">`.
+- **Receipts & POS Surfaces:** Use `.receipt-layout` + `.thermal-receipt` + `.receipt-action-card` for printable thermal reports/receipts, and `.pos-shift-bar` / `.pos-products-card` proportions for POS headers and modals. Always run `npm run build` whenever CSS or JS files are changed.
+
 === tests rules ===
 
 # Test Enforcement

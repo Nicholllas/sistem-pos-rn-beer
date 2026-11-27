@@ -1,6 +1,4 @@
-/* =========================================================
-   MATERIAL UI - INVENTORY ADJUSTMENT (CLEAN, COMPACT, DENSE)
-   ========================================================= */
+/* MATERIAL UI - INVENTORY ADJUSTMENT (CLEAN, COMPACT, DENSE) */
 
 .inventory-adjustment-layout {
     display: grid;
@@ -98,9 +96,7 @@
     color: var(--mui-text-secondary);
 }
 
-/* =========================================================
-   ADJUSTMENT PREVIEW CARD
-   ========================================================= */
+/* ADJUSTMENT PREVIEW CARD */
 
 .inventory-adjustment-preview {
     position: sticky;
@@ -156,8 +152,9 @@
 
 .inventory-adjustment-comparison > div span {
     color: var(--mui-text-secondary);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
     font-weight: 700;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
@@ -241,9 +238,7 @@
     color: var(--mui-text-secondary);
 }
 
-/* =========================================================
-   RESPONSIVE DESIGN
-   ========================================================= */
+/* RESPONSIVE DESIGN */
 
 @media (max-width: 991.98px) {
     .inventory-adjustment-layout {

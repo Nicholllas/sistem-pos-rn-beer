@@ -1,8 +1,6 @@
-/* =========================================================
-   CLASSY, MODERN & PROFESSIONAL AUTHENTICATION MODULE
+/* CLASSY, MODERN & PROFESSIONAL AUTHENTICATION MODULE
    DESIGN.MD SPECIFICATIONS (Trustworthy Blue #1877F2 & Clean White)
-   Enterprise Point of Sale (POS) Workspace
-   ========================================================= */
+   Enterprise Point of Sale (POS) Workspace */
 
 :root {
     --auth-bg: #F4F6F8;
@@ -40,6 +38,7 @@
 
 .auth-page {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;

@@ -1,15 +1,11 @@
-/* =========================================================
-   MATERIAL UI - STOCK LOG PAGE (CLEAN, COMPACT, DENSE)
-   ========================================================= */
+/* MATERIAL UI - STOCK LOG PAGE (CLEAN, COMPACT, DENSE) */
 
 .stock-log-page {
     display: grid;
     gap: 16px;
 }
 
-/* =========================================================
-   STOCK LOG NOTICE BANNER
-   ========================================================= */
+/* STOCK LOG NOTICE BANNER */
 
 .stock-log-notice {
     display: flex;
@@ -66,9 +62,7 @@
     border-radius: var(--mui-radius-pill);
 }
 
-/* =========================================================
-   STOCK LOG SUMMARY STRIP (FIX FOR MEPET BOX)
-   ========================================================= */
+/* STOCK LOG SUMMARY STRIP (FIX FOR MEPET BOX) */
 
 .stock-log-summary {
     display: grid;
@@ -115,9 +109,7 @@
     color: var(--mui-warning);
 }
 
-/* =========================================================
-   STOCK LOG FILTER PANEL
-   ========================================================= */
+/* STOCK LOG FILTER PANEL */
 
 .stock-log-filter-panel {
     margin: 0;
@@ -176,9 +168,7 @@
     border-radius: var(--mui-radius-pill);
 }
 
-/* =========================================================
-   STOCK LOG TABLE & CELLS
-   ========================================================= */
+/* STOCK LOG TABLE & CELLS */
 
 .stock-log-table {
     min-width: 1250px;
@@ -334,8 +324,9 @@
 
 .stock-log-flow > div span {
     color: var(--mui-text-secondary);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
     font-weight: 700;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
@@ -410,9 +401,7 @@
     overflow-wrap: anywhere;
 }
 
-/* =========================================================
-   RESPONSIVE DESIGN
-   ========================================================= */
+/* RESPONSIVE DESIGN */
 
 @media (max-width: 767.98px) {
     .stock-log-notice {
